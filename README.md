@@ -3,11 +3,19 @@
 creates an mpd-client based on the react-js framework
 
 I am planning to port this to react-native, to use it as an android-client
-But first make it work as an ordinary web-client.
+But first make it work as an ordinary web-client!
 
 dependencies:
 uses MPD.js, available on https://github.com/bobboau/MPD.js
 MPD.js is dependent on [Websockify](https://github.com/kanaka/websockify) and Websockify's [websock](https://github.com/kanaka/websockify/wiki/websock.js) library
+
+uses the following react-tools (to be installed using npm):
+    "fdmg-ts-react-image-button": "^1.0.23",
+    "react-event-observer": "^0.5.11",
+    "react-image": "^1.3.1",
+    "react-simpletabs": "^0.7.0",
+    "react-sticky-el": "^1.0.16",
+
 
 This implementation of mpd-client is based on the following assumptions:
 - organize the files as albums in directories.
