@@ -13,19 +13,19 @@ import Slider, { Range } from 'rc-slider';
 
 
 
-var observer = ReactObserver();
-var mpd_client=window.mpd_client;
-var playlistContextmenu=null;
-var albumsContextmenu=null;
-var playlistselection=-1;
-var albumsselection=-1;
-var albumList=null;
+let  observer = ReactObserver();
+let  mpd_client=window.mpd_client;
+let  playlistContextmenu=null;
+let  albumsContextmenu=null;
+let  playlistselection=-1;
+let  albumsselection=-1;
+let  albumList=null;
 function padDigits(number, digits) {
     return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
 }
 function getTime(n){
-    var min=Math.floor(n/60);
-    var sec=n % 60;
+    let  min=Math.floor(n/60);
+    let  sec=n % 60;
     return padDigits(min,2)+":"+padDigits(sec,2);
 }
 function getImagePath(path){
@@ -68,11 +68,11 @@ class ContextMenu1 extends React.Component {
         const screenW = window.innerWidth;
         const screenH = window.innerHeight;
         try{//first time it is displayed no value is assigned to this.app
-            var rootW1 = this.app.offsetWidth;
+            let  rootW1 = this.app.offsetWidth;
 
             const rootW=rootW1;
 
-            var rootH1 = this.app.offsetHeight;
+            let  rootH1 = this.app.offsetHeight;
             const rootH=rootH1;
 
             
@@ -174,7 +174,7 @@ class PlaylistList extends CommonList {
         super(props);
     }
     componentDidMount() {
-        var playlists=mpd_client.getPlaylists();
+        let  playlists=mpd_client.getPlaylists();
         if(playlists!=null)
             this.updatePlaylists(playlists);
 
@@ -187,7 +187,7 @@ class PlaylistList extends CommonList {
     }
     updatePlaylists(playlists){
         playlists.sort();
-        var mylist=[];
+        let  mylist=[];
         playlists.forEach((playlist)=>{
             mylist=mylist.concat( playlist);
             
@@ -228,14 +228,14 @@ class AlbumList extends CommonList {
         this.backClick = this.backClick.bind(this);
   }
   getDirectoryContents(dir){mpd_client.getDirectoryContents(dir, (directory_contents)=> {
-        var myTotalList=[];
-        var mylist=[];
+        let  myTotalList=[];
+        let  mylist=[];
         console.log(directory_contents);
         directory_contents.forEach((content)=>{
-            var element=this.makeFileListElement(content);
+            let  element=this.makeFileListElement(content);
             try{
             myTotalList=myTotalList.concat( element);
-            var path=element.MPD_file_path_name;
+            let  path=element.MPD_file_path_name;
             path=path.substr(path.lastIndexOf('/') + 1);
             mylist=mylist.concat( path)
                     //console.log(element);
@@ -248,7 +248,7 @@ class AlbumList extends CommonList {
                 items: mylist
             }));
         } else{
-            //var path=this.getFilePath(this.selection);
+            //let  path=this.getFilePath(this.selection);
             console.log("add dir:",dir);
             mpd_client.addSongToQueueByFile(dir);
             //no items, display context menu
@@ -259,7 +259,7 @@ class AlbumList extends CommonList {
 
 
     makeFileListElement(content){
-        var item={};
+        let  item={};
         item.mpd_file_path=content.getPath().replace(/(.*[^\/])\/?/, '$1/');
         if(typeof content.getMetadata().directory !== 'undefined'){
             item.MPD_file_path_name=content.getPath();
@@ -275,7 +275,7 @@ class AlbumList extends CommonList {
     }
     
     getFilePath(index){
-        var str=this.totalList[index].mpd_file_path;
+        let  str=this.totalList[index].mpd_file_path;
         str=str.substr(0, str.length - 1);
         return str;
     }
@@ -283,7 +283,7 @@ class AlbumList extends CommonList {
     handleClick(index) {
 	console.log("clicked:",index);
         if (!albumsContextmenu.state.visible){
-            var path=this.getFilePath(index);
+            let  path=this.getFilePath(index);
             this.selection=index;
             this.getDirectoryContents( path);
         }
@@ -292,14 +292,14 @@ class AlbumList extends CommonList {
     contextResult(choice){
         console.log("albums choice:",choice);
         console.log("action with:",albumList.selection);
-        var path=albumList.getFilePath(albumList.selection);
+        let  path=albumList.getFilePath(albumList.selection);
         console.log("albumsselection:",path);
 
         if (choice=="Add"){
             mpd_client.addSongToQueueByFile(path);
         }
         if (choice=="Add and Play"){
-            var len=mpd_client.getQueue().getSongs().length;
+            let  len=mpd_client.getQueue().getSongs().length;
             mpd_client.addSongToQueueByFile(path);
             mpd_client.play(len);
         }
@@ -322,7 +322,7 @@ class AlbumList extends CommonList {
               //this.prevdirs=this.prevdirs.splice(-1,1);
               this.prevdirs.pop();
               console.log("back2",this.prevdirs);
-              var dir=this.prevdirs[this.prevdirs.length-1];
+              let  dir=this.prevdirs[this.prevdirs.length-1];
               console.log("back3",dir);
               //this.prevdirs=this.prevdirs.splice(-1,1);
               this.prevdirs.pop();
@@ -336,13 +336,90 @@ class AlbumList extends CommonList {
       return (
         <div><ContextMenu2 /><br/><button onClick={this.backClick}>Back</button><ul>
           {this.state.items.map((listValue,i)=>{
-              var path=getImagePath("/"+this.totalList[i].mpd_file_path);
+              let  path=getImagePath("/"+this.totalList[i].mpd_file_path);
             return <div className="list-item"><li key={i} onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} style={this.listStyle}><Img src={path}  className="list-image" />{listValue}</li></div>;
           })}
         </ul></div>
       )
     }
 }
+let searchList=null;
+/* class SearchList*/
+class SearchList extends CommonList {
+    constructor(props) {
+        super(props);
+        searchList=this;
+        this.selection = -1;
+        this.totalList = [];
+        this.state = {
+            items: []
+        };
+        this.options=[];
+        this.items=[];
+        //this.handleClick = this.handleClick.bind(this,undefined);
+    }
+    setOptions(options){
+        this.options=options;
+    }
+    processSearchResults(data){
+        let totalList=[];
+        searchList.items=[];
+        let previousItem="";
+        data.forEach((item)=>
+        {
+            let newItem={path:item.getPath(),title:item.getTitle(),album:item.getAlbum(),artist:item.getArtist()};
+            console.log(newItem);
+
+
+            let addItem=newItem.artist+"-"+newItem.title;
+            //this.options=[{name:'artist',value:true},{name:'album',value:false},{name:'title',value:false}];
+            let titleSearch=searchList.options[2].value;
+            let artistSearch=searchList.options[0].value;
+            let albumSearch=searchList.options[1].value;
+            let separate=searchList.options[3].value;
+            if (artistSearch&&!separate)
+                addItem=newItem.album;
+            else
+                if (albumSearch&&!separate)
+                    addItem=newItem.artist+"-"+newItem.album;
+            if (addItem !=previousItem) {
+                let dirpath=newItem.path;
+                dirpath=dirpath.substring(0, dirpath.lastIndexOf("/"));
+                if (!(titleSearch||separate))
+                    newItem.path=dirpath;
+                newItem.dirpath=dirpath;
+                totalList=totalList.concat(addItem);
+                searchList.items=searchList.items.concat(newItem);
+
+                console.log("processSearchResults", newItem.title);
+                console.log(newItem);
+            }
+            searchList.totalList=totalList;
+            previousItem=addItem;
+
+        });
+        console.log("totalList:",totalList);
+        searchList.setState({
+            items: totalList
+        });
+    }
+    handleClick(index) {
+        console.log("clicked:",index);
+            let  path=this.items[index].path;
+            this.selection=index;
+            console.log("add file:",path);
+            mpd_client.addSongToQueueByFile( path);
+        }
+    render() {
+        return (
+            <div><ul>
+                {this.state.items.map((listValue,i)=>{
+                    let path=getImagePath("/"+this.items[i].dirpath);
+                    return <div className="list-item"  onClick={() => { this.handleClick(i);}}><Img src={path}  className="list-image" /><li key={i}  style={this.listStyle}>{listValue}</li></div>;
+                })}
+            </ul></div>
+        )
+    }}
 /* class Playlist*/
 class PlayList extends CommonList {
   constructor(props) {
@@ -355,7 +432,7 @@ class PlayList extends CommonList {
     //this.handleClick = this.handleClick.bind(this,undefined);
   }
    componentDidMount() {
-    var queue=mpd_client.getQueue();
+    let  queue=mpd_client.getQueue();
     console.log("queue:",queue);
     if(queue!=null)
         this.updateQueue(queue);
@@ -369,15 +446,15 @@ class PlayList extends CommonList {
   }
   updateQueue(queue){
       console.log("update queue:",queue.getSongs());
-      var mylist=[];
-      var totalList=[];
+      let  mylist=[];
+      let  totalList=[];
       this.setState(previousState => ({items: []}));
-      var queueList=queue.getSongs();
+      let  queueList=queue.getSongs();
       //console.log(queueList);
       queueList.forEach((song)=>{
-          var path=song.getPath();
-          var dirpath=path.substring(0, path.lastIndexOf("/"));
-          var item={path:song.getPath(),track:song.getTrack(), title:song.getTitle(), dir:dirpath, album:song.getAlbum(), artist:song.getArtist(), duration:song.getDuration()};
+          let  path=song.getPath();
+          let  dirpath=path.substring(0, path.lastIndexOf("/"));
+          let  item={path:song.getPath(),track:song.getTrack(), title:song.getTitle(), dir:dirpath, album:song.getAlbum(), artist:song.getArtist(), duration:song.getDuration()};
           totalList=totalList.concat(item);
           mylist=mylist.concat( song.getDisplayName())
       });
@@ -401,12 +478,12 @@ class PlayList extends CommonList {
             mpd_client.removeSongFromQueueByPosition(playlistselection);
         }
         if (choice=="Remove bottom"){
-            var len=mpd_client.getQueue().getSongs().length;
-            for (var i=playlistselection;i<len;i++)
+            let  len=mpd_client.getQueue().getSongs().length;
+            for (let  i=playlistselection;i<len;i++)
                 mpd_client.removeSongFromQueueByPosition(playlistselection);
         }
         if (choice=="Remove top"){
-            for (var i=0;i<playlistselection;i++)
+            for (let  i=0;i<playlistselection;i++)
                 mpd_client.removeSongFromQueueByPosition(0);
             mpd_client.removeSongFromQueueByPosition(playlistselection);
         }
@@ -426,18 +503,18 @@ class PlayList extends CommonList {
     };
     
     render() {
-        var prevPath="";
+        let  prevPath="";
       return (
         <div><ContextMenu1 /><ul>
           {this.state.items.map((listValue,i)=>{//<Img src={path}  className="list-image" />
-          var img=null;
-          var artist=null;
-            var path=getImagePath("/"+this.totalList[i].dir);
+          let  img=null;
+          let  artist=null;
+            let  path=getImagePath("/"+this.totalList[i].dir);
             if (prevPath !=path){
                 img=<Img src={path}  className="list-image" />;
                 artist=<div className="list-artist">{this.totalList[i].artist+"-"+this.totalList[i].album}</div>
             }
-            var time=getTime(this.totalList[i].duration);
+            let  time=getTime(this.totalList[i].duration);
             prevPath=path;
             return <li key={i} onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {playlistselection=i;this.selection=i; this.contextMenu(e)}} style={this.listStyle}>{img}
             <div className="list-time">{time}</div><span className="list-title">{padDigits(this.totalList[i].track,2)+" "+listValue}</span>{artist}</li>;
@@ -453,7 +530,7 @@ class ShowTime extends React.Component {
         this.playing="stop";
         this.state = {
             curTime : null
-        }
+        };
         this.listener = observer.subscribe('StateChanged',(data)=>{
             console.log('StateChanged is: ',data);
             this.updateState(data.state,data.client);
@@ -472,7 +549,7 @@ class ShowTime extends React.Component {
       setInterval( () => {
           
           if (this.playing=="play"){
-              var newTime=this.state.curTime+1;
+              let  newTime=this.state.curTime+1;
         this.setState({
           curTime : newTime
         })
@@ -506,11 +583,11 @@ class Buttons extends React.Component {
     });
   }
   updateState(state,client){
-      var current_song = client.getCurrentSong();
+      let  current_song = client.getCurrentSong();
       this.artist=current_song.getArtist()+ "-"+current_song.getAlbum();
-      var path=current_song.getPath();
+      let  path=current_song.getPath();
       path=path.substring(0, path.lastIndexOf("/"));
-      var song="";
+      let  song="";
         if(current_song){
             song=current_song.getDisplayName();
         }
@@ -543,15 +620,15 @@ class Buttons extends React.Component {
   
 
   render() {//<Img src="http://192.168.2.8:8081/FamilyMusic/00tags/newest/03-Marlon%20Williams-Make%20Way%20for%20Love/folder.jpg">
-        var s = {
+        let  s = {
             background: 'white'
         };
-        var image = {
+        let  image = {
             height: "65px",
     width: "65px",
     float:"right"
         };
-        var imagePath=getImagePath("/"+this.state.path);
+        let  imagePath=getImagePath("/"+this.state.path);
         console.log(imagePath);
     return (<Sticky>
           <header  style={s}>
@@ -576,11 +653,82 @@ class Buttons extends React.Component {
     );
   }
 }
+/*SearchForm*/
+class SearchForm extends React.Component {
+  constructor(props) {
+    super(props);
+      this.options=[{name:'artist',value:true},{name:'album',value:false},{name:'title',value:false},{name:'separate tracks',value:false}];
+    this.multiSelect=false;
+    this.state = {value: '',options:this.options};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    //alert('A value was submitted: ' + this.state.value);
+      let search={};
+      for (let i=0;i<this.options.length-1;i++){
+          if (this.options[i].value)
+          search[this.options[i].name]=this.state.value;
+
+      };
+      console.log("search for:",search);
+
+      searchList.setOptions(this.options);
+
+      mpd_client.search(search,searchList.processSearchResults);
+    event.preventDefault();
+  }
+
+  render() {
+      console.log(this.state,this.options);
+    return (
+      <form onSubmit={this.handleSubmit}>
+          <label>
+              <input type="text" value={this.state.value} onChange={this.handleChange} />
+          </label>
+          <input type="submit" value="Search" />
+          { this.options.map((option, index) => (
+              <div className="checkbox" key={index}>
+                  <label>
+                      <input type="checkbox"
+                             name={`${name}[${index}]`}
+                             value={option.name}
+                             checked={option.value}
+                             onChange={event => {
+                                 let current=0;
+                                 for (let i=0;i<this.options.length;i++){
+                                     if (this.options[i].name==option.name)
+                                         current=i;
+                                 }
+                                 if (!this.multiSelect && current<this.options.length-1)
+                                     for (let i=0;i<this.options.length-1;i++)
+                                        this.options[i].value=false;
+                                 let prevState=this.state;
+
+                                 this.options[current].value=event.target.checked;
+                                 prevState.options=this.options;
+                                 this.setState(prevState);
+                                 return false;
+                             }}/>
+                      {option.name}
+                  </label>
+              </div>))
+          }
+      </form>
+    );
+  }
+}
 /*VolumeSlider*/
 class VolumeSlider extends Component {
   constructor(props, context) {
     super(props, context);
-    var volume=Math.round(mpd_client.getVolume()*100);
+    let  volume=Math.round(mpd_client.getVolume()*100);
     this.state = {
         volume: volume
     }
@@ -621,7 +769,8 @@ ReactDOM.render(
         </Tabs.Panel>
         <Tabs.Panel title='Tools'>
         <div>
-          <VolumeSlider /></div>
+          <VolumeSlider />
+          <SearchForm /><SearchList/></div>
         </Tabs.Panel>
       </Tabs>
       </div>
@@ -646,7 +795,7 @@ mpd_client.on('PlaylistsChanged',(playlists, client)=>{
     observer.publish('PlaylistsChanged', playlists);
 });
 //PlaylistsChanged
-//var mpd=new MyMPD();
+//let  mpd=new MyMPD();
 console.log("started mpd-client2");
 
 

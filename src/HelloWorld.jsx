@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-
+/*not used, example of how to use separate files for sevverral classes*/
 class HelloWorld extends React.Component {
     render() {
     	return 
