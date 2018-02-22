@@ -403,7 +403,40 @@ class SearchList extends CommonList {
             items: totalList
         });
     }
-    handleClick(index) {
+    getFilePath(index){
+        let  str=this.items[index].dirpath;
+        str=str.substr(0, str.length);
+        return str;
+    }
+
+    contextResult(choice){
+        console.log("albums choice:",choice);
+        console.log("action with:",searchList.selection);
+        let  path=searchList.getFilePath(searchList.selection);
+        console.log("albumsselection:",path);
+
+        if (choice=="Add"){
+            mpd_client.addSongToQueueByFile(path);
+        }
+        if (choice=="Add and Play"){
+            let  len=mpd_client.getQueue().getSongs().length;
+            mpd_client.addSongToQueueByFile(path);
+            mpd_client.play(len);
+        }
+        if (choice=="Replace and Play"){
+            mpd_client.clearQueue();
+            mpd_client.addSongToQueueByFile(path);
+            mpd_client.play(0);
+
+        }
+    }
+    contextMenu (e) {
+        e.preventDefault();
+        albumsselection=this.selection;
+
+        albumsContextmenu.returnChoice=this.contextResult;
+        albumsContextmenu._handleContextMenu(e);
+    };    handleClick(index) {
         console.log("clicked:",index);
             let  path=this.items[index].path;
             this.selection=index;
@@ -412,10 +445,10 @@ class SearchList extends CommonList {
         }
     render() {
         return (
-            <div><ul>
+            <div><ContextMenu2 /><ul>
                 {this.state.items.map((listValue,i)=>{
                     let path=getImagePath("/"+this.items[i].dirpath);
-                    return <div className="list-item"  onClick={() => { this.handleClick(i);}}><Img src={path}  className="list-image" /><li key={i}  style={this.listStyle}>{listValue}</li></div>;
+                    return <div className="list-item"  onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} ><Img src={path}  className="list-image" /><li key={i}  style={this.listStyle}>{listValue}</li></div>;
                 })}
             </ul></div>
         )
