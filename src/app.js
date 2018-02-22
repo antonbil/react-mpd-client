@@ -168,10 +168,12 @@ class CommonList extends React.Component {
         e.preventDefault();
     };
 }
+let playlistList=null;
 /*PlaylistList*/
 class PlaylistList extends CommonList {
     constructor(props) {
         super(props);
+        playlistList=this;
     }
     componentDidMount() {
         let  playlists=mpd_client.getPlaylists();
@@ -196,20 +198,44 @@ class PlaylistList extends CommonList {
             items: mylist
         }));
     }
-    handleClick(index) {
-	console.log("clicked:",index);//.loadPlaylistIntoQueue(element.val());-->replace
-        mpd_client.appendPlaylistToQueue(this.state.items[index]);
-    };
+    contextResult(choice){
+        console.log("albums choice:",choice);
+        console.log("action with:",playlistList.selection);
+        console.log("playlistsselection:",playlistList.state.items[playlistList.selection]);
+
+        if (choice=="Add"){
+            mpd_client.appendPlaylistToQueue(playlistList.state.items[playlistList.selection]);
+        }
+        if (choice=="Add and Play"){
+            let  len=mpd_client.getQueue().getSongs().length;
+            mpd_client.appendPlaylistToQueue(playlistList.state.items[playlistList.selection]);
+            mpd_client.play(len);
+        }
+        if (choice=="Replace and Play"){
+            mpd_client.clearQueue();
+            mpd_client.appendPlaylistToQueue(playlistList.state.items[playlistList.selection]);
+            mpd_client.play(0);
+
+        }
+    }
     contextMenu (e) {
         e.preventDefault();
+        albumsselection=this.selection;
+
+        albumsContextmenu.returnChoice=this.contextResult;
+        albumsContextmenu._handleContextMenu(e);
     };
+    handleClick(index) {
+        mpd_client.appendPlaylistToQueue(this.state.items[index]);
+    };
+
     render() {
-      return (
+      return (<div><ContextMenu2 />
         <ul>
           {this.state.items.map((listValue,i)=>{
             return <li key={i} onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} style={this.listStyle}>{listValue}</li>;
           })}
-        </ul>
+        </ul></div>
       )
     }
 }
