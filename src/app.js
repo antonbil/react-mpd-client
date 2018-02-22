@@ -286,7 +286,10 @@ class AlbumList extends CommonList {
 
     makeFileListElement(content){
         let  item={};
-        item.mpd_file_path=content.getPath().replace(/(.*[^\/])\/?/, '$1/');
+        item.mpd_file_path=content.getPath();
+        try {
+            item.mpd_file_path = item.mpd_file_path.replace(/(.*[^\/])\/?/, '$1/');
+        } catch(e){}
         if(typeof content.getMetadata().directory !== 'undefined'){
             item.MPD_file_path_name=content.getPath();
         }
@@ -363,7 +366,8 @@ class AlbumList extends CommonList {
         <div><ContextMenu2 /><br/><button onClick={this.backClick}>Back</button><ul>
           {this.state.items.map((listValue,i)=>{
               let  path=getImagePath("/"+this.totalList[i].mpd_file_path);
-            return <div className="list-item"><li key={i} onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} style={this.listStyle}><Img src={path}  className="list-image" />{listValue}</li></div>;
+            return <div className="list-item"><Img src={path}  className="list-image-small" /><li key={i} onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} style={this.listStyle}>
+                {listValue}</li></div>;
           })}
         </ul></div>
       )
