@@ -448,7 +448,9 @@ class SearchList extends CommonList {
             <div><ContextMenu2 /><ul>
                 {this.state.items.map((listValue,i)=>{
                     let path=getImagePath("/"+this.items[i].dirpath);
-                    return <div className="list-item"  onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} ><Img src={path}  className="list-image" /><li key={i}  style={this.listStyle}>{listValue}</li></div>;
+                    return <div className="list-item"  onClick={() =>
+                    { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} >
+                        <Img src={path}  className="list-image-small" /><li key={i}  style={this.listStyle}>{listValue}</li></div>;
                 })}
             </ul></div>
         )
@@ -800,10 +802,14 @@ ReactDOM.render(
         <Tabs.Panel title='Playlists'>
           <PlaylistList />
         </Tabs.Panel>
+              <Tabs.Panel title='Search'>
+                  <div>
+                      <SearchForm /><SearchList/></div>
+              </Tabs.Panel>
         <Tabs.Panel title='Tools'>
         <div>
           <VolumeSlider />
-          <SearchForm /><SearchList/></div>
+          </div>
         </Tabs.Panel>
       </Tabs>
       </div>
