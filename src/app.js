@@ -181,7 +181,7 @@ class PlaylistList extends CommonList {
             this.updatePlaylists(playlists);
 
         this.listener = observer.subscribe('PlaylistsChanged',(data)=>{
-            console.log('PlaylistsChanged is: ',data);
+            //console.log('PlaylistsChanged is: ',data);
             this.updatePlaylists(data);
 
         });
@@ -199,9 +199,9 @@ class PlaylistList extends CommonList {
         }));
     }
     contextResult(choice){
-        console.log("albums choice:",choice);
-        console.log("action with:",playlistList.selection);
-        console.log("playlistsselection:",playlistList.state.items[playlistList.selection]);
+        //console.log("albums choice:",choice);
+        //console.log("action with:",playlistList.selection);
+        //console.log("playlistsselection:",playlistList.state.items[playlistList.selection]);
 
         if (choice=="Add"){
             mpd_client.appendPlaylistToQueue(playlistList.state.items[playlistList.selection]);
@@ -256,7 +256,7 @@ class AlbumList extends CommonList {
   getDirectoryContents(dir){mpd_client.getDirectoryContents(dir, (directory_contents)=> {
         let  myTotalList=[];
         let  mylist=[];
-        console.log(directory_contents);
+        //console.log(directory_contents);
         directory_contents.forEach((content)=>{
             let  element=this.makeFileListElement(content);
             try{
@@ -275,7 +275,7 @@ class AlbumList extends CommonList {
             }));
         } else{
             //let  path=this.getFilePath(this.selection);
-            console.log("add dir:",dir);
+            //console.log("add dir:",dir);
             mpd_client.addSongToQueueByFile(dir);
             //no items, display context menu
         }
@@ -310,7 +310,7 @@ class AlbumList extends CommonList {
     }
   
     handleClick(index) {
-	console.log("clicked:",index);
+	//console.log("clicked:",index);
         if (!albumsContextmenu.state.visible){
             let  path=this.getFilePath(index);
             this.selection=index;
@@ -319,10 +319,10 @@ class AlbumList extends CommonList {
         //mpd_client.play(index);
     };
     contextResult(choice){
-        console.log("albums choice:",choice);
-        console.log("action with:",albumList.selection);
+        //console.log("albums choice:",choice);
+        //console.log("action with:",albumList.selection);
         let  path=albumList.getFilePath(albumList.selection);
-        console.log("albumsselection:",path);
+        //console.log("albumsselection:",path);
 
         if (choice=="Add"){
             mpd_client.addSongToQueueByFile(path);
@@ -334,6 +334,7 @@ class AlbumList extends CommonList {
         }
         if (choice=="Replace and Play"){
             mpd_client.clearQueue();
+            mpd_client.addSongToQueueByFile(path);
             mpd_client.play(0);
             
         }
@@ -347,17 +348,17 @@ class AlbumList extends CommonList {
     };
       backClick() {//this.prevdirs=this.prevdirs.splice(-1,1);
           if (this.prevdirs.length>1){
-              console.log("back1",this.prevdirs);
+              //console.log("back1",this.prevdirs);
               //this.prevdirs=this.prevdirs.splice(-1,1);
               this.prevdirs.pop();
-              console.log("back2",this.prevdirs);
+              //console.log("back2",this.prevdirs);
               let  dir=this.prevdirs[this.prevdirs.length-1];
-              console.log("back3",dir);
+              //console.log("back3",dir);
               //this.prevdirs=this.prevdirs.splice(-1,1);
               this.prevdirs.pop();
               this.getDirectoryContents(dir);
           }
-          console.log("back");
+          //console.log("back");
       }
 
     
@@ -366,7 +367,9 @@ class AlbumList extends CommonList {
         <div><ContextMenu2 /><br/><button onClick={this.backClick}>Back</button><ul>
           {this.state.items.map((listValue,i)=>{
               let  path=getImagePath("/"+this.totalList[i].mpd_file_path);
-            return <div className="list-item"><Img src={path}  className="list-image-small" /><li key={i} onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} style={this.listStyle}>
+            return <div className="list-item" onClick={() =>
+            { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} >
+                <Img src={path}  className="list-image-small" /><li key={i} style={this.listStyle}>
                 {listValue}</li></div>;
           })}
         </ul></div>
@@ -398,7 +401,7 @@ class SearchList extends CommonList {
         data.forEach((item)=>
         {
             let newItem={path:item.getPath(),title:item.getTitle(),album:item.getAlbum(),artist:item.getArtist()};
-            console.log(newItem);
+            //console.log(newItem);
 
 
             let addItem=newItem.artist+"-"+newItem.title;
@@ -421,14 +424,14 @@ class SearchList extends CommonList {
                 totalList=totalList.concat(addItem);
                 searchList.items=searchList.items.concat(newItem);
 
-                console.log("processSearchResults", newItem.title);
-                console.log(newItem);
+                //console.log("processSearchResults", newItem.title);
+                //console.log(newItem);
             }
             searchList.totalList=totalList;
             previousItem=addItem;
 
         });
-        console.log("totalList:",totalList);
+        //console.log("totalList:",totalList);
         searchList.setState({
             items: totalList
         });
@@ -440,10 +443,10 @@ class SearchList extends CommonList {
     }
 
     contextResult(choice){
-        console.log("albums choice:",choice);
-        console.log("action with:",searchList.selection);
+        //console.log("albums choice:",choice);
+        //console.log("action with:",searchList.selection);
         let  path=searchList.getFilePath(searchList.selection);
-        console.log("albumsselection:",path);
+        //console.log("albumsselection:",path);
 
         if (choice=="Add"){
             mpd_client.addSongToQueueByFile(path);
@@ -467,10 +470,10 @@ class SearchList extends CommonList {
         albumsContextmenu.returnChoice=this.contextResult;
         albumsContextmenu._handleContextMenu(e);
     };    handleClick(index) {
-        console.log("clicked:",index);
+        //console.log("clicked:",index);
             let  path=this.items[index].path;
             this.selection=index;
-            console.log("add file:",path);
+            //console.log("add file:",path);
             mpd_client.addSongToQueueByFile( path);
         }
     render() {
@@ -478,7 +481,7 @@ class SearchList extends CommonList {
             <div><ContextMenu2 /><ul>
                 {this.state.items.map((listValue,i)=>{
                     let path=getImagePath("/"+this.items[i].dirpath);
-                    return <div className="list-item"  onClick={() =>
+                    return <div className="list-item" key={i+500} onClick={() =>
                     { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} >
                         <Img src={path}  className="list-image-small" /><li key={i}  style={this.listStyle}>{listValue}</li></div>;
                 })}
@@ -498,19 +501,19 @@ class PlayList extends CommonList {
   }
    componentDidMount() {
     let  queue=mpd_client.getQueue();
-    console.log("queue:",queue);
+    //console.log("queue:",queue);
     if(queue!=null)
         this.updateQueue(queue);
 
     this.listener = observer.subscribe('QueueChanged',(data)=>{
-        console.log('QueueChanged is: ',data);
+        //console.log('QueueChanged is: ',data);
         this.updateQueue(data);
 
     });
     
   }
   updateQueue(queue){
-      console.log("update queue:",queue.getSongs());
+      //console.log("update queue:",queue.getSongs());
       let  mylist=[];
       let  totalList=[];
       this.setState(previousState => ({items: []}));
@@ -524,21 +527,21 @@ class PlayList extends CommonList {
           mylist=mylist.concat( song.getDisplayName())
       });
       this.totalList=totalList;
-      console.log(this.totalList);
+      //console.log(this.totalList);
       this.setState(previousState => ({
             items: mylist
       }));
 
     }
     handleClick(index) {
-	console.log("clicked:",index);
+	//console.log("clicked:",index);
         if (!playlistContextmenu.state.visible)
         mpd_client.play(index);
     };
     
     contextResult(choice){
-        console.log("choice:",choice);
-        console.log("action with:",playlistselection);
+        //console.log("choice:",choice);
+        //console.log("action with:",playlistselection);
         if (choice=="Remove"){
             mpd_client.removeSongFromQueueByPosition(playlistselection);
         }
@@ -597,7 +600,7 @@ class ShowTime extends React.Component {
             curTime : null
         };
         this.listener = observer.subscribe('StateChanged',(data)=>{
-            console.log('StateChanged is: ',data);
+            //console.log('StateChanged is: ',data);
             this.updateState(data.state,data.client);
         });
     }
@@ -641,7 +644,7 @@ class Buttons extends React.Component {
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
     this.listener = observer.subscribe('StateChanged',(data)=>{
-        console.log('StateChanged is: ',data);
+        //console.log('StateChanged is: ',data);
         this.updateState(data.state,data.client);
 
         //this.state.playing=(data.state.playstate=="play");
@@ -676,10 +679,10 @@ class Buttons extends React.Component {
     }));
     if (!this.state.playing){
         this.mpd_client.play();
-        console.log("play");
+        //console.log("play");
     } else{
         this.mpd_client.pause();
-        console.log("pause");
+        //console.log("pause");
     }
   }
   
@@ -694,7 +697,7 @@ class Buttons extends React.Component {
     float:"right"
         };
         let  imagePath=getImagePath("/"+this.state.path);
-        console.log(imagePath);
+        //console.log(imagePath);
     return (<Sticky>
           <header  style={s}>
       <div><Img src={imagePath}  className="header-image" /><ImageButton
@@ -741,8 +744,8 @@ class SearchForm extends React.Component {
           if (this.options[i].value)
           search[this.options[i].name]=this.state.value;
 
-      };
-      console.log("search for:",search);
+      }
+      //console.log("search for:",search);
 
       searchList.setOptions(this.options);
 
@@ -751,7 +754,7 @@ class SearchForm extends React.Component {
   }
 
   render() {
-      console.log(this.state,this.options);
+      //console.log(this.state,this.options);
     return (
       <form onSubmit={this.handleSubmit}>
           <label>
@@ -850,22 +853,22 @@ ReactDOM.render(
 
 //pictures at: http://192.168.2.8:8081/FamilyMusic/.....
 /*connect observer to mpd-client*/
-console.log("started mpd-client1");
+//console.log("started mpd-client1");
 mpd_client.on('StateChanged',(state, client)=>{
-    console.log("state changed:",state, client);
+    //console.log("state changed:",state, client);
     observer.publish('StateChanged', {state:state, client:client});
 });
 mpd_client.on('QueueChanged',(queue)=>{
-    console.log("queue changed:",queue);
+    //console.log("queue changed:",queue);
     observer.publish('QueueChanged', queue);
 });
 mpd_client.on('PlaylistsChanged',(playlists, client)=>{
-    console.log("Playlists Changed:",playlists);
+    //console.log("Playlists Changed:",playlists);
     observer.publish('PlaylistsChanged', playlists);
 });
 //PlaylistsChanged
 //let  mpd=new MyMPD();
-console.log("started mpd-client2");
+//console.log("started mpd-client2");
 
 
 
