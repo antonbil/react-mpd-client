@@ -427,10 +427,10 @@ class SearchList extends CommonList {
                 //console.log("processSearchResults", newItem.title);
                 //console.log(newItem);
             }
-            searchList.totalList=totalList;
             previousItem=addItem;
 
         });
+        searchList.totalList=totalList;
         //console.log("totalList:",totalList);
         searchList.setState({
             items: totalList
