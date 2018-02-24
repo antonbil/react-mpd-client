@@ -742,7 +742,7 @@ class SearchForm extends React.Component {
       let search={};
       for (let i=0;i<this.options.length-1;i++){
           if (this.options[i].value)
-          search[this.options[i].name]=this.state.value;
+          search[this.options[i].name]=(this.state.value).trim();
 
       }
       //console.log("search for:",search);
