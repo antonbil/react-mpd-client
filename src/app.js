@@ -792,32 +792,42 @@ class SearchForm extends React.Component {
     );
   }
 }
-/*SelectServer*/
-class SelectServer extends React.Component {
+
+/**
+ * select option; displays list of radio-buttons
+ * descendant must at least define in constructor:
+ *         this.options=[
+ {name:'keuken',value:true},
+ {name:'wifiberry',value:false}];
+ }
+ 
+ this defines two options, with properties name and value.
+
+ */
+class SelectOption extends React.Component {
     constructor(props) {
         super(props);
-        this.options=[
-            {name:'keuken',value:true, host:"http://192.168.2.16/mpdjs"},
-            {name:'wifiberry',value:false, host:"http://192.168.2.12/mpdjs"}];
+        this.options=[];
         this.state = {value: '',options:this.options};
 
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.submitMessage="Select";
+    }
+
+    getSelectedOption(event){
+        event.preventDefault();
+        for (let i=0;i<this.options.length;i++){
+            if (this.options[i].value)
+                return this.options[i];
+        }
+
     }
 
     handleSubmit(event) {
         event.preventDefault();
-        let select={};
-        let address="localhost";
-        for (let i=0;i<this.options.length;i++){
-            if (this.options[i].value)
-                address=this.options[i].host;
-
-        }
-        window.open(address,"_self");
     }
 
     render() {
-        //console.log(this.state,this.options);
         return (
             <form onSubmit={this.handleSubmit}>
                 { this.options.map((option, index) => (
@@ -834,7 +844,7 @@ class SelectServer extends React.Component {
                                                current=i;
                                        }
                                        for (let i=0;i<this.options.length;i++)
-                                               this.options[i].value=false;
+                                           this.options[i].value=false;
                                        let prevState=this.state;
 
                                        this.options[current].value=event.target.checked;
@@ -846,9 +856,24 @@ class SelectServer extends React.Component {
                         </label>
                     </div>))
                 }
-                <input type="submit" value="Select host" />
+                <input type="submit" value={this.submitMessage} />
             </form>
         );
+    }
+}
+/*SelectServer*/
+class SelectServer extends SelectOption {
+    constructor(props) {
+        super(props);
+        this.submitMessage="Select host";
+        this.options=[
+            {name:'keuken',value:true, host:"http://192.168.2.16/mpdjs"},
+            {name:'wifiberry',value:false, host:"http://192.168.2.12/mpdjs"}];
+    }
+
+    handleSubmit(event) {
+        let address=this.getSelectedOption(event).host;
+        window.open(address,"_self");
     }
 }
 /*VolumeSlider*/
@@ -864,9 +889,9 @@ class VolumeSlider extends Component {
   handleOnChange  (value)  {
       value=Math.round(value);
       mpd_client.setVolume(value/100);
-    this.setState({
-      volume: value
-    })
+      this.setState({
+          volume: value
+      })
   }
  
   render() {
