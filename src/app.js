@@ -140,6 +140,7 @@ class ContextMenu2 extends ContextMenu1 {
                 <div className="contextMenu--option">Add</div>
                 <div className="contextMenu--option">Add and Play</div>
                 <div className="contextMenu--option">Replace and Play</div>
+                <div className="contextMenu--option">Info Album</div>
             </div>
     };
     
@@ -239,6 +240,81 @@ class PlaylistList extends CommonList {
       )
     }
 }
+function makeFileListElement(content){
+
+    let  item={};
+    item.mpd_file_path=content.getPath();
+    try {
+        item.mpd_file_path = item.mpd_file_path.replace(/(.*[^\/])\/?/, '$1/');
+    } catch(e){}
+    if(typeof content.getMetadata().directory !== 'undefined'){
+        item.MPD_file_path_name=content.getPath();
+        console.log(content.getMetadata());
+    }
+    else{
+        item.MPD_file_title=content.getDisplayName();
+        item.MPD_file_album=content.getAlbum();
+        item.MPD_file_artist=content.getArtist();
+        item.MPD_file_file=content.getPath();
+        item.MPD_file_track=content.getTrack();
+    }
+
+    return item;
+}
+let popupAlbum=null;
+class PopupAlbum extends CommonList {
+    constructor(props) {
+        super(props);
+        popupAlbum=this;
+        this.album=props.album;
+        this.state = {
+            items: ["a","b"]
+        };
+        mpd_client.getDirectoryContents(props.album, this.getDir.bind(this));
+    }
+    getDir(directory_contents){
+        console.log(directory_contents);
+        let  myTotalList=[];
+        let  mylist=[];
+        //console.log(directory_contents);
+        directory_contents.forEach((content)=>{
+            let  element=makeFileListElement(content);
+            console.log(element);
+            try{
+                myTotalList=myTotalList.concat( element);
+                //let  path=element.MPD_file_path_name;
+                //path=path.substr(path.lastIndexOf('/') + 1);
+                mylist=mylist.concat( element.MPD_file_title)
+                //console.log(element);
+            } catch(e){}
+        });
+        this.totalList=myTotalList;
+        console.log("myList",mylist);
+        this.setState({
+            items: mylist
+        });
+
+    }
+    render() {
+        return (
+            <div className='popup'>
+                <div className='popup_inner'>
+                    <button onClick={this.props.closePopup}>close me</button>
+                    <h1>{this.props.text}</h1>
+                    <ul>
+                        {this.state.items.map((listValue,i)=>{
+
+                            return <div className="list-item"  >
+                                <li key={i} style={this.listStyle}>
+                                {listValue}</li></div>;
+                        })}
+                    </ul>
+
+                </div>
+            </div>
+        );
+    }
+}
 /*AlbumList*/
 class AlbumList extends CommonList {
   constructor(props) {
@@ -248,7 +324,8 @@ class AlbumList extends CommonList {
     this.prevdirs=[];
     albumList=this;
     this.state = {
-      items: []
+      items: [],
+        showPopup: false
     };
     this.getDirectoryContents("/");
         this.backClick = this.backClick.bind(this);
@@ -258,7 +335,7 @@ class AlbumList extends CommonList {
         let  mylist=[];
         //console.log(directory_contents);
         directory_contents.forEach((content)=>{
-            let  element=this.makeFileListElement(content);
+            let  element=makeFileListElement(content);
             try{
             myTotalList=myTotalList.concat( element);
             let  path=element.MPD_file_path_name;
@@ -271,7 +348,7 @@ class AlbumList extends CommonList {
         if (mylist.length>0){
             this.prevdirs=this.prevdirs.concat( dir);
             this.setState(previousState => ({
-                items: mylist
+                items: mylist,showPopup: false
             }));
         } else{
             //let  path=this.getFilePath(this.selection);
@@ -284,24 +361,7 @@ class AlbumList extends CommonList {
   }
 
 
-    makeFileListElement(content){
-        let  item={};
-        item.mpd_file_path=content.getPath();
-        try {
-            item.mpd_file_path = item.mpd_file_path.replace(/(.*[^\/])\/?/, '$1/');
-        } catch(e){}
-        if(typeof content.getMetadata().directory !== 'undefined'){
-            item.MPD_file_path_name=content.getPath();
-        }
-        else{
-            item.MPD_file_title=content.getDisplayName();
-            item.MPD_file_album=content.getAlbum();
-            item.MPD_file_artist=content.getArtist();
-            item.MPD_file_file=content.getPath();
-        }
 
-        return item;
-    }
     
     getFilePath(index){
         let  str=this.totalList[index].mpd_file_path;
@@ -318,6 +378,11 @@ class AlbumList extends CommonList {
         }
         //mpd_client.play(index);
     };
+    togglePopup() {
+        this.setState({items:this.state.items,
+            showPopup: !this.state.showPopup
+        });
+    }
     contextResult(choice){
         //console.log("albums choice:",choice);
         //console.log("action with:",albumList.selection);
@@ -337,6 +402,9 @@ class AlbumList extends CommonList {
             mpd_client.addSongToQueueByFile(path);
             mpd_client.play(0);
             
+        }
+        if (choice==="Info Album") {
+            albumList.togglePopup();
         }
     }
     contextMenu (e) {
@@ -372,7 +440,13 @@ class AlbumList extends CommonList {
                 <Img src={path}  className="list-image-small" /><li key={i} style={this.listStyle}>
                 {listValue}</li></div>;
           })}
-        </ul></div>
+        </ul>{this.state.showPopup ?
+            <PopupAlbum
+                album={this.getFilePath(this.selection)}
+                closePopup={this.togglePopup.bind(this)}
+            />
+            : null
+        }</div>
       )
     }
 }
