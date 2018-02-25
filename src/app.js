@@ -1,16 +1,11 @@
 import ReactDOM from 'react-dom';
 import React , { Component } from 'react';
-import { render } from 'react-dom';
-import HelloWorld from './HelloWorld.jsx';
-//import MPD from "../MPD.js/mpd.js";
 import ReactObserver from 'react-event-observer';
 import Tabs from 'react-simpletabs';
 import Sticky from 'react-sticky-el';
 import Img from 'react-image';
 import ImageButton from 'fdmg-ts-react-image-button';
 import Slider, { Range } from 'rc-slider';
-
-
 
 
 let  observer = ReactObserver();
@@ -21,7 +16,7 @@ let  playlistselection=-1;
 let  albumsselection=-1;
 let  albumList=null;
 function padDigits(number, digits) {
-    return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
+    return Array(Math.max(digits - String(number).length + 1, 0)).join("0") + number;
 }
 function getTime(n){
     let  min=Math.floor(n/60);
@@ -101,7 +96,7 @@ class ContextMenu1 extends React.Component {
     _handleClick (event) {
        
         const { visible } = this.state;
-        const wasOutside = event.target.className.indexOf("contextMenu") == -1;//event.target.className.indexOf("contextMenu") !== -1
+        const wasOutside = event.target.className.indexOf("contextMenu") === -1;//event.target.className.indexOf("contextMenu") !== -1
         if (visible) {event.preventDefault();this.setState({ visible: false, });}
         if (!wasOutside)
             this.returnChoice(event.path[0].textContent);
@@ -324,15 +319,15 @@ class AlbumList extends CommonList {
         let  path=albumList.getFilePath(albumList.selection);
         //console.log("albumsselection:",path);
 
-        if (choice=="Add"){
+        if (choice==="Add"){
             mpd_client.addSongToQueueByFile(path);
         }
-        if (choice=="Add and Play"){
+        if (choice==="Add and Play"){
             let  len=mpd_client.getQueue().getSongs().length;
             mpd_client.addSongToQueueByFile(path);
             mpd_client.play(len);
         }
-        if (choice=="Replace and Play"){
+        if (choice==="Replace and Play"){
             mpd_client.clearQueue();
             mpd_client.addSongToQueueByFile(path);
             mpd_client.play(0);
@@ -415,7 +410,7 @@ class SearchList extends CommonList {
             else
                 if (albumSearch&&!separate)
                     addItem=newItem.artist+"-"+newItem.album;
-            if (addItem !=previousItem) {
+            if (addItem !==previousItem) {
                 let dirpath=newItem.path;
                 dirpath=dirpath.substring(0, dirpath.lastIndexOf("/"));
                 if (!(titleSearch||separate))
@@ -691,12 +686,7 @@ class Buttons extends React.Component {
         let  s = {
             background: 'white'
         };
-        let  image = {
-            height: "65px",
-    width: "65px",
-    float:"right"
-        };
-        let  imagePath=getImagePath("/"+this.state.path);
+  let imagePath=getImagePath("/"+this.state.path);
         //console.log(imagePath);
     return (<Sticky>
           <header  style={s}>
@@ -895,7 +885,7 @@ class VolumeSlider extends Component {
   }
  
   render() {
-    let { volume } = this.state
+    let { volume } = this.state;
     return (
         <div>
         Volume:{volume}<br/>
