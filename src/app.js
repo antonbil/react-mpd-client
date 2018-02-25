@@ -6,7 +6,12 @@ import Sticky from 'react-sticky-el';
 import Img from 'react-image';
 import ImageButton from 'fdmg-ts-react-image-button';
 import Slider, { Range } from 'rc-slider';
+import * as Mpd from '../MPD.js/mpd.js';
 
+console.log("server:",window.server);
+console.log(Mpd);
+window.mpd_client = new MPD(8800,"ws://"+window.server);
+console.log("mpd client:",window.mpd_client);
 
 let  observer = ReactObserver();
 let  mpd_client=window.mpd_client;
