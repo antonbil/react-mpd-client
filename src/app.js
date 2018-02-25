@@ -668,7 +668,11 @@ class Buttons extends React.Component {
       this.mpd_client.play();
   }
 
-  handleClick() {
+    home() {
+        window.scrollTo(0, 0);
+    }
+
+    handleClick() {
     this.setState(prevState => ({
       playing: !prevState.playing
     }));
@@ -705,7 +709,12 @@ class Buttons extends React.Component {
                 onClick={this.next.bind(this)}
                 className="image-btn btn"
                 alt="Special button"
-            /><br/><div>{this.state.songName}<ShowTime/></div></div>
+            /><ImageButton
+          src={"img/home.png"}
+          onClick={this.home.bind(this)}
+          className="image-btn btn"
+          alt="Special button"
+      /><br/><div>{this.state.songName}<ShowTime/></div></div>
             <div className="header-artist">{this.artist}</div></header>
         </Sticky>
     );
@@ -823,7 +832,7 @@ class SelectOption extends React.Component {
                 { this.options.map((option, index) => (
                     <div className="checkbox" key={index}>
                         <label>
-                            <input type="radio"
+                            <input type="checkbox"
                                    name={`${name}[${index}]`}
                                    value={option.name}
                                    checked={option.value}

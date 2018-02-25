@@ -1,0 +1,22 @@
+    .contextMenu--option {
+        font-size: 50px;
+        }
+ 
+    .header-image{
+        width:200px;
+        height:200px;
+
+    }
+.list-image{
+width:120px;
+height:120px;
+}
+.list-image-small{
+    width:80px;
+    height:80px;
+}
+        #app {
+            font-size: 3rem;
+        }header{
+    min-height: 300px;
+}
