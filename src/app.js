@@ -203,15 +203,15 @@ class PlaylistList extends CommonList {
         //console.log("action with:",playlistList.selection);
         //console.log("playlistsselection:",playlistList.state.items[playlistList.selection]);
 
-        if (choice=="Add"){
+        if (choice==="Add"){
             mpd_client.appendPlaylistToQueue(playlistList.state.items[playlistList.selection]);
         }
-        if (choice=="Add and Play"){
+        if (choice==="Add and Play"){
             let  len=mpd_client.getQueue().getSongs().length;
             mpd_client.appendPlaylistToQueue(playlistList.state.items[playlistList.selection]);
             mpd_client.play(len);
         }
-        if (choice=="Replace and Play"){
+        if (choice==="Replace and Play"){
             mpd_client.clearQueue();
             mpd_client.appendPlaylistToQueue(playlistList.state.items[playlistList.selection]);
             mpd_client.play(0);
@@ -448,15 +448,15 @@ class SearchList extends CommonList {
         let  path=searchList.getFilePath(searchList.selection);
         //console.log("albumsselection:",path);
 
-        if (choice=="Add"){
+        if (choice==="Add"){
             mpd_client.addSongToQueueByFile(path);
         }
-        if (choice=="Add and Play"){
+        if (choice==="Add and Play"){
             let  len=mpd_client.getQueue().getSongs().length;
             mpd_client.addSongToQueueByFile(path);
             mpd_client.play(len);
         }
-        if (choice=="Replace and Play"){
+        if (choice==="Replace and Play"){
             mpd_client.clearQueue();
             mpd_client.addSongToQueueByFile(path);
             mpd_client.play(0);
@@ -542,23 +542,23 @@ class PlayList extends CommonList {
     contextResult(choice){
         //console.log("choice:",choice);
         //console.log("action with:",playlistselection);
-        if (choice=="Remove"){
+        if (choice==="Remove"){
             mpd_client.removeSongFromQueueByPosition(playlistselection);
         }
-        if (choice=="Remove bottom"){
+        if (choice==="Remove bottom"){
             let  len=mpd_client.getQueue().getSongs().length;
             for (let  i=playlistselection;i<len;i++)
                 mpd_client.removeSongFromQueueByPosition(playlistselection);
         }
-        if (choice=="Remove top"){
+        if (choice==="Remove top"){
             for (let  i=0;i<playlistselection;i++)
                 mpd_client.removeSongFromQueueByPosition(0);
             mpd_client.removeSongFromQueueByPosition(playlistselection);
         }
-        if (choice=="Remove all"){
+        if (choice==="Remove all"){
             mpd_client.clearQueue();
         }
-        if (choice=="Play")
+        if (choice==="Play")
             mpd_client.play(playlistselection);
     }
     
@@ -578,7 +578,7 @@ class PlayList extends CommonList {
           let  img=null;
           let  artist=null;
             let  path=getImagePath("/"+this.totalList[i].dir);
-            if (prevPath !=path){
+            if (prevPath !==path){
                 img=<Img src={path}  className="list-image" />;
                 artist=<div className="list-artist">{this.totalList[i].artist+"-"+this.totalList[i].album}</div>
             }
@@ -607,7 +607,7 @@ class ShowTime extends React.Component {
     updateState(state,client){
         this.playing=state.playstate;
         
-        if (state.playstate=="play"){
+        if (state.playstate==="play"){
                     this.state = {
                     curTime : Math.floor(state.current_song.elapsed_time)
                 }
@@ -616,7 +616,7 @@ class ShowTime extends React.Component {
     componentDidMount() {
       setInterval( () => {
           
-          if (this.playing=="play"){
+          if (this.playing==="play"){
               let  newTime=this.state.curTime+1;
         this.setState({
           curTime : newTime
@@ -660,7 +660,7 @@ class Buttons extends React.Component {
             song=current_song.getDisplayName();
         }
       this.setState(prevState => ({
-      playing: state.playstate=="play",songName:song,path:path
+      playing: state.playstate==="play",songName:song,path:path
     }));
   }
   next() {
@@ -771,7 +771,7 @@ class SearchForm extends React.Component {
                              onChange={event => {
                                  let current=0;
                                  for (let i=0;i<this.options.length;i++){
-                                     if (this.options[i].name==option.name)
+                                     if (this.options[i].name===option.name)
                                          current=i;
                                  }
                                  if (!this.multiSelect && current<this.options.length-1)
