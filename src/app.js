@@ -792,6 +792,65 @@ class SearchForm extends React.Component {
     );
   }
 }
+/*SelectServer*/
+class SelectServer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.options=[
+            {name:'keuken',value:true, host:"http://192.168.2.16/mpdjs"},
+            {name:'wifiberry',value:false, host:"http://192.168.2.12/mpdjs"}];
+        this.state = {value: '',options:this.options};
+
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        let select={};
+        let address="localhost";
+        for (let i=0;i<this.options.length;i++){
+            if (this.options[i].value)
+                address=this.options[i].host;
+
+        }
+        window.open(address,"_self");
+    }
+
+    render() {
+        //console.log(this.state,this.options);
+        return (
+            <form onSubmit={this.handleSubmit}>
+                { this.options.map((option, index) => (
+                    <div className="checkbox" key={index}>
+                        <label>
+                            <input type="radio"
+                                   name={`${name}[${index}]`}
+                                   value={option.name}
+                                   checked={option.value}
+                                   onChange={event => {
+                                       let current=0;
+                                       for (let i=0;i<this.options.length;i++){
+                                           if (this.options[i].name===option.name)
+                                               current=i;
+                                       }
+                                       for (let i=0;i<this.options.length;i++)
+                                               this.options[i].value=false;
+                                       let prevState=this.state;
+
+                                       this.options[current].value=event.target.checked;
+                                       prevState.options=this.options;
+                                       this.setState(prevState);
+                                       return false;
+                                   }}/>
+                            {option.name}
+                        </label>
+                    </div>))
+                }
+                <input type="submit" value="Select host" />
+            </form>
+        );
+    }
+}
 /*VolumeSlider*/
 class VolumeSlider extends Component {
   constructor(props, context) {
@@ -842,6 +901,7 @@ ReactDOM.render(
         <Tabs.Panel title='Tools'>
         <div>
           <VolumeSlider />
+            < SelectServer />
           </div>
         </Tabs.Panel>
       </Tabs>
