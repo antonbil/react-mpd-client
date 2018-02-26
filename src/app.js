@@ -7,6 +7,8 @@ import Img from 'react-image';
 import ImageButton from 'fdmg-ts-react-image-button';
 import Slider, { Range } from 'rc-slider';
 import * as Mpd from '../MPD.js/mpd.js';
+import Modal from 'react-modal';
+import ReactScrollbar from 'react-scrollbar-js';
 
 console.log("server:",window.server);
 console.log(Mpd);
@@ -246,7 +248,7 @@ function makeFileListElement(content){
     } catch(e){}
     if(typeof content.getMetadata().directory !== 'undefined'){
         item.MPD_file_path_name=content.getPath();
-        console.log(content.getMetadata());
+        //console.log(content.getMetadata());
     }
     else{
         item.MPD_file_title=content.getDisplayName();
@@ -258,60 +260,7 @@ function makeFileListElement(content){
 
     return item;
 }
-let popupAlbum=null;
-class PopupAlbum extends CommonList {
-    constructor(props) {
-        super(props);
-        popupAlbum=this;
-        this.album=props.album;
-        this.state = {
-            items: ["a","b"]
-        };
-        mpd_client.getDirectoryContents(props.album, this.getDir.bind(this));
-    }
-    getDir(directory_contents){
-        console.log(directory_contents);
-        let  myTotalList=[];
-        let  mylist=[];
-        //console.log(directory_contents);
-        directory_contents.forEach((content)=>{
-            let  element=makeFileListElement(content);
-            console.log(element);
-            try{
-                myTotalList=myTotalList.concat( element);
-                //let  path=element.MPD_file_path_name;
-                //path=path.substr(path.lastIndexOf('/') + 1);
-                mylist=mylist.concat( element.MPD_file_title)
-                //console.log(element);
-            } catch(e){}
-        });
-        this.totalList=myTotalList;
-        console.log("myList",mylist);
-        this.setState({
-            items: mylist
-        });
 
-    }
-    render() {
-        return (
-            <div className='popup'>
-                <div className='popup_inner'>
-                    <button onClick={this.props.closePopup}>close me</button>
-                    <h1>{this.props.text}</h1>
-                    <ul>
-                        {this.state.items.map((listValue,i)=>{
-
-                            return <div className="list-item"  >
-                                <li key={i} style={this.listStyle}>
-                                {listValue}</li></div>;
-                        })}
-                    </ul>
-
-                </div>
-            </div>
-        );
-    }
-}
 /*AlbumList*/
 class AlbumList extends CommonList {
   constructor(props) {
@@ -319,10 +268,12 @@ class AlbumList extends CommonList {
     this.selection=-1;
     this.totalList=[];
     this.prevdirs=[];
+      this.singleList=[];
       this.albumsContextmenu = null;
     this.state = {
       items: [],
-        showPopup: false
+        showPopup: false,
+        modalIsOpen: false
     };
     this.getDirectoryContents("/");
         this.backClick = this.backClick.bind(this);
@@ -383,7 +334,9 @@ class AlbumList extends CommonList {
     contextResult(choice){
         //console.log("albums choice:",choice);
         //console.log("action with:",albumList.selection);
+        console.log("this.selection:",this.selection);
         let  path=this.getFilePath(this.selection);
+        console.log("path:",path);
 
         if (choice==="Add"){
             mpd_client.addSongToQueueByFile(path);
@@ -400,8 +353,40 @@ class AlbumList extends CommonList {
             
         }
         if (choice==="Info Album") {
-            this.togglePopup();
+            mpd_client.getDirectoryContents(this.getFilePath(this.selection), this.getDir.bind(this));
+            //this.setState({modalIsOpen: true});
+
+            //this.togglePopup();
         }
+    }
+
+
+getDir(directory_contents){
+    //console.log(directory_contents);
+    let  myTotalList=[];
+    let  mylist=[];
+    //console.log(directory_contents);
+    directory_contents.forEach((content)=>{
+        let  element=makeFileListElement(content);
+        //console.log(element);
+        try{
+            myTotalList=myTotalList.concat( element);
+            //let  path=element.MPD_file_path_name;
+            //path=path.substr(path.lastIndexOf('/') + 1);
+            mylist=mylist.concat( element.MPD_file_title)
+            //console.log(element);
+        } catch(e){}
+    });
+    this.singleList=myTotalList;
+    //console.log("myList",mylist);
+    this.setState({items:this.state.items,
+        modalIsOpen: true
+    });
+}
+    closeModal() {
+        this.setState({items:this.state.items,
+            modalIsOpen: false
+        });
     }
     contextMenu (e) {
         e.preventDefault();
@@ -426,6 +411,10 @@ class AlbumList extends CommonList {
 
     
     render() {
+        const myScrollbar = {
+            width: 600,
+            height: 800,
+        };
       return (
         <div><ContextMenu2  onRef={ref => (this.albumsContextmenu = ref)} /><br/><button onClick={this.backClick}>Back</button><ul>
           {this.state.items.map((listValue,i)=>{
@@ -435,17 +424,47 @@ class AlbumList extends CommonList {
                 <Img src={path}  className="list-image-small" /><li key={i} style={this.listStyle}>
                 {listValue}</li></div>;
           })}
-        </ul>{this.state.showPopup ?
-            <PopupAlbum
-                album={this.getFilePath(this.selection)}
-                closePopup={this.togglePopup.bind(this)}
-            />
+        </ul>{this.state.modalIsOpen ?
+            <Modal  onClick={this.closeModal.bind(this)}
+                isOpen={this.state.modalIsOpen}
+
+                onRequestClose={this.closeModal.bind(this)}
+                style={customStyles}
+                contentLabel="Example Modal"
+            >
+
+                <ReactScrollbar style={myScrollbar} >
+                    <div onClick={this.closeModal.bind(this)}>
+                        <Img src={getImagePath("/"+this.getFilePath(this.selection))}
+                             className="list-image-large"  />
+                <ul>
+                    {this.singleList.map((listValue,i)=>{
+
+                        return <li  className="list-item" key={i} style={this.listStyle}>
+                            {listValue.MPD_file_title}</li>;
+                    })}
+                </ul>
+                    </div>
+                </ReactScrollbar>
+
+
+            </Modal>
             : null
-        }</div>
+        }
+        </div>
       )
     }
 }
-
+const customStyles = {
+    content : {
+        top                   : '50%',
+        left                  : '50%',
+        right                 : 'auto',
+        bottom                : 'auto',
+        marginRight           : '-50%',
+        transform             : 'translate(-50%, -50%)'
+    }
+};
 /* class SearchList*/
 class SearchList extends CommonList {
     constructor(props) {
