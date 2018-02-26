@@ -445,12 +445,12 @@ class AlbumList extends CommonList {
       )
     }
 }
-let searchList=null;
+
 /* class SearchList*/
 class SearchList extends CommonList {
     constructor(props) {
         super(props);
-        searchList=this;
+        props.onRef(this);
         this.selection = -1;
         this.totalList = [];
         this.albumsContextmenu = null;
@@ -514,8 +514,6 @@ class SearchList extends CommonList {
     }
 
     contextResult(choice){
-        //console.log("albums choice:",choice);
-        //console.log("action with:",searchList.selection);
         let  path=this.getFilePath(this.selection);
 
         if (choice==="Add"){
@@ -561,6 +559,7 @@ class SearchList extends CommonList {
 class PlayList extends CommonList {
   constructor(props) {
     super(props);
+
     this.selection=-1; 
     this.totalList=[];
     this.playlistContextmenu = null;
@@ -797,6 +796,7 @@ class Buttons extends React.Component {
 class SearchForm extends React.Component {
   constructor(props) {
     super(props);
+    props.onRef(this);
       this.options=[{name:'artist',value:true},{name:'album',value:false},{name:'title',value:false},{name:'separate tracks',value:false}];
     this.multiSelect=false;
     this.state = {value: '',options:this.options};
@@ -809,6 +809,10 @@ class SearchForm extends React.Component {
     this.setState({value: event.target.value});
   }
 
+  setSearchList(searchList){
+      this.searchList=searchList;
+  }
+
   handleSubmit(event) {
     //alert('A value was submitted: ' + this.state.value);
       let search={};
@@ -819,9 +823,9 @@ class SearchForm extends React.Component {
       }
       //console.log("search for:",search);
 
-      searchList.setOptions(this.options);
+      this.searchList.setOptions(this.options);
 
-      mpd_client.search(search,searchList.processSearchResults.bind(searchList));
+      mpd_client.search(search,this.searchList.processSearchResults.bind(this.searchList));
     event.preventDefault();
   }
 
@@ -979,6 +983,25 @@ class VolumeSlider extends Component {
     )
   }
 }
+
+class SearchTotal extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.searchList = null;
+        this.searchForm = null;
+    }
+    componentDidMount() {
+        this.searchForm.setSearchList(this.searchList)
+    }
+
+    render() {
+        return (
+            <div>
+            <SearchForm  onRef={ref => (this.searchForm = ref)} /><SearchList  onRef={ref => (this.searchList = ref)} /></div>
+        )
+    }
+}
+
 ReactDOM.render(
     <div className="buttons"><Buttons />
           <Tabs>
@@ -992,8 +1015,7 @@ ReactDOM.render(
           <PlaylistList />
         </Tabs.Panel>
               <Tabs.Panel title='Search'>
-                  <div>
-                      <SearchForm /><SearchList/></div>
+                  <SearchTotal />
               </Tabs.Panel>
         <Tabs.Panel title='Tools'>
         <div>
