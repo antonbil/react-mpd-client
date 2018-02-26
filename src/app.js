@@ -15,11 +15,6 @@ console.log("mpd client:",window.mpd_client);
 
 let  observer = ReactObserver();
 let  mpd_client=window.mpd_client;
-let  playlistContextmenu=null;
-let  albumsContextmenu=null;
-let  playlistselection=-1;
-let  albumsselection=-1;
-let  albumList=null;
 function padDigits(number, digits) {
     return Array(Math.max(digits - String(number).length + 1, 0)).join("0") + number;
 }
@@ -44,19 +39,21 @@ class ContextMenu1 extends React.Component {
     this._handleScroll = this._handleScroll.bind(this);
   }
   setMenu(){
-      playlistContextmenu=this;
+      //playlistContextmenu=this;
   }
-    
+
     componentDidMount() {
         //document.addEventListener('contextmenu', this._handleContextMenu);
         document.addEventListener('click', this._handleClick);
         document.addEventListener('scroll', this._handleScroll);
+        this.props.onRef(this)
     };
 
     componentWillUnmount() {
       //document.removeEventListener('contextmenu', this._handleContextMenu);
       document.removeEventListener('click', this._handleClick);
       document.removeEventListener('scroll', this._handleScroll);
+        this.props.onRef(undefined)
     }
     
     _handleContextMenu(event) {
@@ -130,7 +127,7 @@ class ContextMenu1 extends React.Component {
 /*/*ContextMenu2*/
 class ContextMenu2 extends ContextMenu1 {
   setMenu(){
-      albumsContextmenu=this;
+      //albumsContextmenu=this;
   }
     render() {
         const { visible } = this.state;
@@ -175,6 +172,7 @@ class PlaylistList extends CommonList {
     constructor(props) {
         super(props);
         playlistList=this;
+        this.albumsContextmenu=null;
     }
     componentDidMount() {
         let  playlists=mpd_client.getPlaylists();
@@ -201,37 +199,36 @@ class PlaylistList extends CommonList {
     }
     contextResult(choice){
         //console.log("albums choice:",choice);
-        //console.log("action with:",playlistList.selection);
-        //console.log("playlistsselection:",playlistList.state.items[playlistList.selection]);
+        //console.log("action with:",this.selection);
+        //console.log("playlistsselection:",this.state.items[this.selection]);
 
         if (choice==="Add"){
-            mpd_client.appendPlaylistToQueue(playlistList.state.items[playlistList.selection]);
+            mpd_client.appendPlaylistToQueue(this.state.items[this.selection]);
         }
         if (choice==="Add and Play"){
             let  len=mpd_client.getQueue().getSongs().length;
-            mpd_client.appendPlaylistToQueue(playlistList.state.items[playlistList.selection]);
+            mpd_client.appendPlaylistToQueue(this.state.items[this.selection]);
             mpd_client.play(len);
         }
         if (choice==="Replace and Play"){
             mpd_client.clearQueue();
-            mpd_client.appendPlaylistToQueue(playlistList.state.items[playlistList.selection]);
+            mpd_client.appendPlaylistToQueue(this.state.items[this.selection]);
             mpd_client.play(0);
 
         }
     }
     contextMenu (e) {
         e.preventDefault();
-        albumsselection=this.selection;
 
-        albumsContextmenu.returnChoice=this.contextResult;
-        albumsContextmenu._handleContextMenu(e);
+        this.albumsContextmenu.returnChoice=this.contextResult.bind(this);
+        this.albumsContextmenu._handleContextMenu(e);
     };
     handleClick(index) {
         mpd_client.appendPlaylistToQueue(this.state.items[index]);
     };
 
     render() {
-      return (<div><ContextMenu2 />
+      return (<div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)} />
         <ul>
           {this.state.items.map((listValue,i)=>{
             return <li key={i} onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} style={this.listStyle}>{listValue}</li>;
@@ -322,7 +319,7 @@ class AlbumList extends CommonList {
     this.selection=-1;
     this.totalList=[];
     this.prevdirs=[];
-    albumList=this;
+      this.albumsContextmenu = null;
     this.state = {
       items: [],
         showPopup: false
@@ -371,7 +368,7 @@ class AlbumList extends CommonList {
   
     handleClick(index) {
 	//console.log("clicked:",index);
-        if (!albumsContextmenu.state.visible){
+        if (!this.albumsContextmenu.state.visible){
             let  path=this.getFilePath(index);
             this.selection=index;
             this.getDirectoryContents( path);
@@ -386,8 +383,7 @@ class AlbumList extends CommonList {
     contextResult(choice){
         //console.log("albums choice:",choice);
         //console.log("action with:",albumList.selection);
-        let  path=albumList.getFilePath(albumList.selection);
-        //console.log("albumsselection:",path);
+        let  path=this.getFilePath(this.selection);
 
         if (choice==="Add"){
             mpd_client.addSongToQueueByFile(path);
@@ -404,15 +400,14 @@ class AlbumList extends CommonList {
             
         }
         if (choice==="Info Album") {
-            albumList.togglePopup();
+            this.togglePopup();
         }
     }
     contextMenu (e) {
         e.preventDefault();
-        albumsselection=this.selection;
 
-        albumsContextmenu.returnChoice=this.contextResult;
-        albumsContextmenu._handleContextMenu(e);
+        this.albumsContextmenu.returnChoice=this.contextResult.bind(this);
+        this.albumsContextmenu._handleContextMenu(e);
     };
       backClick() {//this.prevdirs=this.prevdirs.splice(-1,1);
           if (this.prevdirs.length>1){
@@ -432,7 +427,7 @@ class AlbumList extends CommonList {
     
     render() {
       return (
-        <div><ContextMenu2 /><br/><button onClick={this.backClick}>Back</button><ul>
+        <div><ContextMenu2  onRef={ref => (this.albumsContextmenu = ref)} /><br/><button onClick={this.backClick}>Back</button><ul>
           {this.state.items.map((listValue,i)=>{
               let  path=getImagePath("/"+this.totalList[i].mpd_file_path);
             return <div className="list-item" onClick={() =>
@@ -458,11 +453,13 @@ class SearchList extends CommonList {
         searchList=this;
         this.selection = -1;
         this.totalList = [];
+        this.albumsContextmenu = null;
         this.state = {
             items: []
         };
         this.options=[];
         this.items=[];
+        this.processSearchResults.bind(this);
         //this.handleClick = this.handleClick.bind(this,undefined);
     }
     setOptions(options){
@@ -470,7 +467,7 @@ class SearchList extends CommonList {
     }
     processSearchResults(data){
         let totalList=[];
-        searchList.items=[];
+        this.items=[];
         let previousItem="";
         data.forEach((item)=>
         {
@@ -480,10 +477,10 @@ class SearchList extends CommonList {
 
             let addItem=newItem.artist+"-"+newItem.title;
             //this.options=[{name:'artist',value:true},{name:'album',value:false},{name:'title',value:false}];
-            let titleSearch=searchList.options[2].value;
-            let artistSearch=searchList.options[0].value;
-            let albumSearch=searchList.options[1].value;
-            let separate=searchList.options[3].value;
+            let titleSearch=this.options[2].value;
+            let artistSearch=this.options[0].value;
+            let albumSearch=this.options[1].value;
+            let separate=this.options[3].value;
             if (artistSearch&&!separate)
                 addItem=newItem.album;
             else
@@ -496,7 +493,7 @@ class SearchList extends CommonList {
                     newItem.path=dirpath;
                 newItem.dirpath=dirpath;
                 totalList=totalList.concat(addItem);
-                searchList.items=searchList.items.concat(newItem);
+                this.items=this.items.concat(newItem);
 
                 //console.log("processSearchResults", newItem.title);
                 //console.log(newItem);
@@ -504,9 +501,9 @@ class SearchList extends CommonList {
             previousItem=addItem;
 
         });
-        searchList.totalList=totalList;
+        this.totalList=totalList;
         //console.log("totalList:",totalList);
-        searchList.setState({
+        this.setState({
             items: totalList
         });
     }
@@ -519,8 +516,7 @@ class SearchList extends CommonList {
     contextResult(choice){
         //console.log("albums choice:",choice);
         //console.log("action with:",searchList.selection);
-        let  path=searchList.getFilePath(searchList.selection);
-        //console.log("albumsselection:",path);
+        let  path=this.getFilePath(this.selection);
 
         if (choice==="Add"){
             mpd_client.addSongToQueueByFile(path);
@@ -539,10 +535,9 @@ class SearchList extends CommonList {
     }
     contextMenu (e) {
         e.preventDefault();
-        albumsselection=this.selection;
 
-        albumsContextmenu.returnChoice=this.contextResult;
-        albumsContextmenu._handleContextMenu(e);
+        this.albumsContextmenu.returnChoice=this.contextResult.bind(this);
+        this.albumsContextmenu._handleContextMenu(e);
     };    handleClick(index) {
         //console.log("clicked:",index);
             let  path=this.items[index].path;
@@ -552,7 +547,7 @@ class SearchList extends CommonList {
         }
     render() {
         return (
-            <div><ContextMenu2 /><ul>
+            <div><ContextMenu2  onRef={ref => (this.albumsContextmenu = ref)} /><ul>
                 {this.state.items.map((listValue,i)=>{
                     let path=getImagePath("/"+this.items[i].dirpath);
                     return <div className="list-item" key={i+500} onClick={() =>
@@ -568,6 +563,7 @@ class PlayList extends CommonList {
     super(props);
     this.selection=-1; 
     this.totalList=[];
+    this.playlistContextmenu = null;
     this.state = {
       items: []
     };
@@ -609,45 +605,43 @@ class PlayList extends CommonList {
     }
     handleClick(index) {
 	//console.log("clicked:",index);
-        if (!playlistContextmenu.state.visible)
+        if (!this.playlistContextmenu.state.visible)
         mpd_client.play(index);
     };
     
     contextResult(choice){
-        //console.log("choice:",choice);
-        //console.log("action with:",playlistselection);
         if (choice==="Remove"){
-            mpd_client.removeSongFromQueueByPosition(playlistselection);
+            mpd_client.removeSongFromQueueByPosition(this.selection);
         }
         if (choice==="Remove bottom"){
             let  len=mpd_client.getQueue().getSongs().length;
-            for (let  i=playlistselection;i<len;i++)
-                mpd_client.removeSongFromQueueByPosition(playlistselection);
+            for (let  i=this.selection;i<len;i++)
+                mpd_client.removeSongFromQueueByPosition(this.selection);
         }
         if (choice==="Remove top"){
-            for (let  i=0;i<playlistselection;i++)
+            for (let  i=0;i<this.selection;i++)
                 mpd_client.removeSongFromQueueByPosition(0);
-            mpd_client.removeSongFromQueueByPosition(playlistselection);
+            mpd_client.removeSongFromQueueByPosition(this.selection);
         }
         if (choice==="Remove all"){
             mpd_client.clearQueue();
         }
         if (choice==="Play")
-            mpd_client.play(playlistselection);
+            mpd_client.play(this.selection);
     }
     
     contextMenu (e) {
         e.preventDefault();
-        playlistContextmenu.returnChoice=this.contextResult;
-        playlistContextmenu._handleContextMenu(e);
-        //setTimeout(()=> { playlistContextmenu._handleContextMenu(e);; }, 100);
+        this.playlistContextmenu.returnChoice=this.contextResult.bind(this);
+        this.playlistContextmenu._handleContextMenu(e);
+        //setTimeout(()=> { this.playlistContextmenu._handleContextMenu(e);; }, 100);
         
     };
     
     render() {
         let  prevPath="";
       return (
-        <div><ContextMenu1 /><ul>
+        <div><ContextMenu1 onRef={ref => (this.playlistContextmenu = ref)}/><ul>
           {this.state.items.map((listValue,i)=>{//<Img src={path}  className="list-image" />
           let  img=null;
           let  artist=null;
@@ -658,7 +652,7 @@ class PlayList extends CommonList {
             }
             let  time=getTime(this.totalList[i].duration);
             prevPath=path;
-            return <li key={i} onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {playlistselection=i;this.selection=i; this.contextMenu(e)}} style={this.listStyle}>{img}
+            return <li key={i} onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} style={this.listStyle}>{img}
             <div className="list-time">{time}</div><span className="list-title">{padDigits(this.totalList[i].track,2)+" "+listValue}</span>{artist}</li>;
           })}
         </ul></div>
@@ -827,7 +821,7 @@ class SearchForm extends React.Component {
 
       searchList.setOptions(this.options);
 
-      mpd_client.search(search,searchList.processSearchResults);
+      mpd_client.search(search,searchList.processSearchResults.bind(searchList));
     event.preventDefault();
   }
 
