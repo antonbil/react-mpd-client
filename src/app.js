@@ -260,201 +260,220 @@ function makeFileListElement(content){
 
     return item;
 }
-
-/*AlbumList*/
-class AlbumList extends CommonList {
-  constructor(props) {
-    super(props);
-    this.selection=-1;
-    this.totalList=[];
-    this.prevdirs=[];
-      this.singleList=[];
-      this.albumsContextmenu = null;
-    this.state = {
-      items: [],
-        showPopup: false,
-        modalIsOpen: false
-    };
-    this.getDirectoryContents("/");
-        this.backClick = this.backClick.bind(this);
-  }
-  getDirectoryContents(dir){mpd_client.getDirectoryContents(dir, (directory_contents)=> {
-        let  myTotalList=[];
-        let  mylist=[];
-        //console.log(directory_contents);
-        directory_contents.forEach((content)=>{
-            let  element=makeFileListElement(content);
-            try{
-            myTotalList=myTotalList.concat( element);
-            let  path=element.MPD_file_path_name;
-            path=path.substr(path.lastIndexOf('/') + 1);
-            mylist=mylist.concat( path)
-                    //console.log(element);
-            } catch(e){}
-        });
-        this.totalList=myTotalList;
-        if (mylist.length>0){
-            this.prevdirs=this.prevdirs.concat( dir);
-            this.setState(previousState => ({
-                items: mylist,showPopup: false
-            }));
-        } else{
-            //let  path=this.getFilePath(this.selection);
-            //console.log("add dir:",dir);
-            mpd_client.addSongToQueueByFile(dir);
-            //no items, display context menu
-        }
-        })
-
-  }
-
-
-
-    
-    getFilePath(index){
-        let  str=this.totalList[index].mpd_file_path;
-        str=str.substr(0, str.length - 1);
-        return str;
-    }
-  
-    handleClick(index) {
-	//console.log("clicked:",index);
-        if (!this.albumsContextmenu.state.visible){
-            let  path=this.getFilePath(index);
-            this.selection=index;
-            this.getDirectoryContents( path);
-        }
-        //mpd_client.play(index);
-    };
-    togglePopup() {
-        this.setState({items:this.state.items,
-            showPopup: !this.state.showPopup
-        });
-    }
-    contextResult(choice){
-        //console.log("albums choice:",choice);
-        //console.log("action with:",albumList.selection);
-        console.log("this.selection:",this.selection);
-        let  path=this.getFilePath(this.selection);
-        console.log("path:",path);
-
-        if (choice==="Add"){
-            mpd_client.addSongToQueueByFile(path);
-        }
-        if (choice==="Add and Play"){
-            let  len=mpd_client.getQueue().getSongs().length;
-            mpd_client.addSongToQueueByFile(path);
-            mpd_client.play(len);
-        }
-        if (choice==="Replace and Play"){
-            mpd_client.clearQueue();
-            mpd_client.addSongToQueueByFile(path);
-            mpd_client.play(0);
-            
-        }
-        if (choice==="Info Album") {
-            mpd_client.getDirectoryContents(this.getFilePath(this.selection), this.getDir.bind(this));
-            //this.setState({modalIsOpen: true});
-
-            //this.togglePopup();
-        }
-    }
-
-
-getDir(directory_contents){
-    //console.log(directory_contents);
-    let  myTotalList=[];
-    let  mylist=[];
-    //console.log(directory_contents);
-    directory_contents.forEach((content)=>{
-        let  element=makeFileListElement(content);
-        //console.log(element);
-        try{
-            myTotalList=myTotalList.concat( element);
-            //let  path=element.MPD_file_path_name;
-            //path=path.substr(path.lastIndexOf('/') + 1);
-            mylist=mylist.concat( element.MPD_file_title)
-            //console.log(element);
-        } catch(e){}
-    });
-    this.singleList=myTotalList;
-    //console.log("myList",mylist);
-    this.setState({items:this.state.items,
-        modalIsOpen: true
-    });
-}
-    closeModal() {
-        this.setState({items:this.state.items,
-            modalIsOpen: false
-        });
-    }
-    contextMenu (e) {
-        e.preventDefault();
-
-        this.albumsContextmenu.returnChoice=this.contextResult.bind(this);
-        this.albumsContextmenu._handleContextMenu(e);
-    };
-      backClick() {//this.prevdirs=this.prevdirs.splice(-1,1);
-          if (this.prevdirs.length>1){
-              //console.log("back1",this.prevdirs);
-              //this.prevdirs=this.prevdirs.splice(-1,1);
-              this.prevdirs.pop();
-              //console.log("back2",this.prevdirs);
-              let  dir=this.prevdirs[this.prevdirs.length-1];
-              //console.log("back3",dir);
-              //this.prevdirs=this.prevdirs.splice(-1,1);
-              this.prevdirs.pop();
-              this.getDirectoryContents(dir);
-          }
-          //console.log("back");
-      }
-
-    
-    render() {
-        const myScrollbar = {
-            width: 600,
-            height: 800,
+class PopupAlbum extends React.Component {
+    constructor(props) {
+        super(props);
+        props.onRef(this);
+        this.closeModal=props.closeModal;
+        this.album=props.album;
+        this.state = {
+            items: []
         };
-      return (
-        <div><ContextMenu2  onRef={ref => (this.albumsContextmenu = ref)} /><br/><button onClick={this.backClick}>Back</button><ul>
-          {this.state.items.map((listValue,i)=>{
-              let  path=getImagePath("/"+this.totalList[i].mpd_file_path);
-            return <div className="list-item" onClick={() =>
-            { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} >
-                <Img src={path}  className="list-image-small" /><li key={i} style={this.listStyle}>
-                {listValue}</li></div>;
-          })}
-        </ul>{this.state.modalIsOpen ?
-            <Modal  onClick={this.closeModal.bind(this)}
-                isOpen={this.state.modalIsOpen}
+    }
 
-                onRequestClose={this.closeModal.bind(this)}
-                style={customStyles}
-                contentLabel="Example Modal"
+    getDir(directory_contents) {
+        let myTotalList = [];
+        directory_contents.forEach((content) => {
+            try {
+                myTotalList = myTotalList.concat(makeFileListElement(content));
+            } catch (e) {
+            }
+        });
+
+        this.setState({
+            items: myTotalList
+        });
+    }
+
+    render(){
+        const myScrollbar = {
+            width: "95%",
+            height: "95%",
+        };
+        return (
+            <Modal onClick={this.closeModal}
+            isOpen={this.state.modalIsOpen}
+
+            onRequestClose={this.closeModal}
+            style={customStyles}
+            contentLabel="Album Info"
             >
 
-                <ReactScrollbar style={myScrollbar} >
-                    <div onClick={this.closeModal.bind(this)}>
-                        <Img src={getImagePath("/"+this.getFilePath(this.selection))}
-                             className="list-image-large"  />
-                <ul>
-                    {this.singleList.map((listValue,i)=>{
+            <ReactScrollbar style={myScrollbar}>
+            <div onClick={this.closeModal}>
+            <Img src={getImagePath("/" + this.album)}
+            className="list-image-large"/>
+            <ul>
+            {this.state.items.map((listValue, i) => {
 
-                        return <li  className="list-item" key={i} style={this.listStyle}>
-                            {listValue.MPD_file_title}</li>;
-                    })}
-                </ul>
-                    </div>
-                </ReactScrollbar>
+                return <li className="list-item" key={i} style={this.listStyle}>
+                    {listValue.MPD_file_title}</li>;
+            })}
+            </ul>
+            </div>
+            </ReactScrollbar>
 
 
             </Modal>
-            : null
-        }
-        </div>
-      )
+        )
     }
 }
+/*AlbumList*/
+class AlbumList extends CommonList {
+    constructor(props) {
+        super(props);
+        this.selection = -1;
+        this.totalList = [];
+        this.prevdirs = [];
+        this.popupAlbum = null;
+        this.albumsContextmenu = null;
+        this.state = {
+            items: [],
+            modalIsOpen: false
+        };
+        this.getDirectoryContents("/");
+        this.backClick = this.backClick.bind(this);
+    }
+
+    getDirectoryContents(dir) {
+        mpd_client.getDirectoryContents(dir, (directory_contents) => {
+            let myTotalList = [];
+            let mylist = [];
+            //console.log(directory_contents);
+            directory_contents.forEach((content) => {
+                let element = makeFileListElement(content);
+                try {
+                    myTotalList = myTotalList.concat(element);
+                    let path = element.MPD_file_path_name;
+                    path = path.substr(path.lastIndexOf('/') + 1);
+                    mylist = mylist.concat(path)
+                    //console.log(element);
+                } catch (e) {
+                }
+            });
+            this.totalList = myTotalList;
+            if (mylist.length > 0) {
+                this.prevdirs = this.prevdirs.concat(dir);
+                this.setState(previousState => ({
+                    items: mylist, showPopup: false
+                }));
+            } else {
+                //let  path=this.getFilePath(this.selection);
+                //console.log("add dir:",dir);
+                mpd_client.addSongToQueueByFile(dir);
+                //no items, display context menu
+            }
+        })
+
+    }
+
+
+    getFilePath(index) {
+        let str = this.totalList[index].mpd_file_path;
+        str = str.substr(0, str.length - 1);
+        return str;
+    }
+
+    handleClick(index) {
+        //console.log("clicked:",index);
+        if (!this.albumsContextmenu.state.visible) {
+            let path = this.getFilePath(index);
+            this.selection = index;
+            this.getDirectoryContents(path);
+        }
+        //mpd_client.play(index);
+    };
+
+    contextResult(choice) {
+        //console.log("albums choice:",choice);
+        //console.log("action with:",albumList.selection);
+        console.log("this.selection:", this.selection);
+        let path = this.getFilePath(this.selection);
+        console.log("path:", path);
+
+        if (choice === "Add") {
+            mpd_client.addSongToQueueByFile(path);
+        }
+        if (choice === "Add and Play") {
+            let len = mpd_client.getQueue().getSongs().length;
+            mpd_client.addSongToQueueByFile(path);
+            mpd_client.play(len);
+        }
+        if (choice === "Replace and Play") {
+            mpd_client.clearQueue();
+            mpd_client.addSongToQueueByFile(path);
+            mpd_client.play(0);
+
+        }
+        if (choice === "Info Album") {
+            mpd_client.getDirectoryContents(this.getFilePath(this.selection), this.popupAlbum.getDir.bind(this));
+            this.setState({
+                items: this.state.items,
+                modalIsOpen: true
+            });
+        }
+    }
+
+
+    closeModal() {
+        this.setState({
+            items: this.state.items,
+            modalIsOpen: false
+        });
+    }
+
+    contextMenu(e) {
+        e.preventDefault();
+
+        this.albumsContextmenu.returnChoice = this.contextResult.bind(this);
+        this.albumsContextmenu._handleContextMenu(e);
+    };
+
+    backClick() {//this.prevdirs=this.prevdirs.splice(-1,1);
+        if (this.prevdirs.length > 1) {
+            //console.log("back1",this.prevdirs);
+            //this.prevdirs=this.prevdirs.splice(-1,1);
+            this.prevdirs.pop();
+            //console.log("back2",this.prevdirs);
+            let dir = this.prevdirs[this.prevdirs.length - 1];
+            //console.log("back3",dir);
+            //this.prevdirs=this.prevdirs.splice(-1,1);
+            this.prevdirs.pop();
+            this.getDirectoryContents(dir);
+        }
+        //console.log("back");
+    }
+
+
+    render() {
+        return (
+            <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/><br/>
+                <button onClick={this.backClick}>Back</button>
+                <ul>
+                    {this.state.items.map((listValue, i) => {
+                        let path = getImagePath("/" + this.totalList[i].mpd_file_path);
+                        return <div className="list-item" onClick={() => {
+                            this.handleClick(i);
+                        }} onContextMenu={(e) => {
+                            this.selection = i;
+                            this.contextMenu(e)
+                        }}>
+                            <Img src={path} className="list-image-small"/>
+                            <li key={i} style={this.listStyle}>
+                                {listValue}</li>
+                        </div>;
+                    })}
+                </ul>
+                {this.state.modalIsOpen ?
+                    <PopupAlbum album={this.getFilePath(this.selection)} onRef={ref => (this.popupAlbum = ref)}
+                    closeModal={this.closeModal.bind(this)}/>
+                    : null
+                }
+            </div>
+        )
+    }
+}
+
 const customStyles = {
     content : {
         top                   : '50%',
