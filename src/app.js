@@ -287,12 +287,23 @@ class PopupAlbum extends React.Component {
 
     render(){
         const myScrollbar = {
-            width: "95%",
-            height: "95%",
+            margin:10,
+            width: '100%',
+            height: 700,
+        };
+        const customStyles = {
+            content : {
+                top                   : '50%',
+                left                  : '50%',
+                right                 : 'auto',
+                bottom                : 'auto',
+                marginRight           : '-50%',
+                transform             : 'translate(-50%, -50%)'
+            }
         };
         return (
             <Modal onClick={this.closeModal}
-            isOpen={this.state.modalIsOpen}
+            isOpen={true}
 
             onRequestClose={this.closeModal}
             style={customStyles}
@@ -300,14 +311,14 @@ class PopupAlbum extends React.Component {
             >
 
             <ReactScrollbar style={myScrollbar}>
-            <div onClick={this.closeModal}>
+            <div  className="popup"  onClick={this.closeModal}>
             <Img src={getImagePath("/" + this.album)}
             className="list-image-large"/>
             <ul>
             {this.state.items.map((listValue, i) => {
 
-                return <li className="list-item" key={i} style={this.listStyle}>
-                    {listValue.MPD_file_title}</li>;
+                return <div  className="list-item" ><li key={i} style={this.listStyle}>
+                {listValue.MPD_file_title}</li></div>;
             })}
             </ul>
             </div>
@@ -474,16 +485,7 @@ class AlbumList extends CommonList {
     }
 }
 
-const customStyles = {
-    content : {
-        top                   : '50%',
-        left                  : '50%',
-        right                 : 'auto',
-        bottom                : 'auto',
-        marginRight           : '-50%',
-        transform             : 'translate(-50%, -50%)'
-    }
-};
+
 /* class SearchList*/
 class SearchList extends CommonList {
     constructor(props) {
