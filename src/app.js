@@ -263,12 +263,12 @@ function makeFileListElement(content){
 class PopupAlbum extends React.Component {
     constructor(props) {
         super(props);
-        props.onRef(this);
         this.closeModal=props.closeModal;
         this.album=props.album;
         this.state = {
             items: []
         };
+        mpd_client.getDirectoryContents(this.album, this.getDir.bind(this));
     }
 
     getDir(directory_contents) {
@@ -325,7 +325,7 @@ class AlbumList extends CommonList {
         this.selection = -1;
         this.totalList = [];
         this.prevdirs = [];
-        this.popupAlbum = null;
+        //this.popupAlbum = null;
         this.albumsContextmenu = null;
         this.state = {
             items: [],
@@ -406,7 +406,7 @@ class AlbumList extends CommonList {
 
         }
         if (choice === "Info Album") {
-            mpd_client.getDirectoryContents(this.getFilePath(this.selection), this.popupAlbum.getDir.bind(this));
+
             this.setState({
                 items: this.state.items,
                 modalIsOpen: true
@@ -465,7 +465,7 @@ class AlbumList extends CommonList {
                     })}
                 </ul>
                 {this.state.modalIsOpen ?
-                    <PopupAlbum album={this.getFilePath(this.selection)} onRef={ref => (this.popupAlbum = ref)}
+                    <PopupAlbum album={this.getFilePath(this.selection)}
                     closeModal={this.closeModal.bind(this)}/>
                     : null
                 }
