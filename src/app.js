@@ -7,7 +7,7 @@ import AlbumList from './AlbumList.js';
 import PlayList from './Playlist.js';
 import PlaylistList from './PlaylistList.js';
 import SearchTotal from './SearchTotal.js';
-import Buttons from './HeaderButtons';
+import HeaderButtons from './HeaderButtons';
 import SelectServer from './SelectServer';
 import VolumeSlider from './VolumeSlider';
 
@@ -19,7 +19,7 @@ window.observer = ReactObserver();
 
 //main display, combine all defined elements
 ReactDOM.render(
-    <div className="buttons"><Buttons />
+    <div className="buttons"><HeaderButtons />
           <Tabs>
         <Tabs.Panel title='Playlist'>
           <div><PlayList /></div>

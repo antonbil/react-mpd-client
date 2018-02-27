@@ -54,12 +54,19 @@ class PopupAlbum extends React.Component {
     }
 
     render(){
-        const myScrollbar = {
+        let width = window.innerWidth
+            || document.documentElement.clientWidth
+            || document.body.clientWidth;
+
+        let height = window.innerHeight
+            || document.documentElement.clientHeight
+            || document.body.clientHeight;
+        let myScrollbar = {
             margin:10,
-            width: '100%',
-            height: 700,
+            width: width-50,
+            height: height-50,
         };
-        const customStyles = {
+        let customStyles = {
             content : {
                 top                   : '50%',
                 left                  : '50%',

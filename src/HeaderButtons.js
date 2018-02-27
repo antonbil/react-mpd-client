@@ -44,8 +44,8 @@ class ShowTime extends React.Component {
         );
     }
 }
-/*Buttons*/
-class Buttons extends React.Component {
+/*HeaderButtons*/
+class HeaderButtons extends React.Component {
     constructor(props) {
         super(props);
         this.state = {playing: true, songName:"", path:""};
@@ -139,4 +139,4 @@ class Buttons extends React.Component {
     }
 }
 
-export default Buttons;
+export default HeaderButtons;
