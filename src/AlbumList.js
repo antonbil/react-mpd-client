@@ -1,33 +1,37 @@
-import React from "react";
+import React , { Component } from "react";
 import Modal from 'react-modal';
 import ReactScrollbar from 'react-scrollbar-js';
 import CommonList from './CommonList';
 import {ContextMenu2} from './ContextMenu.js';
-import{getImagePath,getDimensions}from './Utils.js';
+import {padDigits, getTime, getImagePath, getDimensions, stringFormat} from './Utils.js';
 import Img from 'react-image';
-import { ToastContainer, toast } from 'react-toastify';
+import {ToastContainer, toast} from 'react-toastify';
 
 /**
  * returns object with properties of content
  * @param content
  * @returns {{}}
  */
-function makeFileListElement(content){
+function makeFileListElement(content) {
 
-    let  item={};
-    item.mpd_file_path=content.getPath();
+    let item = {};
+    console.log(content);
+    item.mpd_file_path = content.getPath();
     try {
         item.mpd_file_path = item.mpd_file_path.replace(/(.*[^\/])\/?/, '$1/');
-    } catch(e){}
-    if(typeof content.getMetadata().directory !== 'undefined'){
-        item.MPD_file_path_name=content.getPath();
+    } catch (e) {
     }
-    else{
-        item.MPD_file_title=content.getDisplayName();
-        item.MPD_file_album=content.getAlbum();
-        item.MPD_file_artist=content.getArtist();
-        item.MPD_file_file=content.getPath();
-        item.MPD_file_track=content.getTrack();
+    if (typeof content.getMetadata().directory !== 'undefined') {
+        item.MPD_file_path_name = content.getPath();
+    }
+    else {
+        item.MPD_file_title = content.getDisplayName();
+        item.MPD_file_album = content.getAlbum();
+        item.MPD_file_artist = content.getArtist();
+        item.MPD_file_file = content.getPath();
+        item.MPD_file_track = content.getTrack();
+        item.MPD_file_duration = content.getDuration();
+        //getDuration
     }
 
     return item;
@@ -39,8 +43,8 @@ function makeFileListElement(content){
  */
 let notifyMessage = function (message) {
     //display 4 seconds
-    let seconds=4;
-    let millis=seconds*1000;
+    let seconds = 4;
+    let millis = seconds * 1000;
     let mytoastId = null;
     let notify = () => {
         mytoastId = toast(message, {
@@ -51,18 +55,18 @@ let notifyMessage = function (message) {
     setTimeout(function () {
         toast.dismiss(mytoastId);
 
-    }, millis+500);
+    }, millis + 500);
 };
 
 /**
  * Popup the contents of an album on a Modal View
  */
-class PopupAlbum extends React.Component {
+class PopupAlbum extends Component {
     constructor(props) {
         super(props);
-        this.closeAlbumPopup=props.closeAlbumPopup;
-        this.album=props.album;
-        this.itemChosen=false;
+        this.closeAlbumPopup = props.closeAlbumPopup;
+        this.album = props.album;
+        this.itemChosen = false;
         this.state = {
             items: []
         };
@@ -83,53 +87,64 @@ class PopupAlbum extends React.Component {
         });
     }
 
-    addFileToQueue(e,i) {
+    createTitleLine(song) {
+        return stringFormat("{0} {1} ({2})", [padDigits(song.MPD_file_track, 2), song.MPD_file_title,
+            getTime(song.MPD_file_duration)]);
+
+    }
+
+    addFileToQueue(e, i) {
         e.preventDefault();
-        this.itemChosen=true;
-        let path=this.state.items[i].MPD_file_file;
-        let message="add file:"+path;
+        this.itemChosen = true;
+        let path = this.state.items[i].MPD_file_file;
+        let message = "add file:" + path;
         try {
             notifyMessage(message);
-        } catch(e){}
+        } catch (e) {
+        }
         mpd_client.addSongToQueueByFile(path);
     }
 
-    render(){
+    render() {
         let {width, height} = getDimensions();
         let myScrollbar = {
-            margin:10,
-            width: width-150,
-            height: height-150,
+            margin: 10,
+            width: width - 150,
+            height: height - 150,
         };
-        let customStyles = {
-            content : {
-                top                   : '50%',
-                left                  : '50%',
-                right                 : 'auto',
-                bottom                : 'auto',
-                marginRight           : '-50%',
-                transform             : 'translate(-50%, -50%)'
+        /*let customStyles = {
+            content: {
+                top: '50%',
+                left: '50%',
+                right: 'auto',
+                bottom: 'auto',
+                marginRight: '-50%',
+                transform: 'translate(-50%, -50%)'
             }
-        };
+        };*/
         return (
             <Modal
-                   isOpen={true}
-                   ariaHideApp={false}
-                   
-                   contentLabel="Album Info"
+                isOpen={true}
+                ariaHideApp={false}
+                contentLabel="Album Info"
             >
 
                 <ReactScrollbar style={myScrollbar}>
-                    <div  className="popup"  onClick={(e) => {if (!this.itemChosen)this.closeAlbumPopup(e);this.itemChosen=false;}}>
+                    <div className="popup" onClick={(e) => {
+                        if (!this.itemChosen) this.closeAlbumPopup(e);
+                        this.itemChosen = false;
+                    }}>
                         <Img src={getImagePath("/" + this.album)}
                              className="list-image-large"/>{this.album}
                         <ul>
                             {this.state.items.map((listValue, i) => {
 
-                                return <div key={i}  className="list-item" onClick={(e) => {
-                                    this.addFileToQueue(e,i);
-                                }}><li style={this.listStyle}>
-                                    {listValue.MPD_file_title}</li></div>;
+                                return <div key={i} className="list-item" onClick={(e) => {
+                                    this.addFileToQueue(e, i);
+                                }}>
+                                    <li style={this.listStyle}>
+                                        {this.createTitleLine(listValue)}</li>
+                                </div>;
                             })}
                         </ul>
                     </div>
@@ -156,7 +171,7 @@ class AlbumList extends CommonList {
             modalIsOpen: false
         };
         this.getDirectoryContents("/");
-        this.backClick = this.backClick.bind(this);
+        this.getUpOneDirectory = this.getUpOneDirectory.bind(this);
     }
 
     getDirectoryContents(dir) {
@@ -177,12 +192,12 @@ class AlbumList extends CommonList {
             if (mylist.length > 0) {
                 this.totalList = myTotalList;
                 this.prevdirs = this.prevdirs.concat(dir);
-                this.setState(previousState => ({
+                this.setState({
                     items: mylist, showPopup: false
-                }));
+                });
             } else {
                 mpd_client.addSongToQueueByFile(dir);
-                notifyMessage("add dir:"+dir);
+                notifyMessage("add dir:" + dir);
                 //no items, display context menu
             }
         })
@@ -255,7 +270,7 @@ class AlbumList extends CommonList {
     /**
      * display contents of one directory up
      */
-    backClick() {
+    getUpOneDirectory() {
         if (this.prevdirs.length > 1) {
             this.prevdirs.pop();
             let dir = this.prevdirs[this.prevdirs.length - 1];
@@ -269,7 +284,8 @@ class AlbumList extends CommonList {
 
         return (
             <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/><br/>
-                <button onClick={this.backClick}>Back</button><ToastContainer />
+                <button onClick={this.getUpOneDirectory}>Back</button>
+                <ToastContainer/>
                 <ul>
                     {this.state.items.map((listValue, i) => {
                         let path = getImagePath("/" + this.totalList[i].mpd_file_path);
@@ -295,4 +311,4 @@ class AlbumList extends CommonList {
     }
 }
 
-export default AlbumList ;
+export default AlbumList;
