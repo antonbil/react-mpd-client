@@ -15,7 +15,6 @@ import {ToastContainer, toast} from 'react-toastify';
 function makeFileListElement(content) {
 
     let item = {};
-    console.log(content);
     item.mpd_file_path = content.getPath();
     try {
         item.mpd_file_path = item.mpd_file_path.replace(/(.*[^\/])\/?/, '$1/');
@@ -122,6 +121,11 @@ class PopupAlbum extends Component {
                 transform: 'translate(-50%, -50%)'
             }
         };*/
+        let album=this.album;
+        try {
+            let song = this.state.items[0];
+            album = stringFormat("{0} {1}", [song.MPD_file_artist, song.MPD_file_album]);
+        } catch(e){}
         return (
             <Modal
                 isOpen={true}
@@ -135,7 +139,7 @@ class PopupAlbum extends Component {
                         this.itemChosen = false;
                     }}>
                         <Img src={getImagePath("/" + this.album)}
-                             className="list-image-large"/>{this.album}
+                             className="list-image-large"/>{album}
                         <ul>
                             {this.state.items.map((listValue, i) => {
 
@@ -164,13 +168,20 @@ class AlbumList extends CommonList {
         super(props);
         this.selection = -1;
         this.totalList = [];
-        this.prevdirs = [];
+        //global variable window.albumListConfig to store state of AlbumList
+        if (typeof window.albumListConfig === 'undefined' || window.albumListConfig === null) {
+            window.albumListConfig={prevdirs:[]}
+        }
+        this.prevdirs = window.albumListConfig.prevdirs;
+
         this.albumsContextmenu = null;
         this.state = {
             items: [],
             modalIsOpen: false
         };
-        this.getDirectoryContents("/");
+        let curdir="/";
+        if (this.prevdirs.length>0)curdir=this.prevdirs.pop();
+        this.getDirectoryContents(curdir);
         this.getUpOneDirectory = this.getUpOneDirectory.bind(this);
     }
 
@@ -192,6 +203,9 @@ class AlbumList extends CommonList {
             if (mylist.length > 0) {
                 this.totalList = myTotalList;
                 this.prevdirs = this.prevdirs.concat(dir);
+                //save state to global variable
+                window.albumListConfig.prevdirs=this.prevdirs;
+
                 this.setState({
                     items: mylist, showPopup: false
                 });

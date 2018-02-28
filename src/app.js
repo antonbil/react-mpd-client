@@ -16,7 +16,6 @@ import VolumeSlider from './VolumeSlider';
 window.mpd_client = new MPD(8800,"ws://"+window.server);
 console.log("mpd client:",window.mpd_client);
 window.observer = ReactObserver();
-
 //main display, combine all defined elements
 ReactDOM.render(
     <div className="buttons"><HeaderButtons />
