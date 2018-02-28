@@ -96,7 +96,7 @@ class PopupAlbum extends Component {
         e.preventDefault();
         this.itemChosen = true;
         let path = this.state.items[i].MPD_file_file;
-        let message = "add file:" + path;
+        let message = "add file:" + lastPart(path);
         try {
             notifyMessage(message);
         } catch (e) {
@@ -160,6 +160,11 @@ class PopupAlbum extends Component {
     }
 }
 
+let lastPart = function (path) {
+    path = path.substr(path.lastIndexOf('/') + 1);
+    return path;
+};
+
 /**
  * display contents of directory in Listview
  */
@@ -194,7 +199,7 @@ class AlbumList extends CommonList {
                 try {
                     myTotalList = myTotalList.concat(element);
                     let path = element.MPD_file_path_name;
-                    path = path.substr(path.lastIndexOf('/') + 1);
+                    path = lastPart(path);
                     mylist = mylist.concat(path)
                 } catch (e) {
                 }
@@ -211,7 +216,7 @@ class AlbumList extends CommonList {
                 });
             } else {
                 mpd_client.addSongToQueueByFile(dir);
-                notifyMessage("add dir:" + dir);
+                notifyMessage("add dir:" + lastPart(dir));
                 //no items, display context menu
             }
         })
