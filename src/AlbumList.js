@@ -7,6 +7,11 @@ import{getImagePath,getDimensions}from './Utils.js';
 import Img from 'react-image';
 import { ToastContainer, toast } from 'react-toastify';
 
+/**
+ * returns object with properties of content
+ * @param content
+ * @returns {{}}
+ */
 function makeFileListElement(content){
 
     let  item={};
@@ -28,24 +33,34 @@ function makeFileListElement(content){
     return item;
 }
 
+/**
+ * display mesaage on bottom of screen
+ * @param message
+ */
 let notifyMessage = function (message) {
+    //display 4 seconds
+    let seconds=4;
+    let millis=seconds*1000;
     let mytoastId = null;
     let notify = () => {
         mytoastId = toast(message, {
-            position: toast.POSITION.BOTTOM_CENTER, autoClose: 4000, closeButton: false
+            position: toast.POSITION.BOTTOM_CENTER, autoClose: millis, closeButton: false
         });
     };
     notify();
     setTimeout(function () {
         toast.dismiss(mytoastId);
 
-    }, 4500);
+    }, millis+500);
 };
 
+/**
+ * Popup the contents of an album on a Modal View
+ */
 class PopupAlbum extends React.Component {
     constructor(props) {
         super(props);
-        this.closeModal=props.closeModal;
+        this.closeAlbumPopup=props.closeAlbumPopup;
         this.album=props.album;
         this.itemChosen=false;
         this.state = {
@@ -68,7 +83,7 @@ class PopupAlbum extends React.Component {
         });
     }
 
-    handleItemClick(e,i) {
+    addFileToQueue(e,i) {
         e.preventDefault();
         this.itemChosen=true;
         let path=this.state.items[i].MPD_file_file;
@@ -83,8 +98,8 @@ class PopupAlbum extends React.Component {
         let {width, height} = getDimensions();
         let myScrollbar = {
             margin:10,
-            width: width-50,
-            height: height-50,
+            width: width-150,
+            height: height-150,
         };
         let customStyles = {
             content : {
@@ -100,23 +115,20 @@ class PopupAlbum extends React.Component {
             <Modal
                    isOpen={true}
                    ariaHideApp={false}
-
-                   onRequestClose={this.closeModal}
                    
                    contentLabel="Album Info"
             >
 
                 <ReactScrollbar style={myScrollbar}>
-                    <div  className="popup"  onClick={(e) => {if (!this.itemChosen)this.closeModal(e);this.itemChosen=false;}}>
-                        <ToastContainer autoClose={2000} />
+                    <div  className="popup"  onClick={(e) => {if (!this.itemChosen)this.closeAlbumPopup(e);this.itemChosen=false;}}>
                         <Img src={getImagePath("/" + this.album)}
                              className="list-image-large"/>{this.album}
                         <ul>
                             {this.state.items.map((listValue, i) => {
 
-                                return <div  className="list-item" onClick={(e) => {
-                                    this.handleItemClick(e,i);
-                                }}><li key={i} style={this.listStyle}>
+                                return <div key={i}  className="list-item" onClick={(e) => {
+                                    this.addFileToQueue(e,i);
+                                }}><li style={this.listStyle}>
                                     {listValue.MPD_file_title}</li></div>;
                             })}
                         </ul>
@@ -128,14 +140,16 @@ class PopupAlbum extends React.Component {
         )
     }
 }
-/*AlbumList*/
+
+/**
+ * display contents of directory in Listview
+ */
 class AlbumList extends CommonList {
     constructor(props) {
         super(props);
         this.selection = -1;
         this.totalList = [];
         this.prevdirs = [];
-        //this.popupAlbum = null;
         this.albumsContextmenu = null;
         this.state = {
             items: [],
@@ -167,7 +181,6 @@ class AlbumList extends CommonList {
                     items: mylist, showPopup: false
                 }));
             } else {
-                //let  path=this.getFilePath(this.selection);
                 mpd_client.addSongToQueueByFile(dir);
                 notifyMessage("add dir:"+dir);
                 //no items, display context menu
@@ -183,13 +196,16 @@ class AlbumList extends CommonList {
         return str;
     }
 
-    handleClick(index) {
+    /**
+     * add directory contents of item[index] to queue
+     * @param index
+     */
+    addDirectoryContentsToQueue(index) {
         if (!this.albumsContextmenu.state.visible) {
             let path = this.getFilePath(index);
             this.selection = index;
             this.getDirectoryContents(path);
         }
-        //mpd_client.play(index);
     };
 
     contextResult(choice) {
@@ -218,8 +234,11 @@ class AlbumList extends CommonList {
         }
     }
 
-
-    closeModal(e) {
+    /**
+     * closes modal display of contents of an album
+     * @param e
+     */
+    closeAlbumPopup(e) {
         this.setState({
             items: this.state.items,
             modalIsOpen: false
@@ -233,7 +252,10 @@ class AlbumList extends CommonList {
         this.albumsContextmenu._handleContextMenu(e);
     };
 
-    backClick() {//this.prevdirs=this.prevdirs.splice(-1,1);
+    /**
+     * display contents of one directory up
+     */
+    backClick() {
         if (this.prevdirs.length > 1) {
             this.prevdirs.pop();
             let dir = this.prevdirs[this.prevdirs.length - 1];
@@ -244,27 +266,28 @@ class AlbumList extends CommonList {
 
 
     render() {
+
         return (
             <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/><br/>
                 <button onClick={this.backClick}>Back</button><ToastContainer />
                 <ul>
                     {this.state.items.map((listValue, i) => {
                         let path = getImagePath("/" + this.totalList[i].mpd_file_path);
-                        return <div className="list-item" onClick={() => {
-                            this.handleClick(i);
+                        return <div key={i} className="list-item" onClick={() => {
+                            this.addDirectoryContentsToQueue(i);
                         }} onContextMenu={(e) => {
                             this.selection = i;
                             this.contextMenu(e)
                         }}>
                             <Img src={path} className="list-image-small"/>
-                            <li key={i} style={this.listStyle}>
+                            <li style={this.listStyle}>
                                 {listValue}</li>
                         </div>;
                     })}
                 </ul>
                 {this.state.modalIsOpen ?
                     <PopupAlbum album={this.getFilePath(this.selection)}
-                                closeModal={this.closeModal.bind(this)}/>
+                                closeAlbumPopup={this.closeAlbumPopup.bind(this)}/>
                     : null
                 }
             </div>
