@@ -22,8 +22,8 @@ window.observer = ReactObserver();
 let {width, height} = getDimensions();
 let myScrollbar = {
     margin: 0,
-    width: width,
-    height: height
+    //width: width,
+    height: height-5
 };
 let totalDivStyle = {
 };

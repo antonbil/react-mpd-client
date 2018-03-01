@@ -96,7 +96,7 @@ class PlayList extends CommonList {
         let {width, height} = getDimensions();
         let myScrollbar = {
             margin: 0,
-            width: width,
+            //width: width,
             height: height - this.top-20,
         };
 
