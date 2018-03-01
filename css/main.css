@@ -49,17 +49,20 @@ ul li:last-child {
     .list-time{
     clear: right;
         float:right;
+        padding-right: 15px;
 
     }
    .header-time{
  clear: right;
           float:right;
+       padding-right: 15px;
 
     }
     .header-image{
         float:right;
         width:100px;
         height:100px;
+        padding-right: 15px;
 
     }
     .list-title{

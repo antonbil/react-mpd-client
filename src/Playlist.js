@@ -24,7 +24,6 @@ class PlayList extends CommonList {
         let rect = ReactDOM.findDOMNode(this)
             .getBoundingClientRect();
         this.top=rect.top;
-        console.log(rect);
         let  queue=mpd_client.getQueue();
         //console.log("queue:",queue);
         if(queue!=null)
@@ -98,7 +97,7 @@ class PlayList extends CommonList {
         let myScrollbar = {
             margin: 0,
             width: width,
-            height: height - this.top,
+            height: height - this.top-20,
         };
 
         let  prevPath="";

@@ -10,6 +10,8 @@ import SearchTotal from './SearchTotal.js';
 import HeaderButtons from './HeaderButtons';
 import SelectServer from './SelectServer';
 import VolumeSlider from './VolumeSlider';
+import ReactScrollbar from 'react-scrollbar-js';
+import {getDimensions} from "./Utils";
 
 //pictures at: http://192.168.2.8:8081/FamilyMusic/.....
 //define global variables
@@ -17,8 +19,21 @@ window.mpd_client = new MPD(8800,"ws://"+window.server);
 console.log("mpd client:",window.mpd_client);
 window.observer = ReactObserver();
 //main display, combine all defined elements
+let {width, height} = getDimensions();
+let myScrollbar = {
+    margin: 0,
+    width: width,
+    height: height
+};
+let totalDivStyle = {
+};
+
+//,
+//"right-margin":10
+
 ReactDOM.render(
-    <div className="buttons"><HeaderButtons />
+    <ReactScrollbar style={myScrollbar}>
+    <div className="buttons"  style={totalDivStyle}><HeaderButtons />
           <Tabs>
         <Tabs.Panel title='Playlist'>
           <div><PlayList /></div>
@@ -40,6 +55,7 @@ ReactDOM.render(
         </Tabs.Panel>
       </Tabs>
       </div>
+    </ReactScrollbar>
   ,
   document.getElementById('app')
   //

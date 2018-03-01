@@ -1,9 +1,10 @@
 /*Timer*/
-import {getImagePath, getTime} from "./Utils";
+import {getDimensions, getImagePath, getTime} from "./Utils";
 import React from "react";
 import Sticky from 'react-sticky-el';
 import Img from 'react-image';
 import ImageButton from 'fdmg-ts-react-image-button';
+import ReactScrollbar from 'react-scrollbar-js';
 
 class ShowTime extends React.Component {
     constructor() {
@@ -105,12 +106,20 @@ class HeaderButtons extends React.Component {
 
 
     render() {//<Img src="http://192.168.2.8:8081/FamilyMusic/00tags/newest/03-Marlon%20Williams-Make%20Way%20for%20Love/folder.jpg">
+        let {width, height} = getDimensions();
+        let myScrollbar = {
+            margin: 0,
+
+            width: width,
+            height: 200,
+        };
         let  s = {
             background: 'white'
         };
         let imagePath=getImagePath("/"+this.state.path);
-        //console.log(imagePath);
-        return (<Sticky>
+        //<Sticky>
+        return (
+            <ReactScrollbar style={myScrollbar}>
                 <header  style={s}>
                     <div><Img src={imagePath}  className="header-image" /><ImageButton
                         src={"img/previous.png"}
@@ -134,7 +143,8 @@ class HeaderButtons extends React.Component {
                         alt="Special button"
                     /><br/><div>{this.state.songName}<ShowTime/></div></div>
                     <div className="header-artist">{this.artist}</div></header>
-            </Sticky>
+            </ReactScrollbar>
+
         );
     }
 }

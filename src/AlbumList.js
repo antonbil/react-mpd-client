@@ -6,6 +6,7 @@ import {ContextMenu2} from './ContextMenu.js';
 import {padDigits, getTime, getImagePath, getDimensions, stringFormat} from './Utils.js';
 import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
+import ReactDOM from "react-dom";
 
 /**
  * returns object with properties of content
@@ -173,6 +174,7 @@ class AlbumList extends CommonList {
         super(props);
         this.selection = -1;
         this.totalList = [];
+        this.top=300;
         //global variable window.albumListConfig to store state of AlbumList
         if (typeof window.albumListConfig === 'undefined' || window.albumListConfig === null) {
             window.albumListConfig={prevdirs:[]}
@@ -189,8 +191,14 @@ class AlbumList extends CommonList {
         this.getDirectoryContents(curdir);
         this.getUpOneDirectory = this.getUpOneDirectory.bind(this);
     }
+    componentDidMount() {
+        let rect = ReactDOM.findDOMNode(this)
+            .getBoundingClientRect();
+        this.top = rect.top;
+    }
 
-    getDirectoryContents(dir) {
+
+        getDirectoryContents(dir) {
         mpd_client.getDirectoryContents(dir, (directory_contents) => {
             let myTotalList = [];
             let mylist = [];
@@ -304,7 +312,7 @@ class AlbumList extends CommonList {
         let myScrollbar = {
             margin: 0,
             width: width,
-            height: height - 300,
+            height: height - this.top-85,
         };
 
         return (
