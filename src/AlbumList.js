@@ -300,10 +300,19 @@ class AlbumList extends CommonList {
 
 
     render() {
+        let {width, height} = getDimensions();
+        let myScrollbar = {
+            margin: 0,
+            width: width,
+            height: height - 300,
+        };
 
         return (
+
+
             <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/><br/>
                 <button onClick={this.getUpOneDirectory}>Back</button>
+                <ReactScrollbar style={myScrollbar}>
                 <ToastContainer/>
                 <ul>
                     {this.state.items.map((listValue, i) => {
@@ -325,8 +334,11 @@ class AlbumList extends CommonList {
                                 closeAlbumPopup={this.closeAlbumPopup.bind(this)}/>
                     : null
                 }
+                </ReactScrollbar>
             </div>
-        )
+
+
+                )
     }
 }
 

@@ -3,8 +3,9 @@ import React from "react";
 import CommonList from "./CommonList";
 import {ContextMenu1} from "./ContextMenu.js";
 import Img from 'react-image';
-import {getImagePath, getTime, padDigits} from "./Utils";
-import AlbumList from "./AlbumList";
+import ReactScrollbar from 'react-scrollbar-js';
+import {getDimensions, getImagePath, getTime, padDigits} from "./Utils";
+import ReactDOM from 'react-dom';
 
 class PlayList extends CommonList {
     constructor(props) {
@@ -12,6 +13,7 @@ class PlayList extends CommonList {
 
         this.selection=-1;
         this.totalList=[];
+        this.top=300;
         this.playlistContextmenu = null;
         this.state = {
             items: []
@@ -19,6 +21,10 @@ class PlayList extends CommonList {
         //this.handleClick = this.handleClick.bind(this,undefined);
     }
     componentDidMount() {
+        let rect = ReactDOM.findDOMNode(this)
+            .getBoundingClientRect();
+        this.top=rect.top;
+        console.log(rect);
         let  queue=mpd_client.getQueue();
         //console.log("queue:",queue);
         if(queue!=null)
@@ -88,8 +94,16 @@ class PlayList extends CommonList {
     };
 
     render() {
+        let {width, height} = getDimensions();
+        let myScrollbar = {
+            margin: 0,
+            width: width,
+            height: height - this.top,
+        };
+
         let  prevPath="";
         return (
+            <ReactScrollbar style={myScrollbar}>
             <div><ContextMenu1 onRef={ref => (this.playlistContextmenu = ref)}/><ul>
                 {this.state.items.map((listValue,i)=>{//<Img src={path}  className="list-image" />
                     let  img=null;
@@ -107,6 +121,7 @@ class PlayList extends CommonList {
                         <div className="list-time">{time}</div><span className="list-title">{padDigits(this.totalList[i].track,2)+" "+listValue}</span>{artist}</li>;
                 })}
             </ul></div>
+            </ReactScrollbar>
         )
     }
 }
