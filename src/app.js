@@ -33,7 +33,7 @@ let totalDivStyle = {
 
 ReactDOM.render(
     <ReactScrollbar style={myScrollbar}>
-    <div className="buttons"  style={totalDivStyle}><HeaderButtons />
+    <div className="header-total"  style={totalDivStyle}><HeaderButtons />
           <Tabs>
         <Tabs.Panel title='Playlist'>
           <div><PlayList /></div>

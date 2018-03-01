@@ -1,4 +1,10 @@
 function padDigits(number, digits) {
+    try {
+        if (!(number === parseInt(number, 10))) {
+            number = number.split("/")[0];
+            number = parseInt(number);
+        }
+    }catch(e){}
     return Array(Math.max(digits - String(number).length + 1, 0)).join("0") + number;
 }
 function getTime(n){

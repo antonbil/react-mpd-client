@@ -125,7 +125,7 @@ class PopupAlbum extends Component {
         let album=this.album;
         try {
             let song = this.state.items[0];
-            album = stringFormat("{0} {1}", [song.MPD_file_artist, song.MPD_file_album]);
+            album = stringFormat("{0}-{1}", [song.MPD_file_artist, song.MPD_file_album]);
         } catch(e){}
         return (
             <Modal

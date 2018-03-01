@@ -1,5 +1,5 @@
 /*Timer*/
-import {getDimensions, getImagePath, getTime} from "./Utils";
+import {getDimensions, getImagePath, getTime,stringFormat,padDigits} from "./Utils";
 import React from "react";
 import Sticky from 'react-sticky-el';
 import Img from 'react-image';
@@ -7,25 +7,37 @@ import ImageButton from 'fdmg-ts-react-image-button';
 import ReactScrollbar from 'react-scrollbar-js';
 
 class ShowTime extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
+        props.onRef(this);
         this.playing="stop";
         this.state = {
-            curTime : null
+            curTime : null,
+            curDuration : null
         };
         this.listener = observer.subscribe('StateChanged',(data)=>{
             //console.log('StateChanged is: ',data);
             this.updateState(data.state,data.client);
         });
     }
+
     updateState(state,client){
         this.playing=state.playstate;
 
         if (state.playstate==="play"){
             this.state = {
+                curDuration : this.state.curDuration,
                 curTime : Math.floor(state.current_song.elapsed_time)
             }
         }
+    }
+    updateStateDuration(duration){
+
+            this.state = {
+                curDuration : duration,
+                curTime :  this.state.curTime
+            }
+
     }
     componentDidMount() {
         setInterval( () => {
@@ -40,7 +52,7 @@ class ShowTime extends React.Component {
     }
     render() {
         return(
-            <div className="header-time">{getTime(this.state.curTime)}
+            <div className="header-time">{getTime(this.state.curTime)+" "+getTime(this.state.curDuration)}
             </div>
         );
     }
@@ -49,6 +61,7 @@ class ShowTime extends React.Component {
 class HeaderButtons extends React.Component {
     constructor(props) {
         super(props);
+        this.showTime = null;
         this.state = {playing: true, songName:"", path:""};
         this.mpd_client=mpd_client;
         this.artist="";
@@ -66,12 +79,15 @@ class HeaderButtons extends React.Component {
     }
     updateState(state,client){
         let  current_song = client.getCurrentSong();
-        this.artist=current_song.getArtist()+ "-"+current_song.getAlbum();
+        console.log(current_song);
+        this.artist=stringFormat("{0}-{1}",[current_song.getArtist(),current_song.getAlbum()]);
+        let duration=current_song.getDuration();
+        this.showTime.updateStateDuration(duration);
         let  path=current_song.getPath();
         path=path.substring(0, path.lastIndexOf("/"));
         let  song="";
         if(current_song){
-            song=current_song.getDisplayName();
+            song=stringFormat("({0}){1}",[padDigits(current_song.getTrack(),2),current_song.getDisplayName()]);
         }
         this.setState(prevState => ({
             playing: state.playstate==="play",songName:song,path:path
@@ -105,13 +121,15 @@ class HeaderButtons extends React.Component {
     }
 
 
-    render() {//<Img src="http://192.168.2.8:8081/FamilyMusic/00tags/newest/03-Marlon%20Williams-Make%20Way%20for%20Love/folder.jpg">
+    render() {
         let {width, height} = getDimensions();
+        let minHeight=200;
+        if (window.mpdreactfontlarge)minHeight=400;
         let myScrollbar = {
             margin: 0,
 
             width: width,
-            height: 200,
+            height: minHeight,
         };
         let  s = {
             background: 'white'
@@ -141,7 +159,7 @@ class HeaderButtons extends React.Component {
                         onClick={this.home.bind(this)}
                         className="image-btn btn"
                         alt="Special button"
-                    /><br/><div>{this.state.songName}<ShowTime/></div></div>
+                    /><br/><div>{this.state.songName}<ShowTime  onRef={ref => (this.showTime = ref)}/></div></div>
                     <div className="header-artist">{this.artist}</div></header>
             </ReactScrollbar>
 

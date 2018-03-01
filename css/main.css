@@ -1,3 +1,9 @@
+/*DIGITAL CLOCK FONT*/
+@font-face{
+    font-family:'digital-7';
+    src: url('../fonts/digital-7.ttf');
+}
+
 ul {
     list-style-type: none;
     padding: 0;
@@ -13,6 +19,7 @@ ul li:last-child {
     border-bottom: none
 }
 .contextMenu {
+    z-index:1000;
     position: fixed;
     background: white;
     box-shadow: 0px 2px 10px #999999;
@@ -53,6 +60,7 @@ ul li:last-child {
 
     }
    .header-time{
+       font-family: 'digital-7', sans-serif;
  clear: right;
           float:right;
        padding-right: 15px;
@@ -69,7 +77,7 @@ ul li:last-child {
         margin-right:10px;
     }
 
-.tab-panel, .tabs-navigation, .buttons{
+.tab-panel, .tabs-navigation, .header-total{
     padding-left:5px;
     padding-right:5px;
 }
