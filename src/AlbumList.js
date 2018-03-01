@@ -172,6 +172,7 @@ let lastPart = function (path) {
 class AlbumList extends CommonList {
     constructor(props) {
         super(props);
+        this.scroll=null;
         this.selection = -1;
         this.totalList = [];
         this.top=300;
@@ -222,6 +223,7 @@ class AlbumList extends CommonList {
                 this.setState({
                     items: mylist, showPopup: false
                 });
+                this.scroll.scrollToY(0);
             } else {
                 mpd_client.addSongToQueueByFile(dir);
                 notifyMessage("add dir:" + lastPart(dir));
@@ -312,15 +314,15 @@ class AlbumList extends CommonList {
         let myScrollbar = {
             margin: 0,
             //width: width,
-            height: height - this.top-85,
+            height: height - this.top-35,
         };
 
         return (
 
 
-            <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/><br/>
+            <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/>
                 <button onClick={this.getUpOneDirectory}>Back</button>
-                <ReactScrollbar style={myScrollbar}>
+                <ReactScrollbar style={myScrollbar}  speed={90}  ref={(c) => { this.scroll = c; }}>
                 <ToastContainer/>
                 <ul>
                     {this.state.items.map((listValue, i) => {

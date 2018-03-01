@@ -102,7 +102,7 @@ class PlayList extends CommonList {
 
         let  prevPath="";
         return (
-            <ReactScrollbar style={myScrollbar}>
+            <ReactScrollbar style={myScrollbar} speed={90}>
             <div><ContextMenu1 onRef={ref => (this.playlistContextmenu = ref)}/><ul>
                 {this.state.items.map((listValue,i)=>{//<Img src={path}  className="list-image" />
                     let  img=null;

@@ -35,13 +35,13 @@ ReactDOM.render(
     <ReactScrollbar style={myScrollbar}>
     <div className="header-total"  style={totalDivStyle}><HeaderButtons />
           <Tabs>
-        <Tabs.Panel title='Playlist'>
+        <Tabs.Panel title='Play'>
           <div><PlayList /></div>
         </Tabs.Panel>
         <Tabs.Panel title='Albums'>
           <div><AlbumList /></div>
         </Tabs.Panel>
-        <Tabs.Panel title='Playlists'>
+        <Tabs.Panel title='Lists'>
           <PlaylistList />
         </Tabs.Panel>
               <Tabs.Panel title='Search'>

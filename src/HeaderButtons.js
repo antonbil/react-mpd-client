@@ -124,7 +124,7 @@ class HeaderButtons extends React.Component {
     render() {
         let {width, height} = getDimensions();
         let minHeight=200;
-        if (window.mpdreactfontlarge)minHeight=400;
+        if (window.mpdreactfontlarge)minHeight=300;
         let myScrollbar = {
             margin: 0,
 
@@ -144,7 +144,8 @@ class HeaderButtons extends React.Component {
                         onClick={this.prev.bind(this)}
                         className="image-btn btn"
                         alt="Special button"
-                    /><ImageButton
+                    /><ShowTime  onRef={ref => (this.showTime = ref)}/>
+                        <ImageButton
                         src={this.state.playing ?  "img/play.png":"img/pause.png"}
                         onClick={this.handleClick.bind(this)}
                         className="image-btn btn"
@@ -159,7 +160,7 @@ class HeaderButtons extends React.Component {
                         onClick={this.home.bind(this)}
                         className="image-btn btn"
                         alt="Special button"
-                    /><br/><div>{this.state.songName}<ShowTime  onRef={ref => (this.showTime = ref)}/></div></div>
+                    /><br/><div>{this.state.songName}</div></div>
                     <div className="header-artist">{this.artist}</div></header>
             </ReactScrollbar>
 
