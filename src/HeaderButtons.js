@@ -128,7 +128,6 @@ class HeaderButtons extends React.Component {
         let myScrollbar = {
             margin: 0,
 
-            width: width,
             height: minHeight,
         };
         let  s = {
@@ -136,7 +135,7 @@ class HeaderButtons extends React.Component {
         };
         let imagePath=getImagePath("/"+this.state.path);
         //<Sticky>
-        return (
+        return (<Sticky>
             <ReactScrollbar style={myScrollbar}>
                 <header  style={s}>
                     <div><Img src={imagePath}  className="header-image" /><ImageButton
@@ -163,6 +162,7 @@ class HeaderButtons extends React.Component {
                     /><br/><div>{this.state.songName}</div></div>
                     <div className="header-artist">{this.artist}</div></header>
             </ReactScrollbar>
+            </Sticky>
 
         );
     }

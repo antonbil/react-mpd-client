@@ -100,9 +100,9 @@ class PlayList extends CommonList {
             height: height - this.top-20,
         };
 
-        let  prevPath="";
+        let  prevPath="";//<ReactScrollbar className="playlist" style={myScrollbar} speed={90}>
         return (
-            <ReactScrollbar style={myScrollbar} speed={90}>
+
             <div><ContextMenu1 onRef={ref => (this.playlistContextmenu = ref)}/><ul>
                 {this.state.items.map((listValue,i)=>{//<Img src={path}  className="list-image" />
                     let  img=null;
@@ -120,7 +120,6 @@ class PlayList extends CommonList {
                         <div className="list-time">{time}</div><span className="list-title">{padDigits(this.totalList[i].track,2)+" "+listValue}</span>{artist}</li>;
                 })}
             </ul></div>
-            </ReactScrollbar>
         )
     }
 }

@@ -10,6 +10,7 @@ import SearchTotal from './SearchTotal.js';
 import HeaderButtons from './HeaderButtons';
 import SelectServer from './SelectServer';
 import VolumeSlider from './VolumeSlider';
+
 import ReactScrollbar from 'react-scrollbar-js';
 import {getDimensions} from "./Utils";
 
@@ -28,12 +29,11 @@ let myScrollbar = {
 let totalDivStyle = {
 };
 
-//,
-//"right-margin":10
-
 ReactDOM.render(
-    <ReactScrollbar style={myScrollbar}>
-    <div className="header-total"  style={totalDivStyle}><HeaderButtons />
+
+    <div className="header-total"  style={totalDivStyle}>
+
+        <HeaderButtons />
           <Tabs>
         <Tabs.Panel title='Play'>
           <div><PlayList /></div>
@@ -55,7 +55,6 @@ ReactDOM.render(
         </Tabs.Panel>
       </Tabs>
       </div>
-    </ReactScrollbar>
   ,
   document.getElementById('app')
   //

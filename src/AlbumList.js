@@ -7,6 +7,7 @@ import {padDigits, getTime, getImagePath, getDimensions, stringFormat} from './U
 import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
 import ReactDOM from "react-dom";
+import FloatingButton from './FloatingButton';
 
 /**
  * returns object with properties of content
@@ -300,6 +301,7 @@ class AlbumList extends CommonList {
      * display contents of one directory up
      */
     getUpOneDirectory() {
+        console.log("up");
         if (this.prevdirs.length > 1) {
             this.prevdirs.pop();
             let dir = this.prevdirs[this.prevdirs.length - 1];
@@ -308,6 +310,9 @@ class AlbumList extends CommonList {
         }
     }
 
+    home() {
+        window.scrollTo(0, 0);
+    }
 
     render() {
         let {width, height} = getDimensions();
@@ -317,12 +322,13 @@ class AlbumList extends CommonList {
             height: height - this.top-35,
         };
 
-        return (
+        return (//<ReactScrollbar style={myScrollbar}  speed={90}  ref={(c) => { this.scroll = c; }}>
 
 
             <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/>
-                <button onClick={this.getUpOneDirectory}>Back</button>
-                <ReactScrollbar style={myScrollbar}  speed={90}  ref={(c) => { this.scroll = c; }}>
+                <FloatingButton  action={this.getUpOneDirectory} text="&larr;" level={0}/>
+                <FloatingButton  action={this.home.bind(this)} text="&uarr;" level={1}/>
+
                 <ToastContainer/>
                 <ul>
                     {this.state.items.map((listValue, i) => {
@@ -344,7 +350,6 @@ class AlbumList extends CommonList {
                                 closeAlbumPopup={this.closeAlbumPopup.bind(this)}/>
                     : null
                 }
-                </ReactScrollbar>
             </div>
 
 
