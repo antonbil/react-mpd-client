@@ -103,10 +103,6 @@ class HeaderButtons extends React.Component {
         this.mpd_client.play();
     }
 
-    home() {
-        window.scrollTo(0, 0);
-    }
-
     handleClick() {
         this.setState(prevState => ({
             playing: !prevState.playing
@@ -152,11 +148,6 @@ class HeaderButtons extends React.Component {
                     /><ImageButton
                         src={"img/next.png"}
                         onClick={this.next.bind(this)}
-                        className="image-btn btn"
-                        alt="Special button"
-                    /><ImageButton
-                        src={"img/home.png"}
-                        onClick={this.home.bind(this)}
                         className="image-btn btn"
                         alt="Special button"
                     /><br/><div>{this.state.songName}</div></div>

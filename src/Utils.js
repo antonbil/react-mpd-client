@@ -15,6 +15,10 @@ function getTime(n){
 function getImagePath(path){
     return "http://192.168.2.8:8081/FamilyMusic"+path+"/folder.jpg"
 }
+
+let goHome = function() {
+    window.scrollTo(0, 0);
+}
 let getDimensions = function () {
     let width = window.innerWidth
         || document.documentElement.clientWidth
@@ -46,4 +50,4 @@ function stringFormat(formatString, replacementArray) {
     );
 }
 
-export{padDigits,getTime,getImagePath,getDimensions,stringFormat}
+export{padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome}

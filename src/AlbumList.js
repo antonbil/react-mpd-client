@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import ReactScrollbar from 'react-scrollbar-js';
 import CommonList from './CommonList';
 import {ContextMenu2} from './ContextMenu.js';
-import {padDigits, getTime, getImagePath, getDimensions, stringFormat} from './Utils.js';
+import {padDigits, getTime, getImagePath, getDimensions, stringFormat, goHome} from './Utils.js';
 import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
 import ReactDOM from "react-dom";
@@ -310,9 +310,7 @@ class AlbumList extends CommonList {
         }
     }
 
-    home() {
-        window.scrollTo(0, 0);
-    }
+
 
     render() {
         let {width, height} = getDimensions();
@@ -327,7 +325,7 @@ class AlbumList extends CommonList {
 
             <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/>
                 <FloatingButton  action={this.getUpOneDirectory} text="&larr;" level={0}/>
-                <FloatingButton  action={this.home.bind(this)} text="&uarr;" level={1}/>
+                <FloatingButton  action={()=>{goHome()}} text="&uarr;" level={1}/>
 
                 <ToastContainer/>
                 <ul>

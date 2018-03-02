@@ -4,8 +4,9 @@ import CommonList from "./CommonList";
 import {ContextMenu1} from "./ContextMenu.js";
 import Img from 'react-image';
 import ReactScrollbar from 'react-scrollbar-js';
-import {getDimensions, getImagePath, getTime, padDigits} from "./Utils";
+import {getDimensions, getImagePath, getTime, padDigits, goHome} from "./Utils";
 import ReactDOM from 'react-dom';
+import FloatingButton from './FloatingButton';
 
 class PlayList extends CommonList {
     constructor(props) {
@@ -103,7 +104,8 @@ class PlayList extends CommonList {
         let  prevPath="";//<ReactScrollbar className="playlist" style={myScrollbar} speed={90}>
         return (
 
-            <div><ContextMenu1 onRef={ref => (this.playlistContextmenu = ref)}/><ul>
+            <div><ContextMenu1 onRef={ref => (this.playlistContextmenu = ref)}/>
+                <FloatingButton  action={()=>{goHome()}} text="&uarr;" level={0}/><ul>
                 {this.state.items.map((listValue,i)=>{//<Img src={path}  className="list-image" />
                     let  img=null;
                     let  artist=null;
