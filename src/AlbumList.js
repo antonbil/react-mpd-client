@@ -304,7 +304,6 @@ class AlbumList extends CommonList {
      * display contents of one directory up
      */
     getUpOneDirectory() {
-        console.log("up");
         if (this.prevdirs.length > 1) {
             goHome();
             this.prevdirs.pop();
@@ -344,7 +343,7 @@ class AlbumList extends CommonList {
         return (
             <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/>
                 {this.state.floatingIsOpen ? floatMenu : null}
-                <FloatingButton ref="3" action={this.floatToggle.bind(this)} text="+" level={0}/>
+                <FloatingButton key="3" action={this.floatToggle.bind(this)} text="+" level={0}/>
                 <ToastContainer/>
                 <ul>
                     {this.state.items.map((listValue, i) => {

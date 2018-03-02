@@ -34,7 +34,7 @@ class FloatingButton extends Component {
 
 function floatingMenu(menuItems){
     return (<div>{menuItems.map((menuItem, i) => {
-        return <FloatingButton  action={menuItem.f} text= {menuItem.text} ref={i} level={i+1}/>
+        return <FloatingButton  action={menuItem.f} text= {menuItem.text} key={i} level={i+1}/>
     })}</div>)
 }
 

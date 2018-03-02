@@ -71,7 +71,6 @@ class HeaderButtons extends React.Component {
         this.next = this.next.bind(this);
         this.prev = this.prev.bind(this);
         this.listener = observer.subscribe('StateChanged',(data)=>{
-            //console.log('StateChanged is: ',data);
             this.updateState(data.state,data.client);
 
             //this.state.playing=(data.state.playstate=="play");
@@ -79,7 +78,6 @@ class HeaderButtons extends React.Component {
     }
     updateState(state,client){
         let  current_song = client.getCurrentSong();
-        console.log(current_song);
         this.artist=stringFormat("{0}-{1}",[current_song.getArtist(),current_song.getAlbum()]);
         let duration=current_song.getDuration();
         this.showTime.updateStateDuration(duration);
