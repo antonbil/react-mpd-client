@@ -1,4 +1,4 @@
-import React , { Component } from "react";
+import React, {Component} from "react";
 import Modal from 'react-modal';
 import ReactScrollbar from 'react-scrollbar-js';
 import CommonList from './CommonList';
@@ -7,7 +7,7 @@ import {padDigits, getTime, getImagePath, getDimensions, stringFormat, goHome} f
 import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
 import ReactDOM from "react-dom";
-import FloatingButton from './FloatingButton';
+import {FloatingButton, floatingMenu} from './FloatingButton';
 
 /**
  * returns object with properties of content
@@ -123,11 +123,12 @@ class PopupAlbum extends Component {
                 transform: 'translate(-50%, -50%)'
             }
         };*/
-        let album=this.album;
+        let album = this.album;
         try {
             let song = this.state.items[0];
             album = stringFormat("{0}-{1}", [song.MPD_file_artist, song.MPD_file_album]);
-        } catch(e){}
+        } catch (e) {
+        }
         return (
             <Modal
                 isOpen={true}
@@ -173,26 +174,27 @@ let lastPart = function (path) {
 class AlbumList extends CommonList {
     constructor(props) {
         super(props);
-        this.scroll=null;
         this.selection = -1;
         this.totalList = [];
-        this.top=300;
+        this.top = 300;
         //global variable window.albumListConfig to store state of AlbumList
         if (typeof window.albumListConfig === 'undefined' || window.albumListConfig === null) {
-            window.albumListConfig={prevdirs:[]}
+            window.albumListConfig = {prevdirs: []}
         }
         this.prevdirs = window.albumListConfig.prevdirs;
 
         this.albumsContextmenu = null;
         this.state = {
             items: [],
-            modalIsOpen: false
+            modalIsOpen: false,
+            floatingIsOpen: false
         };
-        let curdir="/";
-        if (this.prevdirs.length>0)curdir=this.prevdirs.pop();
+        let curdir = "/";
+        if (this.prevdirs.length > 0) curdir = this.prevdirs.pop();
         this.getDirectoryContents(curdir);
         this.getUpOneDirectory = this.getUpOneDirectory.bind(this);
     }
+
     componentDidMount() {
         let rect = ReactDOM.findDOMNode(this)
             .getBoundingClientRect();
@@ -200,7 +202,7 @@ class AlbumList extends CommonList {
     }
 
 
-        getDirectoryContents(dir) {
+    getDirectoryContents(dir) {
         mpd_client.getDirectoryContents(dir, (directory_contents) => {
             let myTotalList = [];
             let mylist = [];
@@ -219,12 +221,11 @@ class AlbumList extends CommonList {
                 this.totalList = myTotalList;
                 this.prevdirs = this.prevdirs.concat(dir);
                 //save state to global variable
-                window.albumListConfig.prevdirs=this.prevdirs;
+                window.albumListConfig.prevdirs = this.prevdirs;
 
                 this.setState({
                     items: mylist, showPopup: false
                 });
-                this.scroll.scrollToY(0);
             } else {
                 mpd_client.addSongToQueueByFile(dir);
                 notifyMessage("add dir:" + lastPart(dir));
@@ -274,7 +275,8 @@ class AlbumList extends CommonList {
 
             this.setState({
                 items: this.state.items,
-                modalIsOpen: true
+                modalIsOpen: true,
+                floatingIsOpen: this.state.floatingIsOpen
             });
         }
     }
@@ -286,7 +288,8 @@ class AlbumList extends CommonList {
     closeAlbumPopup(e) {
         this.setState({
             items: this.state.items,
-            modalIsOpen: false
+            modalIsOpen: false,
+            floatingIsOpen: this.state.floatingIsOpen
         });
     }
 
@@ -303,6 +306,7 @@ class AlbumList extends CommonList {
     getUpOneDirectory() {
         console.log("up");
         if (this.prevdirs.length > 1) {
+            goHome();
             this.prevdirs.pop();
             let dir = this.prevdirs[this.prevdirs.length - 1];
             this.prevdirs.pop();
@@ -311,22 +315,36 @@ class AlbumList extends CommonList {
     }
 
 
+    /**
+     * display float-menu yes or no
+     */
+    floatToggle() {
+        this.setState({
+            items: this.state.items,
+            modalIsOpen: this.state.modalIsOpen,
+            floatingIsOpen: !this.state.floatingIsOpen
+        });
+
+    }
 
     render() {
-        let {width, height} = getDimensions();
-        let myScrollbar = {
-            margin: 0,
-            //width: width,
-            height: height - this.top-35,
-        };
 
-        return (//<ReactScrollbar style={myScrollbar}  speed={90}  ref={(c) => { this.scroll = c; }}>
+        let floatMenu = floatingMenu([{
+            text: "<", f: () => {
+                this.floatToggle();
+                this.getUpOneDirectory()
+            }
+        }, {
+            text: "^", f: () => {
+                this.floatToggle();
+                goHome()
+            }
+        }]);
 
-
+        return (
             <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/>
-                <FloatingButton  action={this.getUpOneDirectory} text="&larr;" level={0}/>
-                <FloatingButton  action={()=>{goHome()}} text="&uarr;" level={1}/>
-
+                {this.state.floatingIsOpen ? floatMenu : null}
+                <FloatingButton ref="3" action={this.floatToggle.bind(this)} text="+" level={0}/>
                 <ToastContainer/>
                 <ul>
                     {this.state.items.map((listValue, i) => {
@@ -349,9 +367,7 @@ class AlbumList extends CommonList {
                     : null
                 }
             </div>
-
-
-                )
+        )
     }
 }
 

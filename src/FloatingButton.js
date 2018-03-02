@@ -32,4 +32,10 @@ class FloatingButton extends Component {
     }
 }
 
-export default FloatingButton;
+function floatingMenu(menuItems){
+    return (<div>{menuItems.map((menuItem, i) => {
+        return <FloatingButton  action={menuItem.f} text= {menuItem.text} ref={i} level={i+1}/>
+    })}</div>)
+}
+
+export {FloatingButton,floatingMenu};
