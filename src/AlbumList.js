@@ -176,6 +176,7 @@ class AlbumList extends CommonList {
         super(props);
         this.selection = -1;
         this.totalList = [];
+        this.openPath="";
         this.top = 300;
         this.albumsContextmenu = null;
         this.state = {
@@ -208,13 +209,11 @@ class AlbumList extends CommonList {
     baseDir(){
         let curdir= "/";
         //if (this.prevdirs.length > 0) curdir = this.prevdirs.pop();
-        console.log("curdir:",curdir);
         return curdir;
     }
 
 
     getDirectoryContents(dir) {
-        console.log("get:",dir);
         mpd_client.getDirectoryContents(dir, (directory_contents) => {
             let myTotalList = [];
             let mylist = [];
@@ -239,7 +238,6 @@ class AlbumList extends CommonList {
                     items: mylist, showPopup: false
                 });
             } else {
-                console.log("add:",dir);
                 mpd_client.addSongToQueueByFile(dir);
 
                 notifyMessage("add dir:" + lastPart(dir));
@@ -249,6 +247,10 @@ class AlbumList extends CommonList {
 
     }
 
+    getFilePathCallback(index,doAction) {
+        let path = this.getFilePath(this.selection);
+        doAction(path);
+    }
 
     getFilePath(index) {
         let str = this.totalList[index].mpd_file_path;
@@ -269,30 +271,31 @@ class AlbumList extends CommonList {
     };
 
     contextResult(choice) {
-        let path = this.getFilePath(this.selection);
+        this.getFilePathCallback(this.selection,
+            (path)=> {
+                if (choice === "Add") {
+                    mpd_client.addSongToQueueByFile(path);
+                }
+                if (choice === "Add and Play") {
+                    let len = mpd_client.getQueue().getSongs().length;
+                    mpd_client.addSongToQueueByFile(path);
+                    mpd_client.play(len);
+                }
+                if (choice === "Replace and Play") {
+                    mpd_client.clearQueue();
+                    mpd_client.addSongToQueueByFile(path);
+                    mpd_client.play(0);
 
-        if (choice === "Add") {
-            mpd_client.addSongToQueueByFile(path);
-        }
-        if (choice === "Add and Play") {
-            let len = mpd_client.getQueue().getSongs().length;
-            mpd_client.addSongToQueueByFile(path);
-            mpd_client.play(len);
-        }
-        if (choice === "Replace and Play") {
-            mpd_client.clearQueue();
-            mpd_client.addSongToQueueByFile(path);
-            mpd_client.play(0);
-
-        }
-        if (choice === "Info Album") {
-
-            this.setState({
-                items: this.state.items,
-                modalIsOpen: true,
-                floatingIsOpen: this.state.floatingIsOpen
+                }
+                if (choice === "Info Album") {
+                    this.openPath=path;
+                    this.setState({
+                        items: this.state.items,
+                        modalIsOpen: true,
+                        floatingIsOpen: this.state.floatingIsOpen
+                    });
+                }
             });
-        }
     }
 
     /**
@@ -379,7 +382,7 @@ class AlbumList extends CommonList {
                     })}
                 </ul>
                 {this.state.modalIsOpen ?
-                    <PopupAlbum album={this.getFilePath(this.selection)}
+                    <PopupAlbum album={this.openPath}
                                 closeAlbumPopup={this.closeAlbumPopup.bind(this)}/>
                     : null
                 }
