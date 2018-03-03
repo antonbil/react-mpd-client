@@ -32,6 +32,7 @@
     "webpack-dev-server": "^1.16.2"
   },
   "devDependencies": {
-    "@fdmg/ts-react-image-button": "^1.0.24"
+    "@fdmg/ts-react-image-button": "^1.0.24",
+    "react-dom-parser": "^0.1.7"
   }
 }

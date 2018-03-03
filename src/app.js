@@ -3,7 +3,8 @@ import React , { Component } from 'react';
 import ReactObserver from 'react-event-observer';
 import Tabs from 'react-simpletabs';
 import * as Mpd from '../MPD.js/mpd.js';
-import AlbumList from './AlbumList.js';
+import FavsList from './FavsList.js';
+import {AlbumList} from './AlbumList.js';
 import PlayList from './Playlist.js';
 import PlaylistList from './PlaylistList.js';
 import SearchTotal from './SearchTotal.js';
@@ -38,9 +39,12 @@ ReactDOM.render(
         <Tabs.Panel title='Play'>
           <div><PlayList /></div>
         </Tabs.Panel>
-        <Tabs.Panel title='Albums'>
-          <div><AlbumList /></div>
+        <Tabs.Panel title='Favs'>
+          <div><FavsList /></div>
         </Tabs.Panel>
+              <Tabs.Panel title='Albums'>
+                  <div><AlbumList /></div>
+              </Tabs.Panel>
         <Tabs.Panel title='Lists'>
           <PlaylistList />
         </Tabs.Panel>

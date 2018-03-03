@@ -39,7 +39,7 @@ function makeFileListElement(content) {
 }
 
 /**
- * display mesaage on bottom of screen
+ * display message on bottom of screen
  * @param message
  */
 let notifyMessage = function (message) {
@@ -177,32 +177,44 @@ class AlbumList extends CommonList {
         this.selection = -1;
         this.totalList = [];
         this.top = 300;
-        //global variable window.albumListConfig to store state of AlbumList
-        if (typeof window.albumListConfig === 'undefined' || window.albumListConfig === null) {
-            window.albumListConfig = {prevdirs: []}
-        }
-        this.prevdirs = window.albumListConfig.prevdirs;
-
         this.albumsContextmenu = null;
         this.state = {
             items: [],
             modalIsOpen: false,
             floatingIsOpen: false
         };
-        let curdir = "/";
-        if (this.prevdirs.length > 0) curdir = this.prevdirs.pop();
-        this.getDirectoryContents(curdir);
-        this.getUpOneDirectory = this.getUpOneDirectory.bind(this);
     }
 
     componentDidMount() {
+        this.prevdirs = this.getPrevDirs();
+
+        let curdir = this.baseDir();
+        if (this.prevdirs.length > 0) curdir = this.prevdirs.pop();
+        this.getDirectoryContents(curdir);
+        this.getUpOneDirectory = this.getUpOneDirectory.bind(this);
         let rect = ReactDOM.findDOMNode(this)
             .getBoundingClientRect();
         this.top = rect.top;
     }
 
+    getPrevDirs(){
+        //global variable window.favsListConfig to store state of AlbumList
+        if (typeof window.albumListConfig === 'undefined' || window.albumListConfig === null) {
+            window.albumListConfig = {prevdirs: []}
+        }
+        return window.albumListConfig.prevdirs;
+
+    }
+    baseDir(){
+        let curdir= "/";
+        //if (this.prevdirs.length > 0) curdir = this.prevdirs.pop();
+        console.log("curdir:",curdir);
+        return curdir;
+    }
+
 
     getDirectoryContents(dir) {
+        console.log("get:",dir);
         mpd_client.getDirectoryContents(dir, (directory_contents) => {
             let myTotalList = [];
             let mylist = [];
@@ -227,7 +239,9 @@ class AlbumList extends CommonList {
                     items: mylist, showPopup: false
                 });
             } else {
+                console.log("add:",dir);
                 mpd_client.addSongToQueueByFile(dir);
+
                 notifyMessage("add dir:" + lastPart(dir));
                 //no items, display context menu
             }
@@ -326,6 +340,10 @@ class AlbumList extends CommonList {
 
     }
 
+    getImagePath(path){
+        return getImagePath(path);
+    }
+
     render() {
 
         let floatMenu = floatingMenu([{
@@ -347,7 +365,7 @@ class AlbumList extends CommonList {
                 <ToastContainer/>
                 <ul>
                     {this.state.items.map((listValue, i) => {
-                        let path = getImagePath("/" + this.totalList[i].mpd_file_path);
+                        let path = this.getImagePath("/" + this.totalList[i].mpd_file_path);
                         return <div key={i} className="list-item" onClick={() => {
                             this.addDirectoryContentsToQueue(i);
                         }} onContextMenu={(e) => {
@@ -370,4 +388,4 @@ class AlbumList extends CommonList {
     }
 }
 
-export default AlbumList;
+export {AlbumList,notifyMessage,lastPart};
