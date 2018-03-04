@@ -15,6 +15,9 @@ class FloatingButton extends Component {
         this.horizontalLevel=props.horizontalLevel ? props.horizontalLevel : 0;
         this.action=props.action;
         this.text=props.text;
+        console.log(this.text);
+        this.image=props.image?props.image:null;
+
         this.level=props.level;
     }
 
@@ -34,18 +37,34 @@ class FloatingButton extends Component {
             bottom:bottom,
             right:right
         };
+        /*
+            height:imgsize/4,
+    width:imgsize/4,
+    "margin-top":imgsize/4,
+    "margin-left":imgsize/4
+ */
+        let margin=imgsize/4;
+        if (this.text.type=="img")//not text, image is on button
+            margin=imgsize/8;
         this.textStyle = {
 
             "font-size":(imgsize/3)*2,
             "vertical-align": "middle",
             position:"relative",
-            "margin-top":imgsize/4
+            "margin-top":margin
         };
+        try {
+            this.text.width = imgsize / 4;
+            this.text.height = imgsize / 4;
+        } catch(e){}
+        let content=this.text;
+        if (this.image)
+            content=this.image;
 
         return (
             <div >
                 <div  className="floating-button"  style={this.imgStyle} onClick={this.action}>
-                    <div className="plus"  style={this.textStyle}>{this.text}</div>
+                    <div className="plus"  style={this.textStyle}>{this.props.image}{content}</div>
                 </div>
             </div>
         )

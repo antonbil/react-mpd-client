@@ -84,6 +84,7 @@ class HeaderButtons extends React.Component {
         let  path=current_song.getPath();
         path=path.substring(0, path.lastIndexOf("/"));
         let  song="";
+        window.mpdjsconfig.playstate=state.playstate;
         if(current_song){
             song=stringFormat("({0}){1}",[padDigits(current_song.getTrack(),2),current_song.getDisplayName()]);
         }
@@ -117,38 +118,24 @@ class HeaderButtons extends React.Component {
 
     render() {
         let {width, height} = getDimensions();
-        let minHeight=200;
-        if (window.mpdreactfontlarge)minHeight=300;
+        let minHeight=130;
+        if (window.mpdreactfontlarge)minHeight=280;
         let myScrollbar = {
             margin: 0,
+            "background-color": 'white',
 
             height: minHeight,
         };
         let  s = {
-            background: 'white'
+            "background-color": 'white'
         };
         let imagePath=getImagePath("/"+this.state.path);
         //<Sticky>
         return (<Sticky>
             <ReactScrollbar style={myScrollbar}>
                 <header  style={s}>
-                    <div><Img src={imagePath}  className="header-image" /><ImageButton
-                        src={"img/previous.png"}
-                        onClick={this.prev.bind(this)}
-                        className="image-btn btn"
-                        alt="Special button"
-                    /><ShowTime  onRef={ref => (this.showTime = ref)}/>
-                        <ImageButton
-                        src={this.state.playing ?  "img/play.png":"img/pause.png"}
-                        onClick={this.handleClick.bind(this)}
-                        className="image-btn btn"
-                        alt="Special button"
-                    /><ImageButton
-                        src={"img/next.png"}
-                        onClick={this.next.bind(this)}
-                        className="image-btn btn"
-                        alt="Special button"
-                    /><br/><div>{this.state.songName}</div></div>
+                    <div><Img src={imagePath}  className="header-image" /><ShowTime  onRef={ref => (this.showTime = ref)}/>
+                        <div>{this.state.songName}</div></div>
                     <div className="header-artist">{this.artist}</div></header>
             </ReactScrollbar>
             </Sticky>
