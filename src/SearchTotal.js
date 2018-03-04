@@ -4,6 +4,7 @@ import {getImagePath} from "./Utils";
 import React from "react";
 import {ContextMenu2} from './ContextMenu.js';
 import Img from 'react-image';
+import {BasicFloatingMenu} from "./FloatingButton";
 
 class SearchList extends CommonList {
     constructor(props) {
@@ -204,7 +205,8 @@ class SearchTotal extends React.Component {
     render() {
         return (
             <div>
-                <SearchForm  onRef={ref => (this.searchForm = ref)} /><SearchList  onRef={ref => (this.searchList = ref)} /></div>
+                <SearchForm  onRef={ref => (this.searchForm = ref)} /><SearchList  onRef={ref => (this.searchList = ref)} />
+            <BasicFloatingMenu/></div>
         )
     }
 }

@@ -1,5 +1,6 @@
 /*VolumeSlider*/
 import React , { Component } from 'react';
+import {goHome} from "./Utils";
 
 
 /**
@@ -82,4 +83,65 @@ function floatingSubMenu(menuItems,verticalLevel){
         return <FloatingButton  action={menuItem.f} text= {menuItem.text} key={i} level={verticalLevel} horizontalLevel={i+1}/>
     })}</div>)
 }
-export {FloatingButton,floatingMenu,floatingSubMenu};
+function getImg(location){
+    return <img src={location} width={window.mpdjsconfig.itemheight/2} height={window.mpdjsconfig.itemheight/2}/>
+}
+
+
+class FloatingPlayButtons extends Component {
+    constructor(props) {
+        super(props);
+        this.level=props.level;
+        this.state={subMenu:false};
+        this.floatToggle.bind(this);
+    }
+    floatToggle(){
+        this.setState({subMenu:!this.state.subMenu})
+    }
+    render() {
+        let subMenu=this.state.subMenu?floatingSubMenu([{
+            text: getImg('img/next.png'), f: () => {
+                this.floatToggle();
+                mpd_client.next();
+            }
+        },{
+            text:getImg('img/play.png'), f: () => {
+                this.floatToggle();
+
+                if (window.mpdjsconfig.playstate=="play")
+                    mpd_client.pause();
+                else
+                    mpd_client.play();
+            }
+        }, {
+            text: getImg('img/previous.png'), f: () => {
+                this.floatToggle();
+                mpd_client.previous();
+            }
+        }],this.level):null;
+        return (
+            <div >
+                <FloatingButton  action={()=>this.floatToggle()} text= {"P"} level={this.level}/>{subMenu}
+            </div>
+        )
+    }
+}
+class  BasicFloatingMenu extends Component {
+    constructor(props) {
+        super(props);
+        this.state={subMenu:false};
+    }
+    toggleSubMenu(){
+        this.setState({subMenu:!this.state.subMenu})
+    }
+
+    render() {
+        let subMenu=this.state.subMenu?<div>
+            <FloatingPlayButtons  level={1}/>
+            <FloatingButton  action={()=>{goHome()}} text= {getImg('img/home2.png')} level={2}/>
+        </div>:null;
+        return <div><FloatingButton  action={()=>{this.toggleSubMenu()}} text="+" level={0}/>{subMenu}</div>
+    }
+}
+
+export {FloatingButton,floatingMenu,floatingSubMenu,FloatingPlayButtons,BasicFloatingMenu};

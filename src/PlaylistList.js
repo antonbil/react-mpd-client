@@ -2,6 +2,7 @@
 import React from "react";
 import CommonList from "./CommonList";
 import {ContextMenu2} from './ContextMenu.js';
+import {BasicFloatingMenu} from "./FloatingButton";
 
 class PlaylistList extends CommonList {
     constructor(props) {
@@ -67,7 +68,7 @@ class PlaylistList extends CommonList {
                     {this.state.items.map((listValue,i)=>{
                         return <li key={i} onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} style={this.listStyle}>{listValue}</li>;
                     })}
-                </ul></div>
+                </ul><BasicFloatingMenu/></div>
         )
     }
 }

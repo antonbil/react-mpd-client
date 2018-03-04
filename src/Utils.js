@@ -1,3 +1,4 @@
+import React  from 'react';
 function padDigits(number, digits) {
     try {
         if (!(number === parseInt(number, 10))) {
@@ -50,4 +51,9 @@ function stringFormat(formatString, replacementArray) {
     );
 }
 
-export{padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome}
+function getImg(location){
+    return <img src={location} width={window.mpdjsconfig.itemheight/2} height={window.mpdjsconfig.itemheight/2}/>
+}
+
+
+export{padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome,getImg}

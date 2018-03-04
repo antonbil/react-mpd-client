@@ -14,6 +14,7 @@ import VolumeSlider from './VolumeSlider';
 
 import ReactScrollbar from 'react-scrollbar-js';
 import {getDimensions} from "./Utils";
+import {BasicFloatingMenu, FloatingPlayButtons} from "./FloatingButton";
 
 //pictures at: http://192.168.2.8:8081/FamilyMusic/.....
 //define global variables
@@ -61,6 +62,7 @@ ReactDOM.render(
         <div>
           <VolumeSlider />
             < SelectServer />
+            <FloatingPlayButtons  level={0}/>
           </div>
         </Tabs.Panel>
       </Tabs>
