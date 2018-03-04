@@ -7,7 +7,7 @@ import {padDigits, getTime, getImagePath, getDimensions, stringFormat, goHome} f
 import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
 import ReactDOM from "react-dom";
-import {FloatingButton, floatingMenu} from './FloatingButton';
+import {FloatingButton, floatingMenu,floatingSubMenu} from './FloatingButton';
 
 /**
  * returns object with properties of content
@@ -343,13 +343,42 @@ class AlbumList extends CommonList {
 
     }
 
+    floatSubToggle() {
+        this.subMenu=!this.subMenu;
+        this.setState({
+            items: this.state.items,
+            modalIsOpen: this.state.modalIsOpen,
+            floatingIsOpen: this.state.floatingIsOpen
+        });
+
+    }
     getImagePath(path){
         return getImagePath(path);
     }
-
     render() {
 
-        let floatMenu = floatingMenu([{
+        let subMenu=this.subMenu?floatingSubMenu([{
+            text: ">", f: () => {
+                this.floatToggle();
+                mpd_client.next();
+            }
+        },{
+            text: "^", f: () => {
+                this.floatToggle();
+                mpd_client.play();
+            }
+        }, {
+            text: "<", f: () => {
+                this.floatToggle();
+                mpd_client.previous();
+            }
+        }],1):null;
+
+        let floatMenu = <div>{floatingMenu([{
+            text: "P", f: () => {
+                this.floatSubToggle();
+            }
+        },{
             text: "<", f: () => {
                 this.floatToggle();
                 this.getUpOneDirectory()
@@ -359,7 +388,7 @@ class AlbumList extends CommonList {
                 this.floatToggle();
                 goHome()
             }
-        }]);
+        }])}{subMenu}</div>;
 
         return (
             <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/>
@@ -369,15 +398,15 @@ class AlbumList extends CommonList {
                 <ul>
                     {this.state.items.map((listValue, i) => {
                         let path = this.getImagePath("/" + this.totalList[i].mpd_file_path);
-                        return <div key={i} className="list-item" onClick={() => {
+                        return <div key={i} style={this.listStyle} onClick={() => {
                             this.addDirectoryContentsToQueue(i);
                         }} onContextMenu={(e) => {
                             this.selection = i;
                             this.contextMenu(e)
                         }}>
-                            <Img src={path} className="list-image-small"/>
-                            <li style={this.listStyle}>
-                                {listValue}</li>
+                            <Img src={path} className="list-image-small"  style={this.imgStyle}/>
+                            <li  style={this.textStyle}>
+                                {this.splitHyphen(listValue)}</li>
                         </div>;
                     })}
                 </ul>

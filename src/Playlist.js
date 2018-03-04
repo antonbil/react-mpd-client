@@ -111,15 +111,16 @@ class PlayList extends CommonList {
                     let  artist=null;
                     let  path=getImagePath("/"+this.totalList[i].dir);
                     if (prevPath !==path){
-                        img=<Img src={path}  className="list-image" />;
-                        artist=<div className="list-artist">{this.totalList[i].artist+"-"+this.totalList[i].album}</div>
+                        img=<Img src={path}  style={this.imgStyle}/>;
+                        artist=<div className="list-artist" style={this.textStyle}>{this.totalList[i].artist+"-"+this.totalList[i].album}</div>
                     }
                     let  time=getTime(this.totalList[i].duration);
                     prevPath=path;
-                    return <li key={i} onClick={() => { this.handleClick(i);}}
+                    return <div style={this.listStyle}>{img}<li key={i} onClick={() => { this.handleClick(i);}}
                                onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}}
-                               style={this.listStyle}>{img}
-                        <div className="list-time">{time}</div><span className="list-title">{padDigits(this.totalList[i].track,2)+" "+listValue}</span>{artist}</li>;
+                               >
+                        <div className="list-time" style={this.aligntextStyle}>{time}</div><span className="list-title" style={this.textStyle}>{padDigits(this.totalList[i].track,2)+
+                        " "+listValue}</span>{artist}</li></div>;
                 })}
             </ul></div>
         )

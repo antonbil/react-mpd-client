@@ -20,8 +20,13 @@ import {getDimensions} from "./Utils";
 window.mpd_client = new MPD(8800,"ws://"+window.server);
 console.log("mpd client:",window.mpd_client);
 window.observer = ReactObserver();
-//main display, combine all defined elements
 let {width, height} = getDimensions();
+
+if (typeof window.mpdjsconfig === 'undefined' || window.mpdjsconfig === null) {
+    window.mpdjsconfig = {}
+}
+window.mpdjsconfig.itemheight=height/11;
+
 let myScrollbar = {
     margin: 0,
     //width: width,
@@ -30,6 +35,7 @@ let myScrollbar = {
 let totalDivStyle = {
 };
 
+//main display, combine all defined elements
 ReactDOM.render(
 
     <div className="header-total"  style={totalDivStyle}>

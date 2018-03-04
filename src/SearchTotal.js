@@ -18,6 +18,7 @@ class SearchList extends CommonList {
         this.options=[];
         this.items=[];
         this.processSearchResults.bind(this);
+        this.imgStyle.margin=0;
         //this.handleClick = this.handleClick.bind(this,undefined);
     }
     setOptions(options){
@@ -106,9 +107,9 @@ class SearchList extends CommonList {
             <div><ContextMenu2  onRef={ref => (this.albumsContextmenu = ref)} /><ul>
                 {this.state.items.map((listValue,i)=>{
                     let path=getImagePath("/"+this.items[i].dirpath);
-                    return <div className="list-item" key={i+500} onClick={() =>
+                    return <div  key={i} className="list-item" key={i+500} style={this.listStyle} onClick={() =>
                     { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} >
-                        <Img src={path}  className="list-image-small" /><li key={i}  style={this.listStyle}>{listValue}</li></div>;
+                        <Img src={path}  style={this.imgStyle}/><li  style={this.textStyle}>{this.splitHyphen(listValue)}</li></div>;
                 })}
             </ul></div>
         )
