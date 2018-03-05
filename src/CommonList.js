@@ -10,9 +10,9 @@ class CommonList extends React.Component {
         };
         this.listStyle = {
             border: '3px solid #ddd',
-            'list-style-type': 'none',
+            listStyleType: 'none',
             display: 'block',
-            "min-height":window.mpdjsconfig.itemheight
+            minHeight:window.mpdjsconfig.itemheight
         };
         let imgsize=window.mpdjsconfig.itemheight*0.9;
         //margin:imgsize/9.7
@@ -26,14 +26,14 @@ class CommonList extends React.Component {
         };
         this.textStyle = {
 
-            "font-size":window.mpdjsconfig.itemheight/4,
-        "vertical-align": "middle"
+            fontSize:window.mpdjsconfig.itemheight/4,
+        verticalAlign: "middle"
         };
         this.aligntextStyle = {
 
             padding:window.mpdjsconfig.itemheight/6,
-            "font-size":window.mpdjsconfig.itemheight/4,
-            "vertical-align": "middle"
+            fontSize:window.mpdjsconfig.itemheight/4,
+            verticalAlign: "middle"
         };
         this.handleClick = this.handleClick.bind(this);
         this.contextMenu = this.contextMenu.bind(this);

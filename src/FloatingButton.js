@@ -15,10 +15,11 @@ class FloatingButton extends Component {
         super(props);
         this.horizontalLevel=props.horizontalLevel ? props.horizontalLevel : 0;
         this.action=props.action;
-        this.text=props.text;
-        console.log(this.text);
-        this.image=props.image?props.image:null;
 
+        if (props.img){
+            this.text=getImg(props.img);
+        } else
+            this.text=props.text;
         this.level=props.level;
     }
 
@@ -45,27 +46,25 @@ class FloatingButton extends Component {
     "margin-left":imgsize/4
  */
         let margin=imgsize/4;
-        if (this.text.type=="img")//not text, image is on button
-            margin=imgsize/8;
+        try {
+            if (this.text.type == "img")//not text, image is on button
+                margin = imgsize / 8;
+        }catch(e){}
         this.textStyle = {
-
-            "font-size":(imgsize/3)*2,
-            "vertical-align": "middle",
+            fontSize:(imgsize/3)*2,
+            verticalAlign: "middle",
             position:"relative",
-            "margin-top":margin
+            marginTop:margin
         };
         try {
             this.text.width = imgsize / 4;
             this.text.height = imgsize / 4;
         } catch(e){}
-        let content=this.text;
-        if (this.image)
-            content=this.image;
 
         return (
             <div >
                 <div  className="floating-button"  style={this.imgStyle} onClick={this.action}>
-                    <div className="plus"  style={this.textStyle}>{this.props.image}{content}</div>
+                    <div className="plus"  style={this.textStyle}>{this.props.image}{this.text}</div>
                 </div>
             </div>
         )
@@ -74,13 +73,13 @@ class FloatingButton extends Component {
 
 function floatingMenu(menuItems){
     return (<div>{menuItems.map((menuItem, i) => {
-        return <FloatingButton  action={menuItem.f} text= {menuItem.text} key={i} level={i+1}/>
+        return <FloatingButton  action={menuItem.f} text= {menuItem.text} img= {menuItem.img} key={i} level={i+1}/>
     })}</div>)
 }
 
 function floatingSubMenu(menuItems,verticalLevel){
     return (<div>{menuItems.map((menuItem, i) => {
-        return <FloatingButton  action={menuItem.f} text= {menuItem.text} key={i} level={verticalLevel} horizontalLevel={i+1}/>
+        return <FloatingButton  action={menuItem.f} text= {menuItem.text} img= {menuItem.img} key={i} level={verticalLevel} horizontalLevel={i+1}/>
     })}</div>)
 }
 function getImg(location){

@@ -3,7 +3,6 @@ import {getDimensions, getImagePath, getTime,stringFormat,padDigits} from "./Uti
 import React from "react";
 import Sticky from 'react-sticky-el';
 import Img from 'react-image';
-import ImageButton from 'fdmg-ts-react-image-button';
 import ReactScrollbar from 'react-scrollbar-js';
 
 class ShowTime extends React.Component {
@@ -85,6 +84,9 @@ class HeaderButtons extends React.Component {
         path=path.substring(0, path.lastIndexOf("/"));
         let  song="";
         window.mpdjsconfig.playstate=state.playstate;
+        try {
+            window.mpdjsconfig.currentsong = state.current_song.queue_idx;
+        }catch(e){}
         if(current_song){
             song=stringFormat("({0}){1}",[padDigits(current_song.getTrack(),2),current_song.getDisplayName()]);
         }
@@ -122,12 +124,12 @@ class HeaderButtons extends React.Component {
         if (window.mpdreactfontlarge)minHeight=280;
         let myScrollbar = {
             margin: 0,
-            "background-color": 'white',
+            backgroundColor: 'white',
 
             height: minHeight,
         };
         let  s = {
-            "background-color": 'white'
+            backgroundColor: 'white'
         };
         let imagePath=getImagePath("/"+this.state.path);
         //<Sticky>

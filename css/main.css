@@ -88,6 +88,9 @@ ul li:last-child {
     .list-title{
         margin-right:10px;
     }
+    .list-playing{
+        background-color:#f5f5f0;
+    }
 
 .tab-panel, .tabs-navigation, .header-total{
     padding-left:5px;
@@ -138,7 +141,7 @@ input[type=checkbox]
     width: 55px;
     height: 55px;
     border-radius: 50%;
-    background: #db4437;
+    background: #b8b894;
     position: fixed;
     bottom: 30px;
     right: 30px;

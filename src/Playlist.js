@@ -19,6 +19,7 @@ class PlayList extends CommonList {
         this.state = {
             items: []
         };
+        this.queueId=-1;
         //this.handleClick = this.handleClick.bind(this,undefined);
     }
     componentDidMount() {
@@ -35,7 +36,21 @@ class PlayList extends CommonList {
             this.updateQueue(data);
 
         });
+        this.listenerState = observer.subscribe('StateChanged',(data)=>{
+            this.updateState(data.state,data.client);
+        });
 
+    }
+    updateState(state,client){
+        let id=state.current_song.queue_idx;
+        if (this.queueId!=id){
+            this.queueId=id;
+            this.setState(this.state);
+        }
+    }
+    componentWillUnmount(){
+        this.listenerState.unsubscribe();
+        this.listener.unsubscribe();
     }
     updateQueue(queue){
         //console.log("update queue:",queue.getSongs());
@@ -114,12 +129,16 @@ class PlayList extends CommonList {
                         img=<Img src={path}  style={this.imgStyle}/>;
                         artist=<div className="list-artist" style={this.textStyle}>{this.totalList[i].artist+"-"+this.totalList[i].album}</div>
                     }
+                    let current="";
+                    if (window.mpdjsconfig.currentsong==i)
+                        current="list-playing";
                     let  time=getTime(this.totalList[i].duration);
                     prevPath=path;
-                    return <div style={this.listStyle}>{img}<li key={i} onClick={() => { this.handleClick(i);}}
+                    return <div style={this.listStyle} key={i} className={current}>{img}<li onClick={() => { this.handleClick(i);}}
                                onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}}
                                >
-                        <div className="list-time" style={this.aligntextStyle}>{time}</div><span className="list-title" style={this.textStyle}>{padDigits(this.totalList[i].track,2)+
+                        <div className="list-time" style={this.aligntextStyle}>{time}</div><span className={"list-title"}
+                                                                                                 style={this.textStyle}>{padDigits(this.totalList[i].track,2)+
                         " "+listValue}</span>{artist}</li></div>;
                 })}
             </ul></div>

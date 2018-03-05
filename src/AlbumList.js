@@ -356,18 +356,15 @@ class AlbumList extends CommonList {
         return getImagePath(path);
     }
 
-    getImg(location){
-        return <img src={location} width={window.mpdjsconfig.itemheight/2} height={window.mpdjsconfig.itemheight/2}/>
-    }
     render() {
 
         let subMenu=this.subMenu?floatingSubMenu([{
-            text: this.getImg('img/next.png'), f: () => {
+            img: 'img/next.png', f: () => {
                 this.floatToggle();
                 mpd_client.next();
             }
         },{
-            text:this.getImg('img/play.png'), f: () => {
+            img: 'img/play.png', f: () => {
                 this.floatToggle();
 
                 if (window.mpdjsconfig.playstate=="play")
@@ -376,7 +373,7 @@ class AlbumList extends CommonList {
                     mpd_client.play();
             }
         }, {
-            text: this.getImg('img/previous.png'), f: () => {
+            img: 'img/previous.png', f: () => {
                 this.floatToggle();
                 mpd_client.previous();
             }
@@ -387,12 +384,12 @@ class AlbumList extends CommonList {
                 this.floatSubToggle();
             }
         },{
-            text: this.getImg('img/back.png'), f: () => {
+            img: 'img/back.png', f: () => {
                 this.floatToggle();
                 this.getUpOneDirectory()
             }
         }, {
-            text: this.getImg('img/home2.png'), f: () => {
+            img: 'img/home2.png', f: () => {
                 this.floatToggle();
                 goHome()
             }

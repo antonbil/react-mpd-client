@@ -51,9 +51,5 @@ function stringFormat(formatString, replacementArray) {
     );
 }
 
-function getImg(location){
-    return <img src={location} width={window.mpdjsconfig.itemheight/2} height={window.mpdjsconfig.itemheight/2}/>
-}
 
-
-export{padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome,getImg}
+export{padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome}
