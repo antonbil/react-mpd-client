@@ -115,7 +115,9 @@ class PlayList extends CommonList {
             //width: width,
             height: height - this.top-20,
         };
-
+        let listPlayingStyle = {
+            backgroundColor: global.get("backgroundPlaying")
+        };
         let  prevPath="";//<ReactScrollbar className="playlist" style={myScrollbar} speed={90}>
         return (
 
@@ -129,12 +131,16 @@ class PlayList extends CommonList {
                         img=<Img src={path}  style={this.imgStyle}/>;
                         artist=<div className="list-artist" style={this.textStyle}>{this.totalList[i].artist+"-"+this.totalList[i].album}</div>
                     }
+                    let ls={};
+                    Object.assign(ls, this.listStyle)   ;
                     let current="";
-                    if (global.get("currentsong")==i)
-                        current="list-playing";
+                    if (global.get("currentsong")==i) {
+                        current = "list-playing";
+                        Object.assign(ls, listPlayingStyle)
+                    }
                     let  time=getTime(this.totalList[i].duration);
                     prevPath=path;
-                    return <div style={this.listStyle} key={i} className={current}>{img}<li onClick={() => { this.handleClick(i);}}
+                    return <div style={ls} key={i} >{img}<li onClick={() => { this.handleClick(i);}}
                                onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}}
                                >
                         <div className="list-time" style={this.aligntextStyle}>{time}</div><span className={"list-title"}

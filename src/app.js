@@ -29,6 +29,13 @@ class Main extends React.Component {
         global.set("itemheight",height / 11);
         global.set("observer",this.observer);
         global.set("fontlarge",window.mpdreactfontlarge);
+        //global color-settings for theme
+        global.set("backgroundColor",'white');
+        global.set("color","#212529");
+        global.set("backgroundPlaying","#f5f5f0");
+        //global.set("backgroundColor",'#212529');
+        //global.set("color","white");
+        //global.set("backgroundPlaying","#454540");
 
         /*connect observer to mpd-client*/
         this.mpd_client.on('StateChanged', (state, client) => {
@@ -48,6 +55,8 @@ class Main extends React.Component {
 
     render() {
         //main display, combine all defined elements
+        document.body.style.backgroundColor=global.get("backgroundColor");
+        document.body.style.color=global.get("color");
         return <div className="header-total">
 
             <HeaderButtons/>

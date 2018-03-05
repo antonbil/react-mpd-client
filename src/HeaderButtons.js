@@ -124,13 +124,24 @@ class HeaderButtons extends React.Component {
         if (global.get("fontlarge"))minHeight=280;
         let myScrollbar = {
             margin: 0,
-            backgroundColor: 'white',
+            backgroundColor: global.get("backgroundColor"),
+            color: global.get("color"),
 
             height: minHeight,
         };
         let  s = {
-            backgroundColor: 'white'
+            backgroundColor: global.get("backgroundColor")
         };
+        /*let myScrollbar = {
+            margin: 0,
+            backgroundColor: '#212529',
+            color: "#white",
+
+            height: minHeight,
+        };
+        let  s = {
+            backgroundColor: '#212529'
+        };  */
         let imagePath=getImagePath("/"+this.state.path);
         //<Sticky>
         return (<Sticky>
