@@ -32,7 +32,7 @@ class FloatingButton extends Component {
         };
         //margin:imgsize/9.7
         this.imgStyle = {
-
+            backgroundColor:global.get("backgroundFloat"),
             height:imgsize,
             width:imgsize,
             margin:imgsize/9.7,

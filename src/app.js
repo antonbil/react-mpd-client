@@ -10,10 +10,12 @@ import PlaylistList from './PlaylistList.js';
 import SearchTotal from './SearchTotal.js';
 import HeaderButtons from './HeaderButtons';
 import SelectServer from './SelectServer';
+import {SelectSkin,setColourDefaults} from './SelectSkin';
 import VolumeSlider from './VolumeSlider';
 
 import {global,getDimensions} from "./Utils";
 import {FloatingPlayButtons} from "./FloatingButton";
+import cookie from "react-cookies";
 
 class Main extends React.Component {
     constructor(props) {
@@ -30,9 +32,13 @@ class Main extends React.Component {
         global.set("observer",this.observer);
         global.set("fontlarge",window.mpdreactfontlarge);
         //global color-settings for theme
-        global.set("backgroundColor",'white');
-        global.set("color","#212529");
-        global.set("backgroundPlaying","#f5f5f0");
+        let skin="day";
+        let skincookie=cookie.load("skin");
+        if (!(skincookie==undefined))
+            skin=skincookie;
+        console.log("skincookie",skincookie);
+        //
+        setColourDefaults(skin);
         //global.set("backgroundColor",'#212529');
         //global.set("color","white");
         //global.set("backgroundPlaying","#454540");
@@ -50,8 +56,12 @@ class Main extends React.Component {
             //console.log("Playlists Changed:",playlists);
             this.observer.publish('PlaylistsChanged', playlists);
         });
+        this.renderlistener = this.observer.subscribe('Render',(data)=>{
+            //console.log('StateChanged is: ',data);
+            console.log("re-render main");
+            this.setState({});
+        });
     }
-
 
     render() {
         //main display, combine all defined elements
@@ -80,6 +90,7 @@ class Main extends React.Component {
                     <div>
                         <VolumeSlider/>
                         < SelectServer/>
+                        < SelectSkin />
                         <FloatingPlayButtons level={0}/>
                     </div>
                 </Tabs.Panel>

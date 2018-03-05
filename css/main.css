@@ -41,6 +41,7 @@ ul li:last-child {
         padding: 6px 50px 5px 10px;
         min-width: 160px;
         cursor: default;
+        color:black;
         font-size: 12px;
         }
         .contextMenu--option:hover {
@@ -82,7 +83,7 @@ ul li:last-child {
         float:right;
         width:100px;
         height:100px;
-        padding-right: 15px;
+        margin-right: 15px;
 
     }
     .list-title{
