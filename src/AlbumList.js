@@ -7,10 +7,7 @@ import {padDigits, getTime, getImagePath, getDimensions, stringFormat, goHome} f
 import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
 import ReactDOM from "react-dom";
-import {
-    homeButton, FloatingButton, floatingMenu, floatingSubMenu, FloatingPlayButtons,
-    startButton
-} from './FloatingButton';
+import {AlbumFloatingMenu} from './FloatingButton';
 
 /**
  * returns object with properties of content
@@ -170,28 +167,6 @@ let lastPart = function (path) {
     path = path.substr(path.lastIndexOf('/') + 1);
     return path;
 };
-
-class AlbumFloatingMenu extends Component {
-    constructor(props) {
-        super(props);
-        this.back = props.back;
-        this.state = {subMenu: false};
-    }
-
-    toggleSubMenu() {
-        this.setState({subMenu: !this.state.subMenu})
-    }
-
-    render() {
-        let subMenu = this.state.subMenu ?
-            <div>
-                <FloatingPlayButtons level={1}/>
-                <FloatingButton action={this.back} img='img/back.png' level={2}/>
-                {homeButton(3)}
-            </div> : null;
-        return <div>{startButton(this.toggleSubMenu.bind(this))}{subMenu}</div>
-    }
-}
 
 /**
  * display contents of directory in Listview

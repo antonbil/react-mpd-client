@@ -124,7 +124,7 @@ class FloatingPlayButtons extends Component {
         }],this.level):null;
         return (
             <div >
-                <FloatingButton  action={()=>this.floatToggle()} text= {"P"} level={this.level}/>{subMenu}
+                <FloatingButton  action={()=>this.floatToggle()} img="img/playmenu.png" level={this.level}/>{subMenu}
             </div>
         )
     }
@@ -132,7 +132,7 @@ class FloatingPlayButtons extends Component {
 function startButton(f){
     return <FloatingButton action={() => {
         goHome()
-    }} level={0} action={f} text="+"/>
+    }} level={0} action={f} img="img/startmenu.png"/>
 }
 class  BasicFloatingMenu extends Component {
     constructor(props) {
@@ -153,4 +153,26 @@ class  BasicFloatingMenu extends Component {
     }
 }
 
-export {startButton,homeButton,FloatingButton,floatingMenu,floatingSubMenu,FloatingPlayButtons,BasicFloatingMenu};
+class AlbumFloatingMenu extends Component {
+    constructor(props) {
+        super(props);
+        this.back = props.back;
+        this.state = {subMenu: false};
+    }
+
+    toggleSubMenu() {
+        this.setState({subMenu: !this.state.subMenu})
+    }
+
+    render() {
+        let subMenu = this.state.subMenu ?
+            <div>
+                <FloatingPlayButtons level={2}/>
+                <FloatingButton action={this.back} img='img/back.png' level={1}/>
+                {homeButton(3)}
+            </div> : null;
+        return <div>{startButton(this.toggleSubMenu.bind(this))}{subMenu}</div>
+    }
+}
+
+export {AlbumFloatingMenu,FloatingPlayButtons,BasicFloatingMenu};

@@ -3,10 +3,9 @@ import React from "react";
 import CommonList from "./CommonList";
 import {ContextMenu1} from "./ContextMenu.js";
 import Img from 'react-image';
-import ReactScrollbar from 'react-scrollbar-js';
-import {getDimensions, getImagePath, getTime, padDigits, goHome} from "./Utils";
+import {getDimensions, getImagePath, getTime, padDigits} from "./Utils";
 import ReactDOM from 'react-dom';
-import {BasicFloatingMenu, FloatingButton, FloatingPlayButtons} from './FloatingButton';
+import {BasicFloatingMenu} from './FloatingButton';
 
 class PlayList extends CommonList {
     constructor(props) {
