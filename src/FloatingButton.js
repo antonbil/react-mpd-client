@@ -1,6 +1,6 @@
 /*VolumeSlider*/
 import React , { Component } from 'react';
-import {goHome} from "./Utils";
+import {global,goHome} from "./Utils";
 
 
 /**
@@ -24,7 +24,7 @@ class FloatingButton extends Component {
     }
 
     render() {
-        let imgsize=window.mpdjsconfig.itemheight*0.9;
+        let imgsize=global.get("itemheight")*0.9;
         let bottom=30+this.level*(imgsize+10);
         let right=30+this.horizontalLevel*(imgsize+10);
         let levelStyle = {
@@ -83,7 +83,8 @@ function floatingSubMenu(menuItems,verticalLevel){
     })}</div>)
 }
 function getImg(location){
-    return <img src={location} width={window.mpdjsconfig.itemheight/2} height={window.mpdjsconfig.itemheight/2}/>
+    let itemheight=global.get("itemheight");
+    return <img src={location} width={itemheight/2} height={itemheight/2}/>
 }
 
 function homeButton(level){
@@ -97,6 +98,7 @@ class FloatingPlayButtons extends Component {
         this.level=props.level;
         this.state={subMenu:false};
         this.floatToggle.bind(this);
+        this.mpd_client=global.get("mpd_client");
     }
     floatToggle(){
         this.setState({subMenu:!this.state.subMenu})
@@ -105,21 +107,21 @@ class FloatingPlayButtons extends Component {
         let subMenu=this.state.subMenu?floatingSubMenu([{
             text: getImg('img/next.png'), f: () => {
                 this.floatToggle();
-                mpd_client.next();
+                this.mpd_client.next();
             }
         },{
             text:getImg('img/play.png'), f: () => {
                 this.floatToggle();
 
-                if (window.mpdjsconfig.playstate=="play")
-                    mpd_client.pause();
+                if (global.get("playstate")=="play")
+                    this.mpd_client.pause();
                 else
-                    mpd_client.play();
+                    this.mpd_client.play();
             }
         }, {
             text: getImg('img/previous.png'), f: () => {
                 this.floatToggle();
-                mpd_client.previous();
+                this.mpd_client.previous();
             }
         }],this.level):null;
         return (
@@ -168,7 +170,7 @@ class AlbumFloatingMenu extends Component {
         let subMenu = this.state.subMenu ?
             <div>
                 <FloatingPlayButtons level={2}/>
-                <FloatingButton action={this.back} img='img/back.png' level={1}/>
+                <FloatingButton action={this.back} img='img/back.png' level={1} key="back" />
                 {homeButton(3)}
             </div> : null;
         return <div>{startButton(this.toggleSubMenu.bind(this))}{subMenu}</div>

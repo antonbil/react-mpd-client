@@ -1,5 +1,6 @@
 /*CommonList*/
 import React from "react";
+import {global} from "./Utils";
 
 class CommonList extends React.Component {
     constructor(props) {
@@ -8,13 +9,15 @@ class CommonList extends React.Component {
         this.state = {
             items: []
         };
+        this.mpd_client=global.get("mpd_client");
+        this.itemHeight=global.get("itemheight");
         this.listStyle = {
             border: '3px solid #ddd',
             listStyleType: 'none',
             display: 'block',
-            minHeight:window.mpdjsconfig.itemheight
+            minHeight:this.itemHeight
         };
-        let imgsize=window.mpdjsconfig.itemheight*0.9;
+        let imgsize=this.itemHeight*0.9;
         //margin:imgsize/9.7
         this.imgStyle = {
 
@@ -26,13 +29,13 @@ class CommonList extends React.Component {
         };
         this.textStyle = {
 
-            fontSize:window.mpdjsconfig.itemheight/4,
+            fontSize:this.itemHeight/4,
         verticalAlign: "middle"
         };
         this.aligntextStyle = {
 
-            padding:window.mpdjsconfig.itemheight/6,
-            fontSize:window.mpdjsconfig.itemheight/4,
+            padding:this.itemHeight/6,
+            fontSize:this.itemHeight/4,
             verticalAlign: "middle"
         };
         this.handleClick = this.handleClick.bind(this);

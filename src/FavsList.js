@@ -1,6 +1,6 @@
 import {AlbumList,notifyMessage,lastPart}from "./AlbumList";
 import parser from 'react-dom-parser';
-import {getImagePath} from "./Utils";
+import {global} from "./Utils";
 
 
 // Changes XML to JSON
@@ -56,11 +56,13 @@ class FavsList extends AlbumList {
         return path.substring(1)+"folder.jpg";
     }
     getPrevDirs(){
-        //global variable window.favsListConfig to store state of AlbumList
-        if (typeof window.favsListConfig === 'undefined' || window.favsListConfig === null) {
-            window.favsListConfig = {prevdirs: []}
+        //global variable favsListConfig to store state of FavList
+        let prevdirs=global.get("favsListConfig");
+        if (typeof prevdirs === 'undefined' || prevdirs === null) {
+            prevdirs= [];
+            global.set("favsListConfig",prevdirs)
         }
-        return window.favsListConfig.prevdirs;
+        return prevdirs;
 
     }
     baseDir(){
@@ -109,14 +111,14 @@ class FavsList extends AlbumList {
                 this.totalList = elementList;
                 this.prevdirs = this.prevdirs.concat(dir);
                 //save state to global variable
-                window.favsListConfig.prevdirs = this.prevdirs;
+                global.set("favsListConfig",this.prevdirs);
 
                 this.setState({
                     items: fileList, showPopup: false
                 });
             } else {
                 this.getFilePathCallback(this.selection,(dirToAdd)=>{
-                    mpd_client.addSongToQueueByFile(dirToAdd);
+                    this.mpd_client.addSongToQueueByFile(dirToAdd);
                     notifyMessage("add dir:" + lastPart(dirToAdd));});
             }
         });

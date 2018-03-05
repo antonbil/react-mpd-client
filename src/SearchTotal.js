@@ -77,17 +77,17 @@ class SearchList extends CommonList {
         let  path=this.getFilePath(this.selection);
 
         if (choice==="Add"){
-            mpd_client.addSongToQueueByFile(path);
+            this.mpd_client.addSongToQueueByFile(path);
         }
         if (choice==="Add and Play"){
-            let  len=mpd_client.getQueue().getSongs().length;
-            mpd_client.addSongToQueueByFile(path);
-            mpd_client.play(len);
+            let  len=this.mpd_client.getQueue().getSongs().length;
+            this.mpd_client.addSongToQueueByFile(path);
+            this.mpd_client.play(len);
         }
         if (choice==="Replace and Play"){
-            mpd_client.clearQueue();
-            mpd_client.addSongToQueueByFile(path);
-            mpd_client.play(0);
+            this.mpd_client.clearQueue();
+            this.mpd_client.addSongToQueueByFile(path);
+            this.mpd_client.play(0);
 
         }
     }
@@ -101,7 +101,7 @@ class SearchList extends CommonList {
         let  path=this.items[index].path;
         this.selection=index;
         //console.log("add file:",path);
-        mpd_client.addSongToQueueByFile( path);
+        this.mpd_client.addSongToQueueByFile( path);
     }
     render() {
         return (

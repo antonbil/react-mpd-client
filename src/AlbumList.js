@@ -8,6 +8,7 @@ import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
 import ReactDOM from "react-dom";
 import {AlbumFloatingMenu} from './FloatingButton';
+import {global} from "./Utils";
 
 /**
  * returns object with properties of content
@@ -71,7 +72,8 @@ class PopupAlbum extends Component {
         this.state = {
             items: []
         };
-        mpd_client.getDirectoryContents(this.album, this.getDir.bind(this));
+        this.mpd_client=mpd_client;
+        this.mpd_client.getDirectoryContents(this.album, this.getDir.bind(this));
     }
 
     getDir(directory_contents) {
@@ -103,7 +105,7 @@ class PopupAlbum extends Component {
             notifyMessage(message);
         } catch (e) {
         }
-        mpd_client.addSongToQueueByFile(path);
+        this.mpd_client.addSongToQueueByFile(path);
     }
 
     render() {
@@ -199,11 +201,13 @@ class AlbumList extends CommonList {
     }
 
     getPrevDirs() {
-        //global variable window.favsListConfig to store state of AlbumList
-        if (typeof window.albumListConfig === 'undefined' || window.albumListConfig === null) {
-            window.albumListConfig = {prevdirs: []}
+        //global variable favsListConfig to store state of AlbumList
+        let prevdirs=global.get("albumListConfig");
+        if (typeof prevdirs === 'undefined' || prevdirs === null) {
+            prevdirs=[];
+            global.set("albumListConfig", prevdirs);
         }
-        return window.albumListConfig.prevdirs;
+        return prevdirs;
 
     }
 
@@ -215,7 +219,7 @@ class AlbumList extends CommonList {
 
 
     getDirectoryContents(dir) {
-        mpd_client.getDirectoryContents(dir, (directory_contents) => {
+        this.mpd_client.getDirectoryContents(dir, (directory_contents) => {
             let myTotalList = [];
             let mylist = [];
             directory_contents.forEach((content) => {
@@ -233,13 +237,13 @@ class AlbumList extends CommonList {
                 this.totalList = myTotalList;
                 this.prevdirs = this.prevdirs.concat(dir);
                 //save state to global variable
-                window.albumListConfig.prevdirs = this.prevdirs;
+                global.set("albumListConfig",this.prevdirs);
 
                 this.setState({
                     items: mylist, showPopup: false
                 });
             } else {
-                mpd_client.addSongToQueueByFile(dir);
+                this.mpd_client.addSongToQueueByFile(dir);
 
                 notifyMessage("add dir:" + lastPart(dir));
                 //no items, display context menu
@@ -275,17 +279,17 @@ class AlbumList extends CommonList {
         this.getFilePathCallback(this.selection,
             (path) => {
                 if (choice === "Add") {
-                    mpd_client.addSongToQueueByFile(path);
+                    this.mpd_client.addSongToQueueByFile(path);
                 }
                 if (choice === "Add and Play") {
-                    let len = mpd_client.getQueue().getSongs().length;
-                    mpd_client.addSongToQueueByFile(path);
-                    mpd_client.play(len);
+                    let len = this.mpd_client.getQueue().getSongs().length;
+                    this.mpd_client.addSongToQueueByFile(path);
+                    this.mpd_client.play(len);
                 }
                 if (choice === "Replace and Play") {
-                    mpd_client.clearQueue();
-                    mpd_client.addSongToQueueByFile(path);
-                    mpd_client.play(0);
+                    this.mpd_client.clearQueue();
+                    this.mpd_client.addSongToQueueByFile(path);
+                    this.mpd_client.play(0);
 
                 }
                 if (choice === "Info Album") {

@@ -1,5 +1,5 @@
 /*Timer*/
-import {getDimensions, getImagePath, getTime,stringFormat,padDigits} from "./Utils";
+import {global,getDimensions, getImagePath, getTime,stringFormat,padDigits} from "./Utils";
 import React from "react";
 import Sticky from 'react-sticky-el';
 import Img from 'react-image';
@@ -14,7 +14,7 @@ class ShowTime extends React.Component {
             curTime : null,
             curDuration : null
         };
-        this.listener = observer.subscribe('StateChanged',(data)=>{
+        this.listener = global.get("observer").subscribe('StateChanged',(data)=>{
             //console.log('StateChanged is: ',data);
             this.updateState(data.state,data.client);
         });
@@ -62,14 +62,14 @@ class HeaderButtons extends React.Component {
         super(props);
         this.showTime = null;
         this.state = {playing: true, songName:"", path:""};
-        this.mpd_client=mpd_client;
+        this.mpd_client=global.get("mpd_client");
         this.artist="";
 
         // This binding is necessary to make `this` work in the callback
         this.handleClick = this.handleClick.bind(this);
         this.next = this.next.bind(this);
         this.prev = this.prev.bind(this);
-        this.listener = observer.subscribe('StateChanged',(data)=>{
+        this.listener = global.get("observer").subscribe('StateChanged',(data)=>{
             this.updateState(data.state,data.client);
 
             //this.state.playing=(data.state.playstate=="play");
@@ -83,9 +83,9 @@ class HeaderButtons extends React.Component {
         let  path=current_song.getPath();
         path=path.substring(0, path.lastIndexOf("/"));
         let  song="";
-        window.mpdjsconfig.playstate=state.playstate;
+        global.set("playstate",state.playstate);
         try {
-            window.mpdjsconfig.currentsong = state.current_song.queue_idx;
+            global.set("currentsong",state.current_song.queue_idx);
         }catch(e){}
         if(current_song){
             song=stringFormat("({0}){1}",[padDigits(current_song.getTrack(),2),current_song.getDisplayName()]);
@@ -121,7 +121,7 @@ class HeaderButtons extends React.Component {
     render() {
         let {width, height} = getDimensions();
         let minHeight=130;
-        if (window.mpdreactfontlarge)minHeight=280;
+        if (global.get("fontlarge"))minHeight=280;
         let myScrollbar = {
             margin: 0,
             backgroundColor: 'white',

@@ -50,6 +50,20 @@ function stringFormat(formatString, replacementArray) {
         }
     );
 }
+//store in global namespace
+if (typeof window.mpdjsconfig === 'undefined' || window.mpdjsconfig === null) {
+    window.mpdjsconfig = {}
+}
 
+class Global {
+    get(prop){
+        return window.mpdjsconfig[prop];
+    }
+    set(prop,value){
+        window.mpdjsconfig[prop]=value;
+    }
+}
 
-export{padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome}
+let global=new Global();
+
+export{global, padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome}

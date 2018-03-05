@@ -3,7 +3,7 @@ import React from "react";
 import CommonList from "./CommonList";
 import {ContextMenu1} from "./ContextMenu.js";
 import Img from 'react-image';
-import {getDimensions, getImagePath, getTime, padDigits} from "./Utils";
+import {getDimensions, getImagePath, getTime, global, padDigits} from "./Utils";
 import ReactDOM from 'react-dom';
 import {BasicFloatingMenu} from './FloatingButton';
 
@@ -18,6 +18,7 @@ class PlayList extends CommonList {
         this.state = {
             items: []
         };
+        this.mpd_client=global.get("mpd_client");
         this.queueId=-1;
         //this.handleClick = this.handleClick.bind(this,undefined);
     }
@@ -25,17 +26,17 @@ class PlayList extends CommonList {
         let rect = ReactDOM.findDOMNode(this)
             .getBoundingClientRect();
         this.top=rect.top;
-        let  queue=mpd_client.getQueue();
+        let  queue=this.mpd_client.getQueue();
         //console.log("queue:",queue);
         if(queue!=null)
             this.updateQueue(queue);
 
-        this.listener = observer.subscribe('QueueChanged',(data)=>{
+        this.listener = global.get("observer").subscribe('QueueChanged',(data)=>{
             //console.log('QueueChanged is: ',data);
             this.updateQueue(data);
 
         });
-        this.listenerState = observer.subscribe('StateChanged',(data)=>{
+        this.listenerState = global.get("observer").subscribe('StateChanged',(data)=>{
             this.updateState(data.state,data.client);
         });
 
@@ -75,28 +76,28 @@ class PlayList extends CommonList {
     handleClick(index) {
         //console.log("clicked:",index);
         if (!this.playlistContextmenu.state.visible)
-            mpd_client.play(index);
+            this.mpd_client.play(index);
     };
 
     contextResult(choice){
         if (choice==="Remove"){
-            mpd_client.removeSongFromQueueByPosition(this.selection);
+            this.mpd_client.removeSongFromQueueByPosition(this.selection);
         }
         if (choice==="Remove bottom"){
-            let  len=mpd_client.getQueue().getSongs().length;
+            let  len=this.mpd_client.getQueue().getSongs().length;
             for (let  i=this.selection;i<len;i++)
-                mpd_client.removeSongFromQueueByPosition(this.selection);
+                this.mpd_client.removeSongFromQueueByPosition(this.selection);
         }
         if (choice==="Remove top"){
             for (let  i=0;i<this.selection;i++)
-                mpd_client.removeSongFromQueueByPosition(0);
-            mpd_client.removeSongFromQueueByPosition(this.selection);
+                this.mpd_client.removeSongFromQueueByPosition(0);
+            this.mpd_client.removeSongFromQueueByPosition(this.selection);
         }
         if (choice==="Remove all"){
-            mpd_client.clearQueue();
+            this.mpd_client.clearQueue();
         }
         if (choice==="Play")
-            mpd_client.play(this.selection);
+            this.mpd_client.play(this.selection);
     }
 
     contextMenu (e) {
@@ -129,7 +130,7 @@ class PlayList extends CommonList {
                         artist=<div className="list-artist" style={this.textStyle}>{this.totalList[i].artist+"-"+this.totalList[i].album}</div>
                     }
                     let current="";
-                    if (window.mpdjsconfig.currentsong==i)
+                    if (global.get("currentsong")==i)
                         current="list-playing";
                     let  time=getTime(this.totalList[i].duration);
                     prevPath=path;
