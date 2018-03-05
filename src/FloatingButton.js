@@ -86,7 +86,11 @@ function getImg(location){
     return <img src={location} width={window.mpdjsconfig.itemheight/2} height={window.mpdjsconfig.itemheight/2}/>
 }
 
-
+function homeButton(level){
+    return <FloatingButton action={() => {
+        goHome()
+    }} img={'img/home2.png'} level={level}/>
+}
 class FloatingPlayButtons extends Component {
     constructor(props) {
         super(props);
@@ -125,6 +129,11 @@ class FloatingPlayButtons extends Component {
         )
     }
 }
+function startButton(f){
+    return <FloatingButton action={() => {
+        goHome()
+    }} level={0} action={f} text="+"/>
+}
 class  BasicFloatingMenu extends Component {
     constructor(props) {
         super(props);
@@ -137,10 +146,11 @@ class  BasicFloatingMenu extends Component {
     render() {
         let subMenu=this.state.subMenu?<div>
             <FloatingPlayButtons  level={1}/>
-            <FloatingButton  action={()=>{goHome()}} text= {getImg('img/home2.png')} level={2}/>
+            {homeButton(2)}
         </div>:null;
-        return <div><FloatingButton  action={()=>{this.toggleSubMenu()}} text="+" level={0}/>{subMenu}</div>
+        //
+        return <div>{startButton(this.toggleSubMenu.bind(this))}{subMenu}</div>
     }
 }
 
-export {FloatingButton,floatingMenu,floatingSubMenu,FloatingPlayButtons,BasicFloatingMenu};
+export {startButton,homeButton,FloatingButton,floatingMenu,floatingSubMenu,FloatingPlayButtons,BasicFloatingMenu};

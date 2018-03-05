@@ -7,7 +7,10 @@ import {padDigits, getTime, getImagePath, getDimensions, stringFormat, goHome} f
 import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
 import ReactDOM from "react-dom";
-import {FloatingButton, floatingMenu,floatingSubMenu} from './FloatingButton';
+import {
+    homeButton, FloatingButton, floatingMenu, floatingSubMenu, FloatingPlayButtons,
+    startButton
+} from './FloatingButton';
 
 /**
  * returns object with properties of content
@@ -168,6 +171,28 @@ let lastPart = function (path) {
     return path;
 };
 
+class AlbumFloatingMenu extends Component {
+    constructor(props) {
+        super(props);
+        this.back = props.back;
+        this.state = {subMenu: false};
+    }
+
+    toggleSubMenu() {
+        this.setState({subMenu: !this.state.subMenu})
+    }
+
+    render() {
+        let subMenu = this.state.subMenu ?
+            <div>
+                <FloatingPlayButtons level={1}/>
+                <FloatingButton action={this.back} img='img/back.png' level={2}/>
+                {homeButton(3)}
+            </div> : null;
+        return <div>{startButton(this.toggleSubMenu.bind(this))}{subMenu}</div>
+    }
+}
+
 /**
  * display contents of directory in Listview
  */
@@ -176,7 +201,7 @@ class AlbumList extends CommonList {
         super(props);
         this.selection = -1;
         this.totalList = [];
-        this.openPath="";
+        this.openPath = "";
         this.top = 300;
         this.albumsContextmenu = null;
         this.state = {
@@ -198,7 +223,7 @@ class AlbumList extends CommonList {
         this.top = rect.top;
     }
 
-    getPrevDirs(){
+    getPrevDirs() {
         //global variable window.favsListConfig to store state of AlbumList
         if (typeof window.albumListConfig === 'undefined' || window.albumListConfig === null) {
             window.albumListConfig = {prevdirs: []}
@@ -206,8 +231,9 @@ class AlbumList extends CommonList {
         return window.albumListConfig.prevdirs;
 
     }
-    baseDir(){
-        let curdir= "/";
+
+    baseDir() {
+        let curdir = "/";
         //if (this.prevdirs.length > 0) curdir = this.prevdirs.pop();
         return curdir;
     }
@@ -247,7 +273,7 @@ class AlbumList extends CommonList {
 
     }
 
-    getFilePathCallback(index,doAction) {
+    getFilePathCallback(index, doAction) {
         let path = this.getFilePath(this.selection);
         doAction(path);
     }
@@ -272,7 +298,7 @@ class AlbumList extends CommonList {
 
     contextResult(choice) {
         this.getFilePathCallback(this.selection,
-            (path)=> {
+            (path) => {
                 if (choice === "Add") {
                     mpd_client.addSongToQueueByFile(path);
                 }
@@ -288,7 +314,7 @@ class AlbumList extends CommonList {
 
                 }
                 if (choice === "Info Album") {
-                    this.openPath=path;
+                    this.openPath = path;
                     this.setState({
                         items: this.state.items,
                         modalIsOpen: true,
@@ -321,6 +347,7 @@ class AlbumList extends CommonList {
      * display contents of one directory up
      */
     getUpOneDirectory() {
+        console.log("get back");
         if (this.prevdirs.length > 1) {
             goHome();
             this.prevdirs.pop();
@@ -344,7 +371,7 @@ class AlbumList extends CommonList {
     }
 
     floatSubToggle() {
-        this.subMenu=!this.subMenu;
+        this.subMenu = !this.subMenu;
         this.setState({
             items: this.state.items,
             modalIsOpen: this.state.modalIsOpen,
@@ -352,53 +379,16 @@ class AlbumList extends CommonList {
         });
 
     }
-    getImagePath(path){
+
+    getImagePath(path) {
         return getImagePath(path);
     }
 
     render() {
 
-        let subMenu=this.subMenu?floatingSubMenu([{
-            img: 'img/next.png', f: () => {
-                this.floatToggle();
-                mpd_client.next();
-            }
-        },{
-            img: 'img/play.png', f: () => {
-                this.floatToggle();
-
-                if (window.mpdjsconfig.playstate=="play")
-                    mpd_client.pause();
-                else
-                    mpd_client.play();
-            }
-        }, {
-            img: 'img/previous.png', f: () => {
-                this.floatToggle();
-                mpd_client.previous();
-            }
-        }],1):null;
-
-        let floatMenu = <div>{floatingMenu([{
-            text: "P", f: () => {
-                this.floatSubToggle();
-            }
-        },{
-            img: 'img/back.png', f: () => {
-                this.floatToggle();
-                this.getUpOneDirectory()
-            }
-        }, {
-            img: 'img/home2.png', f: () => {
-                this.floatToggle();
-                goHome()
-            }
-        }])}{subMenu}</div>;
-
         return (
             <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/>
-                {this.state.floatingIsOpen ? floatMenu : null}
-                <FloatingButton key="3" action={this.floatToggle.bind(this)} text="+" level={0}/>
+                <AlbumFloatingMenu back={this.getUpOneDirectory.bind(this)}/>
                 <ToastContainer/>
                 <ul>
                     {this.state.items.map((listValue, i) => {
@@ -409,8 +399,8 @@ class AlbumList extends CommonList {
                             this.selection = i;
                             this.contextMenu(e)
                         }}>
-                            <Img src={path} className="list-image-small"  style={this.imgStyle}/>
-                            <li  style={this.textStyle}>
+                            <Img src={path} className="list-image-small" style={this.imgStyle}/>
+                            <li style={this.textStyle}>
                                 {this.splitHyphen(listValue)}</li>
                         </div>;
                     })}
@@ -425,4 +415,4 @@ class AlbumList extends CommonList {
     }
 }
 
-export {AlbumList,notifyMessage,lastPart};
+export {AlbumList, notifyMessage, lastPart};
