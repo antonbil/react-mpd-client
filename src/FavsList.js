@@ -95,16 +95,19 @@ class FavsList extends AlbumList {
             //first one is directory-up, remove it
             fileList.shift();
             let extList=[];
+            let newList=[];
             //checck if list contains music-files
             for (let i=0;i<fileList.length;i++){
                 let element=fileList[i];
                 if (element.includes(".")){
                     let fileExt = element.split('.').pop();
-                    if (['flac', 'mp3', 'm4a'].includes(fileExt)) extList.push(element)
-                }
+                    if (['flac', 'mp3', 'm4a'].includes(fileExt)) extList.push(element);
+                    else
+                        if (!['txt', 'jpg', 'png'].includes(fileExt)) newList.push(element)
+                } else newList.push(element)
             }
             //if so, do not display it, but process it
-            if (extList.length>0)fileList=[];
+            if (extList.length>0)fileList=[]; else fileList=newList;
             //turn fileList into list of elements
             let elementList=fileList.map((element) => {return {MPD_file_path_name:(dir+"/"+element),mpd_file_path:dir+"/"+element+"/"}});
             if (fileList.length > 0) {
