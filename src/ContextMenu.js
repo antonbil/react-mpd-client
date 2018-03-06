@@ -1,4 +1,5 @@
 import React from "react";
+import {global} from "./Utils";
 
 class ContextMenu1 extends React.Component {
     constructor(props) {
@@ -112,11 +113,28 @@ class ContextMenu2 extends ContextMenu1 {
                 <div className="contextMenu--option">Add and Play</div>
                 <div className="contextMenu--option">Replace and Play</div>
                 <div className="contextMenu--option">Info Album</div>
-                <div className="contextMenu--option">Link</div>
+                <div className="contextMenu--option">Add Link</div>
+            </div>
+    };
+
+}
+/*/*ContextMenu2*/
+class ContextMenu3 extends ContextMenu1 {
+    setMenu(){
+        //albumsContextmenu=this;
+    }
+    render() {
+        //global.set("contextOptions",["Add","Add and Play","Replace and Play","Info Album","Link"])
+        let options=global.get("contextOptions");
+        const { visible } = this.state;
+
+        return(visible || null) &&
+            <div ref={ref => {this.app = ref}} className="contextMenu">
+                {options.map((el,i)=>{return <div key={i} className="contextMenu--option">{el}</div>})}
             </div>
     };
 
 }
 
 export {ContextMenu1,
- ContextMenu2}
+ ContextMenu2, ContextMenu3}

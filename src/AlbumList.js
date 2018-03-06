@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import Modal from 'react-modal';
 import ReactScrollbar from 'react-scrollbar-js';
 import CommonList from './CommonList';
-import {ContextMenu2} from './ContextMenu.js';
+import {ContextMenu2,ContextMenu3} from './ContextMenu.js';
 import {padDigits, getTime, getImagePath, getDimensions, stringFormat, goHome,addLink} from './Utils.js';
 import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
@@ -317,7 +317,7 @@ class AlbumList extends CommonList {
                         floatingIsOpen: this.state.floatingIsOpen
                     });
                 }
-                if (choice === "Link") {
+                if (choice === "Add Link") {
                     addLink(path);
                 }
             });
@@ -337,6 +337,7 @@ class AlbumList extends CommonList {
 
     contextMenu(e) {
         e.preventDefault();
+        global.set("contextOptions",["Add","Add and Play","Replace and Play","Info Album","Add Link"]);
 
         this.albumsContextmenu.returnChoice = this.contextResult.bind(this);
         this.albumsContextmenu._handleContextMenu(e);
@@ -386,7 +387,7 @@ class AlbumList extends CommonList {
     render() {
 
         return (
-            <div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)}/>
+            <div><ContextMenu3 onRef={ref => (this.albumsContextmenu = ref)}/>
                 <AlbumFloatingMenu back={this.getUpOneDirectory.bind(this)}/>
                 <ToastContainer/>
                 <ul>
