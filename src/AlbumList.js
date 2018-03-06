@@ -250,7 +250,7 @@ class AlbumList extends CommonList {
                 this.totalList = myTotalList;
                 this.prevdirs = this.prevdirs.concat(dir);
                 //save state to global variable
-                global.set("albumListConfig",this.prevdirs);
+                this.savePrevDirs();
 
                 this.setState({
                     items: mylist, showPopup: false
@@ -264,6 +264,10 @@ class AlbumList extends CommonList {
         })
 
     }
+    savePrevDirs() {
+        global.set("albumListConfig", this.prevdirs);
+    }
+
 
     getFilePathCallback(index, doAction) {
         let path = this.getFilePath(this.selection);

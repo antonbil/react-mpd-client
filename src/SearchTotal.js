@@ -1,8 +1,8 @@
 /* class SearchList*/
 import CommonList from "./CommonList";
-import {getImagePath} from "./Utils";
+import {getImagePath, global} from "./Utils";
 import React from "react";
-import {ContextMenu2} from './ContextMenu.js';
+import {ContextMenu3} from './ContextMenu.js';
 import Img from 'react-image';
 import {BasicFloatingMenu} from "./FloatingButton";
 
@@ -18,6 +18,7 @@ class SearchList extends CommonList {
         };
         this.options=[];
         this.items=[];
+        this.mpd_client=global.get("mpd_client");
         this.processSearchResults.bind(this);
         this.imgStyle.margin=0;
         //this.handleClick = this.handleClick.bind(this,undefined);
@@ -94,6 +95,7 @@ class SearchList extends CommonList {
     contextMenu (e) {
         e.preventDefault();
 
+        global.set("contextOptions",["Add","Add and Play","Replace and Play"]);
         this.albumsContextmenu.returnChoice=this.contextResult.bind(this);
         this.albumsContextmenu._handleContextMenu(e);
     };    handleClick(index) {
@@ -105,7 +107,7 @@ class SearchList extends CommonList {
     }
     render() {
         return (
-            <div><ContextMenu2  onRef={ref => (this.albumsContextmenu = ref)} /><ul>
+            <div><ContextMenu3  onRef={ref => (this.albumsContextmenu = ref)} /><ul>
                 {this.state.items.map((listValue,i)=>{
                     let path=getImagePath("/"+this.items[i].dirpath);
                     return <div  key={i} className="list-item" key={i+500} style={this.listStyle} onClick={() =>
@@ -127,6 +129,7 @@ class SearchForm extends React.Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.mpd_client=global.get("mpd_client");
     }
 
     handleChange(event) {
@@ -145,18 +148,18 @@ class SearchForm extends React.Component {
                 search[this.options[i].name]=(this.state.value).trim();
 
         }
-        //console.log("search for:",search);
+        console.log("search for:",search);
 
         this.searchList.setOptions(this.options);
 
-        mpd_client.search(search,this.searchList.processSearchResults.bind(this.searchList));
+        this.mpd_client.search(search,this.searchList.processSearchResults.bind(this.searchList));
         event.preventDefault();
     }
 
     render() {
         //console.log(this.state,this.options);
         return (
-            <form onSubmit={this.handleSubmit}>
+            <form onSubmit={this.handleSubmit.bind(this)}>
                 <label>
                     <input type="text" value={this.state.value} onChange={this.handleChange} />
                 </label>
