@@ -112,7 +112,7 @@ class ContextMenu2 extends ContextMenu1 {
                 <div className="contextMenu--option">Add and Play</div>
                 <div className="contextMenu--option">Replace and Play</div>
                 <div className="contextMenu--option">Info Album</div>
-                <div className="contextMenu--option">Add link</div>
+                <div className="contextMenu--option">Link</div>
             </div>
     };
 

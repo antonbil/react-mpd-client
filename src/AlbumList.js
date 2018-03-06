@@ -317,7 +317,7 @@ class AlbumList extends CommonList {
                         floatingIsOpen: this.state.floatingIsOpen
                     });
                 }
-                if (choice === "Add link") {
+                if (choice === "Link") {
                     addLink(path);
                 }
             });
@@ -392,12 +392,12 @@ class AlbumList extends CommonList {
                 <ul>
                     {this.state.items.map((listValue, i) => {
                         let path = this.getImagePath("/" + this.totalList[i].mpd_file_path);
-                        return <div key={i} style={this.listStyle} onClick={() => {
+                        return <div style={this.listStyle} onClick={() => {
                             this.addDirectoryContentsToQueue(i);
                         }} onContextMenu={(e) => {
                             this.selection = i;
                             this.contextMenu(e)
-                        }}>
+                        }} key={i} >
                             <Img src={path} className="list-image-small" style={this.imgStyle}/>
                             <li style={this.textStyle}>
                                 {this.splitHyphen(listValue)}</li>
