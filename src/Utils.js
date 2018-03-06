@@ -1,4 +1,5 @@
 import React  from 'react';
+import cookie from "react-cookies";
 function padDigits(number, digits) {
     try {
         if (!(number === parseInt(number, 10))) {
@@ -19,7 +20,7 @@ function getImagePath(path){
 
 let goHome = function() {
     window.scrollTo(0, 0);
-}
+};
 let getDimensions = function () {
     let width = window.innerWidth
         || document.documentElement.clientWidth
@@ -64,6 +65,23 @@ class Global {
     }
 }
 
+function getLinks(){
+    let links=[];
+    let linkscookie=cookie.load("links");
+    if (!(linkscookie==undefined))
+        links=linkscookie;
+    return links;
+}
+
+function saveLinks(links){
+    console.log("save links",links);
+    cookie.save("links", links, {path: "/"});
+}
+
+function addLink(link){
+    saveLinks(getLinks().concat(link))
+}
+
 let global=new Global();
 
-export{global, padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome}
+export{global, padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome,getLinks,saveLinks,addLink}

@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import ReactScrollbar from 'react-scrollbar-js';
 import CommonList from './CommonList';
 import {ContextMenu2} from './ContextMenu.js';
-import {padDigits, getTime, getImagePath, getDimensions, stringFormat, goHome} from './Utils.js';
+import {padDigits, getTime, getImagePath, getDimensions, stringFormat, goHome,addLink} from './Utils.js';
 import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
 import ReactDOM from "react-dom";
@@ -72,11 +72,12 @@ class PopupAlbum extends Component {
         this.state = {
             items: []
         };
-        this.mpd_client=mpd_client;
+        this.mpd_client=global.get("mpd_client");
         this.mpd_client.getDirectoryContents(this.album, this.getDir.bind(this));
     }
 
     getDir(directory_contents) {
+        console.log(directory_contents);
         let myTotalList = [];
         directory_contents.forEach((content) => {
             try {
@@ -109,6 +110,11 @@ class PopupAlbum extends Component {
     }
 
     render() {
+        let listPopupStyle = {
+            color: global.get("backgroundColor"),
+            backgroundColor: global.get("color")
+        };
+
         let {width, height} = getDimensions();
         let myScrollbar = {
             margin: 10,
@@ -131,6 +137,10 @@ class PopupAlbum extends Component {
             album = stringFormat("{0}-{1}", [song.MPD_file_artist, song.MPD_file_album]);
         } catch (e) {
         }
+        let ls={};
+        Object.assign(ls, this.listStyle);
+        Object.assign(ls, listPopupStyle);
+
         return (
             <Modal
                 isOpen={true}
@@ -151,7 +161,7 @@ class PopupAlbum extends Component {
                                 return <div key={i} className="list-item" onClick={(e) => {
                                     this.addFileToQueue(e, i);
                                 }}>
-                                    <li style={this.listStyle}>
+                                    <li style={ls}>
                                         {this.createTitleLine(listValue)}</li>
                                 </div>;
                             })}
@@ -217,8 +227,11 @@ class AlbumList extends CommonList {
         return curdir;
     }
 
-
     getDirectoryContents(dir) {
+        this.getAlbumDirectoryContents(dir);
+    }
+
+    getAlbumDirectoryContents(dir) {
         this.mpd_client.getDirectoryContents(dir, (directory_contents) => {
             let myTotalList = [];
             let mylist = [];
@@ -276,6 +289,10 @@ class AlbumList extends CommonList {
     };
 
     contextResult(choice) {
+        this.contextAlbumResult(choice);
+    }
+
+    contextAlbumResult(choice) {
         this.getFilePathCallback(this.selection,
             (path) => {
                 if (choice === "Add") {
@@ -299,6 +316,9 @@ class AlbumList extends CommonList {
                         modalIsOpen: true,
                         floatingIsOpen: this.state.floatingIsOpen
                     });
+                }
+                if (choice === "Add link") {
+                    addLink(path);
                 }
             });
     }

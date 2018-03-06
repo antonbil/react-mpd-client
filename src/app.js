@@ -5,6 +5,7 @@ import Tabs from 'react-simpletabs';
 import * as Mpd from '../MPD.js/mpd.js';//--> gives MPD-class
 import FavsList from './FavsList.js';
 import {AlbumList} from './AlbumList.js';
+import {LinksList} from './LinksList.js';
 import PlayList from './Playlist.js';
 import PlaylistList from './PlaylistList.js';
 import SearchTotal from './SearchTotal.js';
@@ -79,6 +80,9 @@ class Main extends React.Component {
                 </Tabs.Panel>
                 <Tabs.Panel title='Albums'>
                     <div><AlbumList/></div>
+                </Tabs.Panel>
+                <Tabs.Panel title='Links'>
+                    <div><LinksList /> </div>
                 </Tabs.Panel>
                 <Tabs.Panel title='Lists'>
                     <PlaylistList/>
