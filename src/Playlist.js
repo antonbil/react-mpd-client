@@ -9,8 +9,8 @@ import {BasicFloatingMenu} from './FloatingButton';
 
 const removeAction = "Remove";
 const removeTopAction = "Remove top";
-const removeBottomAction = "Remove top";
-const removeAllAction = "Remove top";
+const removeBottomAction = "Remove bottom";
+const removeAllAction = "Remove all";
 const playAction = "Play";
 
 /**

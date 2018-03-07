@@ -9,7 +9,6 @@ class ContextMenu1 extends React.Component {
             visible: false,
         };
         this.style = {};
-        this.returnChoice = null;
         this._handleContextMenu = this._handleContextMenu.bind(this);
         this._handleClick = this._handleClick.bind(this);
         this._handleScroll = this._handleScroll.bind(this);
