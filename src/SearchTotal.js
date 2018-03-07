@@ -2,7 +2,7 @@
 import CommonList from "./CommonList";
 import {getImagePath, global} from "./Utils";
 import React from "react";
-import {ContextMenu3} from './ContextMenu.js';
+import {ContextMenu2} from './ContextMenu.js';
 import Img from 'react-image';
 import {BasicFloatingMenu} from "./FloatingButton";
 
@@ -21,7 +21,6 @@ class SearchList extends CommonList {
         this.mpd_client=global.get("mpd_client");
         this.processSearchResults.bind(this);
         this.imgStyle.margin=0;
-        //this.handleClick = this.handleClick.bind(this,undefined);
     }
     setOptions(options){
         this.options=options;
@@ -55,9 +54,6 @@ class SearchList extends CommonList {
                 newItem.dirpath=dirpath;
                 totalList=totalList.concat(addItem);
                 this.items=this.items.concat(newItem);
-
-                //console.log("processSearchResults", newItem.title);
-                //console.log(newItem);
             }
             previousItem=addItem;
 
@@ -94,20 +90,17 @@ class SearchList extends CommonList {
     }
     contextMenu (e) {
         e.preventDefault();
-
-        global.set("contextOptions",["Add","Add and Play","Replace and Play"]);
-        this.albumsContextmenu.returnChoice=this.contextResult.bind(this);
         this.albumsContextmenu._handleContextMenu(e);
-    };    handleClick(index) {
-        //console.log("clicked:",index);
+    };
+    handleClick(index) {
         let  path=this.items[index].path;
         this.selection=index;
-        //console.log("add file:",path);
         this.mpd_client.addSongToQueueByFile( path);
     }
     render() {
         return (
-            <div><ContextMenu3  onRef={ref => (this.albumsContextmenu = ref)} /><ul>
+            <div><ContextMenu2  onRef={ref => (this.albumsContextmenu = ref)} returnChoice={this.contextResult.bind(this)}
+                                options={["Add","Add and Play","Replace and Play"]} /><ul>
                 {this.state.items.map((listValue,i)=>{
                     let path=getImagePath("/"+this.items[i].dirpath);
                     return <div  key={i} className="list-item" key={i+500} style={this.listStyle} onClick={() =>

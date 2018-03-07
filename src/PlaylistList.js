@@ -1,7 +1,7 @@
 /*PlaylistList*/
 import React from "react";
 import CommonList from "./CommonList";
-import {ContextMenu3} from './ContextMenu.js';
+import {ContextMenu2} from './ContextMenu.js';
 import {BasicFloatingMenu} from "./FloatingButton";
 import {global} from "./Utils";
 
@@ -54,9 +54,6 @@ class PlaylistList extends CommonList {
     }
     contextMenu (e) {
         e.preventDefault();
-        global.set("contextOptions",["Add","Add and Play","Replace and Play"]);
-
-        this.albumsContextmenu.returnChoice=this.contextResult.bind(this);
         this.albumsContextmenu._handleContextMenu(e);
     };
     handleClick(index) {
@@ -64,7 +61,8 @@ class PlaylistList extends CommonList {
     };
 
     render() {
-        return (<div><ContextMenu3 onRef={ref => (this.albumsContextmenu = ref)} />
+        return (<div><ContextMenu2 onRef={ref => (this.albumsContextmenu = ref)} returnChoice={this.contextResult.bind(this)}
+                                   options={["Add","Add and Play","Replace and Play"]}/>
                 <ul>
                     {this.state.items.map((listValue,i)=>{
                         return <li key={i} onClick={() => { this.handleClick(i);}}
