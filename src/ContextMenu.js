@@ -101,19 +101,19 @@ class ContextMenu1 extends React.Component {
 }
 /*/*ContextMenu2*/
 class ContextMenu2 extends ContextMenu1 {
-    setMenu(){
-        //albumsContextmenu=this;
+    constructor(props) {
+        super(props);
+        this.returnChoice=props.returnChoice;
+        this.options=props.options;
     }
     render() {
         const { visible } = this.state;
 
         return(visible || null) &&
             <div ref={ref => {this.app = ref}} className="contextMenu">
-                <div className="contextMenu--option">Add</div>
-                <div className="contextMenu--option">Add and Play</div>
-                <div className="contextMenu--option">Replace and Play</div>
-                <div className="contextMenu--option">Info Album</div>
-                <div className="contextMenu--option">Add Link</div>
+                {this.options.map((el,i)=>{return <div key={i}
+                                                  className={el.length>0?"contextMenu--option":"contextMenu--separator"}>
+                    {el.length>0?el:""}</div>})}
             </div>
     };
 
@@ -130,7 +130,9 @@ class ContextMenu3 extends ContextMenu1 {
 
         return(visible || null) &&
             <div ref={ref => {this.app = ref}} className="contextMenu">
-                {options.map((el,i)=>{return <div key={i} className="contextMenu--option">{el}</div>})}
+                {options.map((el,i)=>{return <div key={i}
+                                                  className={el.length>0?"contextMenu--option":"contextMenu--separator"}>
+                    {el.length>0?el:""}</div>})}
             </div>
     };
 

@@ -16,7 +16,6 @@ class PlaylistList extends CommonList {
             this.updatePlaylists(playlists);
 
         this.listener = global.get("observer").subscribe('PlaylistsChanged',(data)=>{
-            //console.log('PlaylistsChanged is: ',data);
             this.updatePlaylists(data);
 
         });
@@ -37,9 +36,6 @@ class PlaylistList extends CommonList {
         }));
     }
     contextResult(choice){
-        //console.log("albums choice:",choice);
-        //console.log("action with:",this.selection);
-        //console.log("playlistsselection:",this.state.items[this.selection]);
 
         if (choice==="Add"){
             this.mpd_client.appendPlaylistToQueue(this.state.items[this.selection]);
@@ -71,7 +67,9 @@ class PlaylistList extends CommonList {
         return (<div><ContextMenu3 onRef={ref => (this.albumsContextmenu = ref)} />
                 <ul>
                     {this.state.items.map((listValue,i)=>{
-                        return <li key={i} onClick={() => { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} style={this.listStyle}>{listValue}</li>;
+                        return <li key={i} onClick={() => { this.handleClick(i);}}
+                                   onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}}
+                                   style={this.listStyle}>{listValue}</li>;
                     })}
                 </ul><BasicFloatingMenu/></div>
         )

@@ -94,20 +94,28 @@ class FavsList extends AlbumList {
             let fileList = data.map((element) => element.TD[0].A["#text"]);
             //first one is directory-up, remove it
             fileList.shift();
-            let extList=[];
-            let newList=[];
-            //checck if list contains music-files
-            for (let i=0;i<fileList.length;i++){
-                let element=fileList[i];
-                if (element.includes(".")){
+            //check if list contains music-files
+            let wrongList=fileList.filter((element)=>{
+                if (element.includes(".")) {
                     let fileExt = element.split('.').pop();
-                    if (['flac', 'mp3', 'm4a'].includes(fileExt)) extList.push(element);
-                    else
-                        if (!['txt', 'jpg', 'png'].includes(fileExt)) newList.push(element)
-                } else newList.push(element)
-            }
+                    if (['flac', 'mp3', 'm4a'].includes(fileExt)) return true;
+                }
+            });
             //if so, do not display it, but process it
-            if (extList.length>0)fileList=[]; else fileList=newList;
+            if (wrongList.length>0)
+                fileList=[];
+            else
+                //remove irrelevant filenames
+                fileList=fileList.filter((element)=>{
+                    if (element.includes(".")) {
+                        let fileExt = element.split('.').pop();
+                        //remove files with unrelevant extensions
+                        if (['TXT', 'JPG', 'PNG'].includes(fileExt.toUpperCase())) return false;
+                    }
+                    //remove system files
+                    if (['.directory'].includes(element))return false;
+                    return true;
+                });
             //turn fileList into list of elements
             let elementList=fileList.map((element) => {return {MPD_file_path_name:(dir+"/"+element),mpd_file_path:dir+"/"+element+"/"}});
             if (fileList.length > 0) {

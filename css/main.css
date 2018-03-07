@@ -58,7 +58,12 @@ ul li:last-child {
             color: #999999;
             pointer-events: none;
         }
-
+.tabs-menu-item:not(.is-active) a:hover {
+    color: #3498DB;
+}
+.tabs-menu-item.is-active a{
+    color: #3498DB;
+}
     
     .contextMenu--separator {
         width: 100%;
@@ -92,8 +97,11 @@ ul li:last-child {
     .list-playing{
         background-color:#f5f5f0;
     }
-
-.tab-panel, .tabs-navigation, .header-total{
+.tabs-navigation{
+    padding-left:5px;
+    padding-right:5px;
+}
+.tab-panel, .header-total{
     padding-left:5px;
     padding-right:5px;
 }

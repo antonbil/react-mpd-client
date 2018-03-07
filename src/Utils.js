@@ -84,4 +84,25 @@ function addLink(link){
 
 let global=new Global();
 
-export{global, padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome,getLinks,saveLinks,addLink}
+/*
+change property of css-rule to given value
+ */
+function changeCSSRule(ruleName,property,value) {
+    ruleName = ruleName.toLowerCase();
+    let result = null;
+    let find = Array.prototype.find;
+
+    find.call(document.styleSheets, styleSheet => {
+        try {
+            result = find.call(styleSheet.cssRules, cssRule => {
+                return cssRule instanceof CSSStyleRule
+                    && cssRule.selectorText.toLowerCase() == ruleName;
+            });
+            result.style[property]=value;
+            return result != null;
+        }catch(e){}
+    });
+    return result;
+}
+
+export{global, padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome,getLinks,saveLinks,addLink,changeCSSRule}

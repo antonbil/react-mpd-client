@@ -77,11 +77,9 @@ class PopupAlbum extends Component {
     }
 
     getDir(directory_contents) {
-        console.log(directory_contents);
-        let myTotalList = [];
-        directory_contents.forEach((content) => {
+        let myTotalList = directory_contents.map((content) => {
             try {
-                myTotalList = myTotalList.concat(makeFileListElement(content));
+                return makeFileListElement(content);
             } catch (e) {
             }
         });
@@ -121,16 +119,7 @@ class PopupAlbum extends Component {
             width: width - 150,
             height: height - 150,
         };
-        /*let customStyles = {
-            content: {
-                top: '50%',
-                left: '50%',
-                right: 'auto',
-                bottom: 'auto',
-                marginRight: '-50%',
-                transform: 'translate(-50%, -50%)'
-            }
-        };*/
+
         let album = this.album;
         try {
             let song = this.state.items[0];
@@ -341,7 +330,7 @@ class AlbumList extends CommonList {
 
     contextMenu(e) {
         e.preventDefault();
-        global.set("contextOptions",["Add","Add and Play","Replace and Play","Info Album","Add Link"]);
+        global.set("contextOptions",["Add","Add and Play","Replace and Play","Info Album","","Add Link"]);
 
         this.albumsContextmenu.returnChoice = this.contextResult.bind(this);
         this.albumsContextmenu._handleContextMenu(e);

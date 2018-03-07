@@ -14,10 +14,9 @@ import SelectServer from './SelectServer';
 import {SelectSkin,setColourDefaults} from './SelectSkin';
 import VolumeSlider from './VolumeSlider';
 
-import {global,getDimensions} from "./Utils";
+import {global,getDimensions,changeCSSRule} from "./Utils";
 import {FloatingPlayButtons} from "./FloatingButton";
 import cookie from "react-cookies";
-
 class Main extends React.Component {
     constructor(props) {
         super(props);
@@ -37,12 +36,9 @@ class Main extends React.Component {
         let skincookie=cookie.load("skin");
         if (!(skincookie==undefined))
             skin=skincookie;
-        console.log("skincookie",skincookie);
-        //
+        //change to selected color scheme
         setColourDefaults(skin);
-        //global.set("backgroundColor",'#212529');
-        //global.set("color","white");
-        //global.set("backgroundPlaying","#454540");
+
 
         /*connect observer to mpd-client*/
         this.mpd_client.on('StateChanged', (state, client) => {
@@ -58,13 +54,19 @@ class Main extends React.Component {
             this.observer.publish('PlaylistsChanged', playlists);
         });
         this.renderlistener = this.observer.subscribe('Render',(data)=>{
-            //console.log('StateChanged is: ',data);
-            console.log("re-render main");
+            //re-render main
             this.setState({});
         });
     }
 
     render() {
+        //change colors for tab-header, and main. This is very hairy code!
+        //css-classname must be rule!
+        //so add the following style to 'main.css'. Otherwise they cannot be found, and nog be changed.
+        changeCSSRule('.tabs-menu',"backgroundColor",global.get("backgroundHeader"));
+        changeCSSRule('.tabs-menu-item.is-active a',"color",global.get("colorHeader"));
+        changeCSSRule('.tabs-menu-item:not(.is-active) a:hover',"color",global.get("colorHeader"));
+
         //main display, combine all defined elements
         document.body.style.backgroundColor=global.get("backgroundColor");
         document.body.style.color=global.get("color");
