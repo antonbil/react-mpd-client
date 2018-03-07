@@ -329,10 +329,7 @@ class AlbumList extends CommonList {
     }
 
     contextMenu(e) {
-        e.preventDefault();
         global.set("contextOptions",["Add","Add and Play","Replace and Play","Info Album","","Add Link"]);
-
-        this.albumsContextmenu.returnChoice = this.contextResult.bind(this);
         this.albumsContextmenu._handleContextMenu(e);
     };
 
@@ -380,7 +377,8 @@ class AlbumList extends CommonList {
     render() {
 
         return (
-            <div><ContextMenu3 onRef={ref => (this.albumsContextmenu = ref)}/>
+            <div><ContextMenu3 onRef={ref => (this.albumsContextmenu = ref)}
+                               returnChoice={this.contextResult.bind(this)}/>
                 <AlbumFloatingMenu back={this.getUpOneDirectory.bind(this)}/>
                 <ToastContainer/>
                 <ul>

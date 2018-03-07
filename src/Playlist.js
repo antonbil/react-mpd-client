@@ -117,9 +117,7 @@ class PlayList extends CommonList {
     }
 
     contextMenu(e) {
-        e.preventDefault();
         this.playlistContextmenu._handleContextMenu(e);
-
     };
 
     render() {
