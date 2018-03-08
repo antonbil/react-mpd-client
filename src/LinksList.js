@@ -247,8 +247,8 @@ class LinksList extends AlbumList {
         let path ="";
         let toPrint=this.splitHyphen(listValue);
         let catimg = "";
-        try {
-            let listElement = {MPD_file_path_name:"",mpd_file_path:"",category:"",visible:true,name:name,isCategory:false}
+
+            let listElement = {MPD_file_path_name:"",mpd_file_path:"",category:"",visible:true,name:name,isCategory:false};
             Object.assign(listElement,     this.totalList[i]);
             if (listElement.isCategory) {
                 context = this.contextMenuCategory.bind(this);
@@ -259,7 +259,7 @@ class LinksList extends AlbumList {
             }
             path = this.getImagePath("/" + listElement.mpd_file_path);
             if (!(listElement.visible || listElement.isCategory)) return "";
-        }catch(e){}
+
         return (<div style={this.listStyle} onClick={() => {
             click(i);
         }} onContextMenu={(e) => {
