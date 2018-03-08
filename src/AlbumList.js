@@ -266,7 +266,8 @@ class AlbumList extends CommonList {
     getFilePath(index) {
         console.log(this.totalList[index]);
         let str = this.totalList[index].mpd_file_path;
-        str = str.substr(0, str.length - 1);
+        if (str.endsWith("/"))
+            str = str.substr(0, str.length - 1);
         console.log(str);
         return str;
     }
@@ -388,6 +389,12 @@ class AlbumList extends CommonList {
     getImagePath(path) {
         return getImagePath(path);
     }
+    displayModal(){
+        return this.state.modalIsOpen ?
+            <PopupAlbum album={this.openPath}
+                        closeAlbumPopup={this.closeAlbumPopup.bind(this)}/>
+            : null
+    }
 
     render() {
 
@@ -399,11 +406,7 @@ class AlbumList extends CommonList {
                 <ul>
                     {this.state.items.map(this.listItemFunction.bind(this))}
                 </ul>
-                {this.state.modalIsOpen ?
-                    <PopupAlbum album={this.openPath}
-                                closeAlbumPopup={this.closeAlbumPopup.bind(this)}/>
-                    : null
-                }
+                {this.displayModal()}
             </div>
         )
     }
