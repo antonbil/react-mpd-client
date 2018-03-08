@@ -1,4 +1,4 @@
-import {AlbumList}from "./AlbumList";
+import {AlbumList,notifyMessage}from "./AlbumList";
 import Modal from 'react-modal';
 import ReactScrollbar from 'react-scrollbar-js';
 
@@ -116,7 +116,7 @@ class LinksList extends AlbumList {
             this.state.modalIsOpen=true;
             this.setState(this.state);
         }else
-            if (choice.startsWith(CATEGORY)){
+            /*if (choice.startsWith(CATEGORY)){
                 let el=this.state.items;
                 let index=this.selection;
                 //let links=getLinks();
@@ -134,11 +134,11 @@ class LinksList extends AlbumList {
                 this.setState({
                     items: el, showPopup: false
                 });
-            } else
+            } else*/
                 this.contextAlbumResult(choice);
-    }//clickCategory
+    }
+
     clickCategory(i) {
-        console.log("category click");
         let cat=this.totalList[i].name;
         if (cat===NOCATEGORY)cat="";
         let visible=!this.totalList[i].visible;
@@ -147,15 +147,13 @@ class LinksList extends AlbumList {
             if(this.totalList[j].category===cat)this.totalList[j].visible=visible;
         }
         this.setState(this.state);
-
-
     };
+
     closePopup(e,choice){
         e.preventDefault();
         if (choice===null)return;
         let el=this.state.items;
         let index=this.selection;
-        //let links=getLinks();
         let newCategory=choice;//.replace(CATEGORY,"");
         let link=this.totalList[index].MPD_file_path_name.split(";")[0]+";"+newCategory;
         this.totalList[index].MPD_file_path_name=link;
@@ -167,15 +165,18 @@ class LinksList extends AlbumList {
         saveLinks(links);
         //use this if you wnat to update the list after chaning category
         //this.getDirectoryContents(this.baseDir());
+        notifyMessage("set category to "+newCategory);
         this.setState({
             items: el, showPopup: false,modalIsOpen:false
         });
     }
+
     contextMenuCategory(e) {
         e.preventDefault();
         console.log("category context");
 
     };
+
     contextMenu(e) {
         e.preventDefault();
         let extra="Add Link";
@@ -244,21 +245,20 @@ class LinksList extends AlbumList {
         console.log("final:",listValue);
         let context=this.contextMenu;
         let click=this.addDirectoryContentsToQueue.bind(this);
-        let path ="";
-        let toPrint=this.splitHyphen(listValue);
         let catimg = "";
 
-            let listElement = {MPD_file_path_name:"",mpd_file_path:"",category:"",visible:true,name:name,isCategory:false};
-            Object.assign(listElement,     this.totalList[i]);
-            if (listElement.isCategory) {
-                context = this.contextMenuCategory.bind(this);
-                click = this.clickCategory.bind(this);
-                //toPrint=(listElement.visible?"":"> ")+listValue;
-                catimg = <Img src={listElement.visible ? "img/down.png" : "img/right.png"} className="list-image-small"
-                              style={this.imgStyle}/>
-            }
-            path = this.getImagePath("/" + listElement.mpd_file_path);
-            if (!(listElement.visible || listElement.isCategory)) return "";
+        //make listElement from albumlist compatible with linkslist
+        let listElement = {MPD_file_path_name:"",mpd_file_path:"",category:"",visible:true,name:name,isCategory:false};
+        Object.assign(listElement, this.totalList[i]);
+        
+        if (listElement.isCategory) {
+            context = this.contextMenuCategory.bind(this);
+            click = this.clickCategory.bind(this);
+            catimg = <Img src={listElement.visible ? "img/down.png" : "img/right.png"} className="list-image-small"
+                          style={this.imgStyle}/>
+        }
+        let path = this.getImagePath("/" + listElement.mpd_file_path);
+        if (!(listElement.visible || listElement.isCategory)) return "";
 
         return (<div style={this.listStyle} onClick={() => {
             click(i);
@@ -268,7 +268,7 @@ class LinksList extends AlbumList {
         }} key={i}>
             <Img src={path} className="list-image-small" style={this.imgStyle}/>{catimg}
             <li style={this.textStyle}>
-                {toPrint}</li>
+                {this.splitHyphen(listValue)}</li>
         </div>);
     }
 
