@@ -10,7 +10,7 @@ import {addLink, getDimensions, getImagePath, global, stringFormat} from "./Util
 
 
 let categories=[
-    "Interesting","New","Classical","R&B"
+    "Interesting","New","Classical","R&B","Pop","Rock","Progressive Rock","Blues","Jazz","Electronic","Hip Hop","Dance"
 ];
 let CATEGORY="Cat: ";
 let NOCATEGORY="No Category";
