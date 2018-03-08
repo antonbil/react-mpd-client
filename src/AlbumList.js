@@ -264,8 +264,10 @@ class AlbumList extends CommonList {
     }
 
     getFilePath(index) {
+        console.log(this.totalList[index]);
         let str = this.totalList[index].mpd_file_path;
         str = str.substr(0, str.length - 1);
+        console.log(str);
         return str;
     }
 
@@ -370,6 +372,19 @@ class AlbumList extends CommonList {
 
     }
 
+    listItemFunction(listValue, i) {
+        let path = this.getImagePath("/" + this.totalList[i].mpd_file_path);
+        return (<div style={this.listStyle} onClick={() => {
+            this.addDirectoryContentsToQueue(i);
+        }} onContextMenu={(e) => {
+            this.selection = i;
+            this.contextMenu(e)
+        }} key={i}>
+            <Img src={path} className="list-image-small" style={this.imgStyle}/>
+            <li style={this.textStyle}>
+                {this.splitHyphen(listValue)}</li>
+        </div>);
+    }
     getImagePath(path) {
         return getImagePath(path);
     }
@@ -382,19 +397,7 @@ class AlbumList extends CommonList {
                 <AlbumFloatingMenu back={this.getUpOneDirectory.bind(this)}/>
                 <ToastContainer/>
                 <ul>
-                    {this.state.items.map((listValue, i) => {
-                        let path = this.getImagePath("/" + this.totalList[i].mpd_file_path);
-                        return <div style={this.listStyle} onClick={() => {
-                            this.addDirectoryContentsToQueue(i);
-                        }} onContextMenu={(e) => {
-                            this.selection = i;
-                            this.contextMenu(e)
-                        }} key={i} >
-                            <Img src={path} className="list-image-small" style={this.imgStyle}/>
-                            <li style={this.textStyle}>
-                                {this.splitHyphen(listValue)}</li>
-                        </div>;
-                    })}
+                    {this.state.items.map(this.listItemFunction.bind(this))}
                 </ul>
                 {this.state.modalIsOpen ?
                     <PopupAlbum album={this.openPath}
