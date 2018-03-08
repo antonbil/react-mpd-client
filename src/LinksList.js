@@ -22,7 +22,7 @@ class PopupCategories extends Component {
         this.title=props.title;
     }
 
-        render() {
+    render() {
         let listPopupStyle = {
             color: global.get("backgroundColor"),
             backgroundColor: global.get("color")
@@ -158,7 +158,6 @@ class LinksList extends AlbumList {
         let link=this.totalList[index].MPD_file_path_name.split(";")[0]+";"+newCategory;
         this.totalList[index].MPD_file_path_name=link;
         let links=this.totalList.filter((el)=>{return !el.isCategory}).map((el)=>{return el.MPD_file_path_name});
-        console.log("new category:",link);
 
         this.totalList[index].MPD_file_path_name=link;
         this.totalList[index].category=newCategory;
@@ -193,7 +192,7 @@ class LinksList extends AlbumList {
         if (dir===this.baseDir()){
             //create fileList, and elementList
             let fileList=getLinks();
-            console.log("links read:",fileList);
+            //construct elements from saved links
             let elementList=fileList.map((el,i)=>{
                 let el1=el;
                 let spl=el.split(";");
@@ -208,26 +207,29 @@ class LinksList extends AlbumList {
                 }
                 return {MPD_file_path_name:el,mpd_file_path:name+"/",category:category,visible:true,name:name,isCategory:false}
             });
+            //sort list on category + name
             elementList.sort(function(a, b) {
                 let x=a.category+" "+a.mpd_file_path;
                 let y=b.category+" "+b.mpd_file_path;
                 return x < y ? -1 : x > y ? 1 : 0;
             });
-            let newList=[];
+            //insert headers for categories in constructed list
+            let listWithHeaders=[];
             let prevCat=NOCATEGORY;
             for (let i=0;i<elementList.length;i++){
                 let el=elementList[i];
 
                 if(el.category!==prevCat){
                     let category=el.category.length===0?prevCat:el.category;
-                    newList.push({MPD_file_path_name:"",mpd_file_path:category,category:category,visible:true,name:category,isCategory:true})
+                    listWithHeaders.push({MPD_file_path_name:"",mpd_file_path:category,category:category,visible:true,name:category,isCategory:true})
                 }
                 prevCat=el.category;
-                newList.push(el);
+                listWithHeaders.push(el);
 
             }
-            this.totalList = newList;
-            fileList=newList.map((el)=>{return el.name});
+            //store constructed lists to state and memory
+            this.totalList = listWithHeaders;
+            fileList=listWithHeaders.map((el)=>{return el.name});
             this.prevdirs = this.prevdirs.concat(dir);
             this.setState({
                 items: fileList, showPopup: false
@@ -242,7 +244,6 @@ class LinksList extends AlbumList {
     }
 
     listItemFunction(listValue, i) {
-        console.log("final:",listValue);
         let context=this.contextMenu;
         let click=this.addDirectoryContentsToQueue.bind(this);
         let catimg = "";
@@ -250,7 +251,7 @@ class LinksList extends AlbumList {
         //make listElement from albumlist compatible with linkslist
         let listElement = {MPD_file_path_name:"",mpd_file_path:"",category:"",visible:true,name:name,isCategory:false};
         Object.assign(listElement, this.totalList[i]);
-        
+
         if (listElement.isCategory) {
             context = this.contextMenuCategory.bind(this);
             click = this.clickCategory.bind(this);
