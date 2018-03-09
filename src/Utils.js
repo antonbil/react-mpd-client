@@ -74,7 +74,6 @@ function getLinks(){
 }
 
 function saveLinks(links){
-    console.log("save links",links);
     cookie.save("links", links, {path: "/"});
 }
 

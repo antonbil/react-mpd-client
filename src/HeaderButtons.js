@@ -69,13 +69,17 @@ class HeaderButtons extends React.Component {
         this.handleClick = this.handleClick.bind(this);
         this.next = this.next.bind(this);
         this.prev = this.prev.bind(this);
+    }
+    componentDidMount() {
         this.listener = global.get("observer").subscribe('StateChanged',(data)=>{
             this.updateState(data.state,data.client);
-
-            //this.state.playing=(data.state.playstate=="play");
         });
     }
-    updateState(state,client){
+    componentWillUnmount() {
+        this.listener.unsubscribe();
+    }
+
+        updateState(state,client){
         let  current_song = client.getCurrentSong();
         this.artist=stringFormat("{0}-{1}",[current_song.getArtist(),current_song.getAlbum()]);
         let duration=current_song.getDuration();

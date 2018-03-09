@@ -1,11 +1,11 @@
 import {AlbumList,notifyMessage}from "./AlbumList";
 import Modal from 'react-modal';
 import ReactScrollbar from 'react-scrollbar-js';
-
+import {ContextMenu3} from './ContextMenu.js';
 import {getLinks,saveLinks} from './Utils.js';
 import React, {Component} from "react";
 import Img from 'react-image';
-//import cookie from "react-cookies";
+import cookie from "react-cookies";
 import {addLink, getDimensions, getImagePath, global, stringFormat} from "./Utils";
 import { MyButton } from './Buttons';
 
@@ -13,6 +13,18 @@ import { MyButton } from './Buttons';
 let categories=[
     "Interesting","New","Classical","R&B","Pop","Rock","Progressive Rock","Blues","Jazz","Electronic","Hip Hop","Dance"
 ];
+
+function getCategories(){
+    let insideCategories=categories;
+    let categoriescookie=cookie.load("categories");
+    if (!(categoriescookie==undefined))
+        insideCategories=categoriescookie;
+    return insideCategories;
+}
+function setCategories(newCategories){
+    cookie.save("categories", newCategories, {path: "/"});
+    categories=newCategories;
+}
 let CATEGORY="Cat: ";
 let NOCATEGORY="No Category";
 //<PopupEditCategories onRef={ref => (this.albumsContextmenu = ref)}}/>
@@ -41,18 +53,20 @@ class PopupEdit extends Component {
 
     render() {
         const {visible} = this.state;
-        console.log("visible:",visible);
         let {width, height} = getDimensions();
         let PopupStyle = {
             color: global.get("backgroundColor"),
             backgroundColor: global.get("color"),
             margin: 10,
-            width: width - 150,
-            height: height - 150,
+            width: width - 250,
+            height: height - 340,
         };
         let buttonStyle={
             float:"right"
         };
+        let modalStyle={
+            width: width - 200
+        };//
 
 
         return (<div ref={ref => {
@@ -63,16 +77,17 @@ class PopupEdit extends Component {
                     isOpen={true}
                     ariaHideApp={false}
                     contentLabel="Edit"
-                >
+                ><div className={"contextMenu--option"}>{this.title}</div>
 
                     <ReactScrollbar style={PopupStyle}>
                         <div className="popup">
-                            {this.title}
+
                             {this.popupContent()}
 
                         </div>
-                        <MyButton text={"Close"} style={buttonStyle} onClick={(e)=>{this.closePopup(e)}}/>
+
                     </ReactScrollbar>
+                    <MyButton text={"Close"} style={buttonStyle} onClick={(e)=>{this.closePopup(e)}}/>
 
 
                 </Modal>:""
@@ -81,8 +96,72 @@ class PopupEdit extends Component {
     }
 }
 class PopupEditCategories extends PopupEdit {
+    constructor(props) {
+        super(props);
+        this.editSelection="";
+        this.categories=getCategories();
+    }
+    contextMenu(e) {
+        global.set("contextOptions",["Remove","Rename"]);
+        this.albumsContextmenu._handleContextMenu(e);
+    };
+    contextResult(choice) {
+        if(choice==="Remove"){
+            this.categories.splice(this.selection, 1);
+            setCategories(this.categories);
+            this.setState(this.state);
+        }
+        if(choice==="Rename"){
+            this.categories[this.selection]=this.editSelection;
+            setCategories(this.categories);
+            this.setState(this.state);
+        }
+    }
+    handleChange(event) {
+        this.editSelection=event.target.value;
+    }
+    addItem(e){
+        this.categories.push(this.editSelection);
+        setCategories(this.categories);
+        this.setState(this.state);
+    }
+
+
     popupContent(){
-        return <div>{"inside edit-categories"}</div>
+        let {width, height} = getDimensions();
+        let PopupStyle = {
+            color: global.get("backgroundColor"),
+            backgroundColor: global.get("color"),
+            margin: 1,
+            width: width - 255,
+            height: height - 440,
+        };
+        let EditStyle = {
+            margin: 10,
+            width: width - 500
+
+        };
+        let buttonStyle={
+            float:"right"
+        };
+
+        return <div>
+            <ReactScrollbar style={PopupStyle}>
+                <ContextMenu3 onRef={ref => (this.albumsContextmenu = ref)}
+                                             returnChoice={this.contextResult.bind(this)}/>
+
+        <div>
+            <ul>{this.categories.map((item,i)=>{return <li key={i} onContextMenu={(e) => {
+                this.selection = i;
+                this.contextMenu(e)
+            }}>
+                {item}</li>})}
+    </ul></div >
+            </ReactScrollbar>
+            <input type="text" value={this.state.value} style={EditStyle} onChange={this.handleChange.bind(this)} />
+            <MyButton text={"Add"} onClick={this.addItem.bind(this)} style={buttonStyle}/>
+    </div>
+
     }
 
 }
@@ -125,7 +204,7 @@ class PopupCategories extends Component {
                         <Img src={getImagePath("/" + this.album)}
                              className="list-image-large"/>
                         <ul>
-                            {categories.map((listValue, i) => {
+                            {getCategories().map((listValue, i) => {
 
                                 return <div key={i} className="list-item" onClick={(e) => {
                                     this.closePopup(e, listValue);

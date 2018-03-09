@@ -11,9 +11,8 @@ class MyButton extends React.Component {
     }
 
     render() {
-        //Object.assign(ls, this.listStyle);
+        //merge props-style with buttonStyle
         let mystyle=this.style||{};
-        //Object.assign(mystyle, this.style);
         let buttonStyle = {
             color: global.get("backgroundColor"),
             backgroundColor: global.get("color"),
@@ -21,7 +20,7 @@ class MyButton extends React.Component {
         };
         Object.assign(mystyle, buttonStyle);
         return (
-            <FlatButton color="primary" className="myButton"
+            <FlatButton color="primary" className={["myButton","contextMenu--option"].join(' ')}
                         ripple={true} style={mystyle}  onClick={this.onClick}>{this.text}</FlatButton>)
 
 

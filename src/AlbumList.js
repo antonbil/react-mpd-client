@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import Modal from 'react-modal';
 import ReactScrollbar from 'react-scrollbar-js';
 import CommonList from './CommonList';
-import {ContextMenu2,ContextMenu3} from './ContextMenu.js';
+import {ContextMenu3} from './ContextMenu.js';
 import {padDigits, getTime, getImagePath, getDimensions, stringFormat, goHome,addLink} from './Utils.js';
 import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
@@ -373,14 +373,14 @@ class AlbumList extends CommonList {
 
     listItemFunction(listValue, i) {
         let path = this.getImagePath("/" + this.totalList[i].mpd_file_path);
-        return (<div style={this.listStyle} onClick={() => {
+        return (<div style={this.listStyle} key={i} onClick={() => {
             this.addDirectoryContentsToQueue(i);
         }} onContextMenu={(e) => {
             this.selection = i;
             this.contextMenu(e)
-        }} key={i}>
+        }}>
             <Img src={path} className="list-image-small" style={this.imgStyle}/>
-            <li style={this.textStyle}>
+            <li style={this.textStyle} >
                 {this.splitHyphen(listValue)}</li>
         </div>);
     }
