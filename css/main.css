@@ -177,3 +177,12 @@ input[type=checkbox]
     transition: all 0.3s;
 }
 
+.myButton {
+    -moz-border-radius:15px;
+    -webkit-border-radius:15px;
+    border-radius:15px;
+    border:4px solid;
+    display:inline-block;
+    cursor:pointer;
+}
+
