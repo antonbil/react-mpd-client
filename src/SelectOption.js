@@ -1,5 +1,9 @@
 import React from "react";
 
+
+import { MyButton } from './Buttons';
+import {global} from "./Utils";
+
 class SelectOption extends React.Component {
     constructor(props) {
         super(props);
@@ -24,8 +28,12 @@ class SelectOption extends React.Component {
     }
 
     render() {
+        let buttonStyle={
+            color: global.get("backgroundColor"),
+            backgroundColor: global.get("color")
+        };
         return (
-            <form onSubmit={this.handleSubmit}>
+            <form >
                 { this.options.map((option, index) => (
                     <div className="checkbox" key={index}>
                         <label>
@@ -52,7 +60,7 @@ class SelectOption extends React.Component {
                         </label>
                     </div>))
                 }
-                <input type="submit" value={this.submitMessage} />
+                <MyButton text={this.submitMessage}  onClick={this.handleSubmit}/>
             </form>
         );
     }

@@ -264,11 +264,9 @@ class AlbumList extends CommonList {
     }
 
     getFilePath(index) {
-        console.log(this.totalList[index]);
         let str = this.totalList[index].mpd_file_path;
         if (str.endsWith("/"))
             str = str.substr(0, str.length - 1);
-        console.log(str);
         return str;
     }
 

@@ -5,6 +5,7 @@ import React from "react";
 import {ContextMenu2} from './ContextMenu.js';
 import Img from 'react-image';
 import {BasicFloatingMenu} from "./FloatingButton";
+import { MyButton } from './Buttons';
 
 class SearchList extends CommonList {
     constructor(props) {
@@ -134,6 +135,7 @@ class SearchForm extends React.Component {
     }
 
     handleSubmit(event) {
+        console.log("searching:");
         //alert('A value was submitted: ' + this.state.value);
         let search={};
         for (let i=0;i<this.options.length-1;i++){
@@ -152,11 +154,11 @@ class SearchForm extends React.Component {
     render() {
         //console.log(this.state,this.options);
         return (
-            <form onSubmit={this.handleSubmit.bind(this)}>
+            <form >
                 <label>
                     <input type="text" value={this.state.value} onChange={this.handleChange} />
                 </label>
-                <input type="submit" value="Search" />
+                <MyButton text={"Search"} onClick={this.handleSubmit.bind(this)}/>
                 { this.options.map((option, index) => (
                     <div className="checkbox" key={index}>
                         <label>
