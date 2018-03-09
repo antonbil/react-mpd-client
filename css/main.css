@@ -185,4 +185,5 @@ input[type=checkbox]
     display:inline-block;
     cursor:pointer;
 }
+.myButton:focus { outline: none; }
 

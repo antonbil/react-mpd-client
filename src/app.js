@@ -4,6 +4,7 @@ import ReactObserver from 'react-event-observer';
 import Tabs from 'react-simpletabs';
 import * as Mpd from '../MPD.js/mpd.js';//--> gives MPD-class
 import FavsList from './FavsList.js';
+import {PopupEditCategories} from './LinksList.js';
 import {AlbumList} from './AlbumList.js';
 import {LinksList} from './LinksList.js';
 import PlayList from './Playlist.js';
@@ -13,6 +14,7 @@ import HeaderButtons from './HeaderButtons';
 import SelectServer from './SelectServer';
 import {SelectSkin,setColourDefaults} from './SelectSkin';
 import VolumeSlider from './VolumeSlider';
+import { MyButton } from './Buttons';
 
 import {global,getDimensions,changeCSSRule} from "./Utils";
 import {FloatingPlayButtons} from "./FloatingButton";
@@ -97,6 +99,8 @@ class Main extends React.Component {
                         <VolumeSlider/>
                         < SelectServer/>
                         < SelectSkin />
+                        <PopupEditCategories title={"Edit Categories"} onRef={ref => (this.PopupEditCategories = ref)}/>
+                        <MyButton text={"Edit Categories"}  onClick={(e)=>{this.PopupEditCategories.openPopup(e)}}/>
                         <FloatingPlayButtons level={0}/>
                     </div>
                 </Tabs.Panel>

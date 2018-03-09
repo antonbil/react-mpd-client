@@ -7,6 +7,7 @@ import React, {Component} from "react";
 import Img from 'react-image';
 //import cookie from "react-cookies";
 import {addLink, getDimensions, getImagePath, global, stringFormat} from "./Utils";
+import { MyButton } from './Buttons';
 
 
 let categories=[
@@ -14,7 +15,77 @@ let categories=[
 ];
 let CATEGORY="Cat: ";
 let NOCATEGORY="No Category";
+//<PopupEditCategories onRef={ref => (this.albumsContextmenu = ref)}}/>
+class PopupEdit extends Component {
+    constructor(props) {
+        super(props);
+        this.state={visible:false};
+        this.title=props.title;
+        props.onRef(this);
 
+    }
+
+    closePopup(e){
+        e.preventDefault();
+        this.setState({visible:false})
+    }
+
+    openPopup(e){
+        e.preventDefault();
+        this.setState({visible:true})
+    }
+
+    popupContent(){
+        return <div></div>
+    }
+
+    render() {
+        const {visible} = this.state;
+        console.log("visible:",visible);
+        let {width, height} = getDimensions();
+        let PopupStyle = {
+            color: global.get("backgroundColor"),
+            backgroundColor: global.get("color"),
+            margin: 10,
+            width: width - 150,
+            height: height - 150,
+        };
+        let buttonStyle={
+            float:"right"
+        };
+
+
+        return (<div ref={ref => {
+            this.app = ref
+        }} >
+            {visible ?
+                <Modal
+                    isOpen={true}
+                    ariaHideApp={false}
+                    contentLabel="Edit"
+                >
+
+                    <ReactScrollbar style={PopupStyle}>
+                        <div className="popup">
+                            {this.title}
+                            {this.popupContent()}
+
+                        </div>
+                        <MyButton text={"Close"} style={buttonStyle} onClick={(e)=>{this.closePopup(e)}}/>
+                    </ReactScrollbar>
+
+
+                </Modal>:""
+            }
+        </div>)
+    }
+}
+class PopupEditCategories extends PopupEdit {
+    popupContent(){
+        return <div>{"inside edit-categories"}</div>
+    }
+
+}
 class PopupCategories extends Component {
     constructor(props) {
         super(props);
@@ -275,4 +346,4 @@ class LinksList extends AlbumList {
 
 
 }
-export {LinksList};
+export {LinksList,PopupEditCategories};
