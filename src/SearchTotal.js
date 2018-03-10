@@ -106,7 +106,7 @@ class SearchList extends CommonList {
                                 options={["Add","Add and Play","Replace and Play"]} /><ul>
                 {this.state.items.map((listValue,i)=>{
                     let path=getImagePath("/"+this.items[i].dirpath);
-                    return <div  key={i} className="list-item" key={i+500} style={this.listStyle} onClick={() =>
+                    return <div  key={i} className="list-item" key={i+500} style={this.getEvenStyle(i)} onClick={() =>
                     { this.handleClick(i);}} onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}} >
                         <Img src={path}  style={this.imgStyle}/><li  style={this.textStyle}>{this.splitHyphen(listValue)}</li></div>;
                 })}

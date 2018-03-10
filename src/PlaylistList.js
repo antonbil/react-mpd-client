@@ -67,7 +67,7 @@ class PlaylistList extends CommonList {
                     {this.state.items.map((listValue,i)=>{
                         return <li key={i} onClick={() => { this.handleClick(i);}}
                                    onContextMenu={(e) => {this.selection=i; this.contextMenu(e)}}
-                                   style={this.listStyle}>{listValue}</li>;
+                                   style={this.getEvenStyle(i)}>{listValue}</li>;
                     })}
                 </ul><BasicFloatingMenu/></div>
         )

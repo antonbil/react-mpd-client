@@ -411,7 +411,7 @@ class LinksList extends AlbumList {
         let path = this.getImagePath("/" + listElement.mpd_file_path);
         if (!(listElement.visible || listElement.isCategory)) return "";
 
-        return (<div style={this.listStyle} onClick={() => {
+        return (<div style={this.getEvenStyle(i)} onClick={() => {
             click(i);
         }} onContextMenu={(e) => {
             this.selection = i;

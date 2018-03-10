@@ -3,7 +3,7 @@ import React from "react";
 import CommonList from "./CommonList";
 import {ContextMenu2} from "./ContextMenu.js";
 import Img from 'react-image';
-import {getDimensions, getImagePath, getTime, global, padDigits} from "./Utils";
+import {getDimensions, getImagePath, getTime, global, padDigits,blend_colors} from "./Utils";
 import ReactDOM from 'react-dom';
 import {BasicFloatingMenu} from './FloatingButton';
 
@@ -128,7 +128,8 @@ class PlayList extends CommonList {
             height: height - this.top - 20,
         };
         let listPlayingStyle = {
-            backgroundColor: global.get("backgroundPlaying")
+            backgroundColor: global.get("backgroundPlaying"),
+            border:"4px solid"
         };
 
         let prevPath = "";
@@ -148,8 +149,7 @@ class PlayList extends CommonList {
                             artist = <div className="list-artist"
                                           style={this.textStyle}>{this.totalList[i].artist + "-" + this.totalList[i].album}</div>
                         }
-                        let ls = {};
-                        Object.assign(ls, this.listStyle);
+                        let ls = this.getEvenStyle(i);
                         let current = "";
                         if (global.get("currentsong") == i) {
                             current = "list-playing";

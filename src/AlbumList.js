@@ -288,6 +288,7 @@ class AlbumList extends CommonList {
     }
 
     contextAlbumResult(choice) {
+
         this.getFilePathCallback(this.selection,
             (path) => {
                 if (choice === "Add") {
@@ -377,7 +378,7 @@ class AlbumList extends CommonList {
 
     listItemFunction(listValue, i) {
         let path = this.getImagePath("/" + this.totalList[i].mpd_file_path);
-        return (<div style={this.listStyle} key={i} onClick={() => {
+        return (<div style={this.getEvenStyle(i)} key={i} onClick={() => {
             this.addDirectoryContentsToQueue(i);
         }} onContextMenu={(e) => {
             this.selection = i;

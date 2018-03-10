@@ -1,6 +1,6 @@
 /*CommonList*/
 import React from "react";
-import {global} from "./Utils";
+import {blend_colors, global} from "./Utils";
 
 class CommonList extends React.Component {
     constructor(props) {
@@ -12,7 +12,7 @@ class CommonList extends React.Component {
         this.mpd_client=global.get("mpd_client");
         this.itemHeight=global.get("itemheight");
         this.listStyle = {
-            border: '3px solid #ddd',
+            border: '1px solid',
             listStyleType: 'none',
             display: 'block',
             minHeight:this.itemHeight
@@ -40,7 +40,20 @@ class CommonList extends React.Component {
         };
         this.handleClick = this.handleClick.bind(this);
         this.contextMenu = this.contextMenu.bind(this);
+        let background = global.get("backgroundColor");
+        let foreground = global.get("color");
+        this.evenListStyle = {
+            backgroundColor: blend_colors(background, foreground, 0.05)
+        };
 
+    }
+    getEvenStyle(i){
+        let ls = {};
+        Object.assign(ls, this.listStyle);
+        if(i % 2 == 0){
+            Object.assign(ls, this.evenListStyle)
+        }
+        return ls;
     }
     handleClick(index) {
     };
