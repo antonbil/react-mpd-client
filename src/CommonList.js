@@ -70,12 +70,35 @@ class CommonList extends React.Component {
         e.preventDefault();
     };
 
-    splitHyphen(text){
-        //javascript only replaces first occurrence!(lucky...)
+    splitHyphen2(value){
+        let arr = value.split("/");
+        let first = arr.pop();
+        let second = arr.pop();
+        let artist=second==undefined?"":second;
+        let arr2=first.split("-");
+        if (arr2.length==1){
+            let title=arr2[0];
+            if (second==undefined) return title;
+            return artist+"-"+title;
+        }
+        let title = arr2.pop();
+        second=arr2.join("-");
+        let n=parseFloat(second);
+        console.log("float",n,second,title,isNaN(n));
+        if (!isNaN(n) && Number(n) === n && (n.toString()).length+2>second.length){return artist+"-"+title}
+        return second+"-"+title;
+
+        /*//javascript only replaces first occurrence!(lucky...)
+        */
+    }
+
+    splitHyphen(value) {
+        let text=this.splitHyphen2(value);
         text=text.replace("-", 'blahblah');
         let sp=text.split("blahblah");
         return sp.map((e,i)=>{return <div>{e}</div>})
     }
+
 }
 
 export default CommonList ;
