@@ -49,12 +49,17 @@ class RecentList extends SearchList {
     constructor(props) {
         super(props);
         this.processSearchResults();
+    }
+    componentDidMount() {
         this.listener = global.get("observer").subscribe('AddedRecent',(data)=>{
             this.processRecent(data.recent);
             this.setState({
                 items: data.recent
             });
         });
+    }
+    componentWillUnmount() {
+        this.listener.unsubscribe();
     }
     processRecent(totalList){
         this.items = totalList.map((el,i)=>{return {path:el,title:el,album:"",artist:"", dirpath:el}});
