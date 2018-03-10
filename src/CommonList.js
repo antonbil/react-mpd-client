@@ -45,6 +45,9 @@ class CommonList extends React.Component {
         this.evenListStyle = {
             backgroundColor: blend_colors(background, foreground, 0.05)
         };
+        this.alternateHeadStyle = {
+            backgroundColor: blend_colors(background, foreground, 0.2)
+        };
 
     }
     getEvenStyle(i){
@@ -53,6 +56,12 @@ class CommonList extends React.Component {
         if(i % 2 == 0){
             Object.assign(ls, this.evenListStyle)
         }
+        return ls;
+    }
+    getAlternateHeadStyle(i){
+        let ls = {};
+        Object.assign(ls, this.listStyle);
+        Object.assign(ls, this.alternateHeadStyle)
         return ls;
     }
     handleClick(index) {

@@ -397,6 +397,7 @@ class LinksList extends AlbumList {
         let context=this.contextMenu;
         let click=this.addDirectoryContentsToQueue.bind(this);
         let catimg = "";
+        let ls=this.getEvenStyle(i);
 
         //make listElement from albumlist compatible with linkslist
         let listElement = {MPD_file_path_name:"",mpd_file_path:"",category:"",visible:true,name:name,isCategory:false};
@@ -407,11 +408,12 @@ class LinksList extends AlbumList {
             click = this.clickCategory.bind(this);
             catimg = <Img src={listElement.visible ? "img/down.png" : "img/right.png"} className="list-image-small"
                           style={this.imgStyle}/>
+            Object.assign(ls,this.getAlternateHeadStyle());
         }
         let path = this.getImagePath("/" + listElement.mpd_file_path);
         if (!(listElement.visible || listElement.isCategory)) return "";
 
-        return (<div style={this.getEvenStyle(i)} onClick={() => {
+        return (<div style={ls} onClick={() => {
             click(i);
         }} onContextMenu={(e) => {
             this.selection = i;
