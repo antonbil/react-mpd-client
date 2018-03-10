@@ -73,6 +73,7 @@ class SearchList extends CommonList {
 
     contextResult(choice){
         let  path=this.getFilePath(this.selection);
+        global.get("observer").publish('AddRecent', {recentElement:path});
 
         if (choice==="Add"){
             this.mpd_client.addSongToQueueByFile(path);
@@ -96,6 +97,7 @@ class SearchList extends CommonList {
     handleClick(index) {
         let  path=this.items[index].path;
         this.selection=index;
+        global.get("observer").publish('AddRecent', {recentElement:path});
         this.mpd_client.addSongToQueueByFile( path);
     }
     render() {
@@ -209,4 +211,4 @@ class SearchTotal extends React.Component {
     }
 }
 
-export default SearchTotal;
+export { SearchTotal,SearchList};

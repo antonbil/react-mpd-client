@@ -130,6 +130,7 @@ class FavsList extends AlbumList {
             } else {
                 this.getFilePathCallback(this.selection,(dirToAdd)=>{
                     this.mpd_client.addSongToQueueByFile(dirToAdd);
+                    global.get("observer").publish('AddRecent', {recentElement:dirToAdd});
                     notifyMessage("add dir:" + lastPart(dirToAdd));});
             }
         });

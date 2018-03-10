@@ -246,6 +246,7 @@ class AlbumList extends CommonList {
                 });
             } else {
                 this.mpd_client.addSongToQueueByFile(dir);
+                global.get("observer").publish('AddRecent', {recentElement:dir});
 
                 notifyMessage("add dir:" + lastPart(dir));
                 //no items, display context menu
@@ -290,14 +291,17 @@ class AlbumList extends CommonList {
         this.getFilePathCallback(this.selection,
             (path) => {
                 if (choice === "Add") {
+                    global.get("observer").publish('AddRecent', {recentElement:path});
                     this.mpd_client.addSongToQueueByFile(path);
                 }
                 if (choice === "Add and Play") {
+                    global.get("observer").publish('AddRecent', {recentElement:path});
                     let len = this.mpd_client.getQueue().getSongs().length;
                     this.mpd_client.addSongToQueueByFile(path);
                     this.mpd_client.play(len);
                 }
                 if (choice === "Replace and Play") {
+                    global.get("observer").publish('AddRecent', {recentElement:path});
                     this.mpd_client.clearQueue();
                     this.mpd_client.addSongToQueueByFile(path);
                     this.mpd_client.play(0);

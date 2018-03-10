@@ -9,12 +9,13 @@ import {AlbumList} from './AlbumList.js';
 import {LinksList} from './LinksList.js';
 import PlayList from './Playlist.js';
 import PlaylistList from './PlaylistList.js';
-import SearchTotal from './SearchTotal.js';
+import {SearchTotal} from './SearchTotal.js';
 import HeaderButtons from './HeaderButtons';
 import SelectServer from './SelectServer';
 import {SelectSkin,setColourDefaults} from './SelectSkin';
 import VolumeSlider from './VolumeSlider';
 import { MyButton } from './Buttons';
+import { RecentModel,RecentList } from './RecentModel';
 
 import {global,getDimensions,changeCSSRule} from "./Utils";
 import {FloatingPlayButtons} from "./FloatingButton";
@@ -32,6 +33,8 @@ class Main extends React.Component {
         global.set("mpd_client",this.mpd_client);
         global.set("itemheight",height / 11);
         global.set("observer",this.observer);
+        //create recentModel AFTER creating observer!
+        global.set("recentmodel",new RecentModel({observer:this.observer}));
         global.set("fontlarge",window.mpdreactfontlarge);
         //global color-settings for theme
         let skin="day";
@@ -90,6 +93,9 @@ class Main extends React.Component {
                 </Tabs.Panel>
                 <Tabs.Panel title='Lists'>
                     <PlaylistList/>
+                </Tabs.Panel>
+                <Tabs.Panel title='Recent'>
+                    <RecentList  onRef={ref => (this.PopupEditCategories = ref)}/>
                 </Tabs.Panel>
                 <Tabs.Panel title='Search'>
                     <SearchTotal/>
