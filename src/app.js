@@ -45,19 +45,6 @@ class Main extends React.Component {
         setColourDefaults(skin);
 
 
-        /*connect observer to mpd-client*/
-        this.mpd_client.on('StateChanged', (state, client) => {
-            //console.log("state changed:",state, client);
-            this.observer.publish('StateChanged', {state: state, client: client});
-        });
-        this.mpd_client.on('QueueChanged', (queue) => {
-            //console.log("queue changed:",queue);
-            this.observer.publish('QueueChanged', queue);
-        });
-        this.mpd_client.on('PlaylistsChanged', (playlists, client) => {
-            //console.log("Playlists Changed:",playlists);
-            this.observer.publish('PlaylistsChanged', playlists);
-        });
         this.renderlistener = this.observer.subscribe('Render',(data)=>{
             //re-render main
             this.setState({});
@@ -72,6 +59,19 @@ class Main extends React.Component {
     connect(){
         this.mpd_client = new MPD(8800, "ws://" + window.server);
         global.set("mpd_client",this.mpd_client);
+        /*connect observer to mpd-client*/
+        this.mpd_client.on('StateChanged', (state, client) => {
+            //console.log("state changed:",state, client);
+            this.observer.publish('StateChanged', {state: state, client: client});
+        });
+        this.mpd_client.on('QueueChanged', (queue) => {
+            //console.log("queue changed:",queue);
+            this.observer.publish('QueueChanged', queue);
+        });
+        this.mpd_client.on('PlaylistsChanged', (playlists, client) => {
+            //console.log("Playlists Changed:",playlists);
+            this.observer.publish('PlaylistsChanged', playlists);
+        });
     }
 
     tick(){
@@ -81,7 +81,12 @@ class Main extends React.Component {
         if(typeof state === 'number' && isNaN(state)||state===undefined||state===null)this.connect();
         else {
             if (this.time!==null) {
-                this.time.curTime=Math.floor(global.get("mpd_client").getCurrentSongTime());
+                let time1=this.time.curTime;
+                let time2=Math.floor(global.get("mpd_client").getCurrentSongTime());
+                if (Math.abs(time1-time2)>5)
+                    this.connect()
+                else
+                    this.time.curTime=time2;
             }
         }
     }
