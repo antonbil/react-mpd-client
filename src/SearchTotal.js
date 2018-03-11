@@ -155,6 +155,9 @@ class SearchForm extends React.Component {
 
     render() {
         //console.log(this.state,this.options);
+        let optionStyle={
+            zIndex:-1
+        };
         return (
             <form >
                 <label>
@@ -164,7 +167,7 @@ class SearchForm extends React.Component {
                 { this.options.map((option, index) => (
                     <div className="checkbox" key={index}>
                         <label>
-                            <input type="checkbox"
+                            <input type="checkbox" style={optionStyle}
                                    name={`${name}[${index}]`}
                                    value={option.name}
                                    checked={option.value}

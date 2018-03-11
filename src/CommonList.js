@@ -84,7 +84,6 @@ class CommonList extends React.Component {
         let title = arr2.pop();
         second=arr2.join("-");
         let n=parseFloat(second);
-        console.log("float",n,second,title,isNaN(n));
         if (!isNaN(n) && Number(n) === n && (n.toString()).length+2>second.length){return artist+"-"+title}
         return second+"-"+title;
 

@@ -25,12 +25,12 @@ class Main extends React.Component {
         super(props);
         //pictures at: http://192.168.2.8:8081/FamilyMusic/.....
 
-        this.mpd_client = new MPD(8800, "ws://" + window.server);
         this.observer = ReactObserver();
+        this.connect();
+        console.log(this.mpd_client);
 
         //define global variables
         let {width, height} = getDimensions();
-        global.set("mpd_client",this.mpd_client);
         global.set("itemheight",height / 11);
         global.set("observer",this.observer);
         //create recentModel AFTER creating observer!
@@ -62,6 +62,28 @@ class Main extends React.Component {
             //re-render main
             this.setState({});
         });
+        this.time=null;
+        this.observer.subscribe('ShowTime',(data)=>{
+            //ask Object ShowTime for its address,and store it in this.time
+            this.time=data.time;
+        });
+        this.timer = setInterval(this.tick.bind(this), 10000);
+    }
+    connect(){
+        this.mpd_client = new MPD(8800, "ws://" + window.server);
+        global.set("mpd_client",this.mpd_client);
+    }
+
+    tick(){
+        //sync time every 10 seconds
+        let state=global.get("mpd_client").getState();
+
+        if(typeof state === 'number' && isNaN(state)||state===undefined||state===null)this.connect();
+        else {
+            if (this.time!==null) {
+                this.time.curTime=Math.floor(global.get("mpd_client").getCurrentSongTime());
+            }
+        }
     }
 
     render() {

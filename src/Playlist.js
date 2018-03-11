@@ -45,12 +45,12 @@ class PlayList extends CommonList {
 
         });
         this.listenerState = global.get("observer").subscribe('StateChanged', (data) => {
-            this.updateState(data.state, data.client);
+            this.updateState(data.state);
         });
 
     }
 
-    updateState(state, client) {
+    updateState(state) {
         let id = state.current_song.queue_idx;
         if (this.queueId != id) {
             this.queueId = id;

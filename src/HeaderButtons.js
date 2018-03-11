@@ -10,48 +10,51 @@ class ShowTime extends React.Component {
         super(props);
         props.onRef(this);
         this.playing="stop";
+        this.updatingState=false;
+        this.curDuration=null;
+        this.curTime=null;
         this.state = {
             curTime : null,
-            curDuration : null
+
         };
-        this.listener = global.get("observer").subscribe('StateChanged',(data)=>{
-            //console.log('StateChanged is: ',data);
-            this.updateState(data.state,data.client);
-        });
     }
 
-    updateState(state,client){
+    updateState(state){
         this.playing=state.playstate;
 
+
         if (state.playstate==="play"){
-            this.state = {
-                curDuration : this.state.curDuration,
-                curTime : Math.floor(state.current_song.elapsed_time)
-            }
+            this.curTime=Math.floor(state.current_song.elapsed_time);
         }
     }
     updateStateDuration(duration){
 
-            this.state = {
-                curDuration : duration,
+        this.curDuration=duration;
+            /*this.state = {
+
                 curTime :  this.state.curTime
-            }
+            }*/
 
     }
     componentDidMount() {
+        this.listener = global.get("observer").subscribe('StateChanged',(data)=>{
+            //console.log('StateChanged is: ',data);
+            this.updateState(data.state);
+        });
         setInterval( () => {
 
             if (this.playing==="play"){
-                let  newTime=this.state.curTime+1;
+                this.curTime++;
                 this.setState({
-                    curTime : newTime
-                })
+                    curTime : this.curTime
+                });
             }
-        },1000)
+        },1000);
+        global.get("observer").publish('ShowTime', {time:this});
     }
     render() {
         return(
-            <div className="header-time">{getTime(this.state.curTime)+" "+getTime(this.state.curDuration)}
+            <div className="header-time">{getTime(this.curTime)+" "+getTime(this.curDuration)}
             </div>
         );
     }
@@ -72,15 +75,15 @@ class HeaderButtons extends React.Component {
     }
     componentDidMount() {
         this.listener = global.get("observer").subscribe('StateChanged',(data)=>{
-            this.updateState(data.state,data.client);
+            this.updateState(data.state);
         });
     }
     componentWillUnmount() {
         this.listener.unsubscribe();
     }
 
-        updateState(state,client){
-        let  current_song = client.getCurrentSong();
+    updateState(state){
+        let  current_song = this.mpd_client.getCurrentSong();
         this.artist=stringFormat("{0}-{1}",[current_song.getArtist(),current_song.getAlbum()]);
         let duration=current_song.getDuration();
         this.showTime.updateStateDuration(duration);
@@ -132,6 +135,8 @@ class HeaderButtons extends React.Component {
             color: global.get("color"),
 
             height: minHeight,
+            zIndex:100
+
         };
         let  s = {
             backgroundColor: global.get("backgroundColor")

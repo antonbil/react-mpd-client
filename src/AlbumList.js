@@ -222,6 +222,12 @@ class AlbumList extends CommonList {
 
     getAlbumDirectoryContents(dir) {
         this.mpd_client.getDirectoryContents(dir, (directory_contents) => {
+            if (directory_contents.length===0){
+                //always display somthing!!
+                console.log("empty result, display main direcctory!");
+                getAlbumDirectoryContents(this.baseDir());
+                return;
+            }
             let myTotalList = [];
             let mylist = [];
             directory_contents.forEach((content) => {
