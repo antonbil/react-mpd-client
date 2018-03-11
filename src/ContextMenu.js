@@ -36,14 +36,22 @@ class ContextMenu1 extends React.Component {
 
         const screenW = window.innerWidth;
 
-        const screenH = window.innerHeight;
+        let screenH = window.innerHeight;
+        let h=global.get("itemheight")*global.get("contextOptions");
+        if (h>0)screenH = h;
         try {//first time it is displayed no value is assigned to this.app
             let rootW1 = this.app.offsetWidth;
+            //todo: dirty hack. find out how to initialize this.app first correctly
+            if(rootW1<1){
+                if (global.get("fontlarge"))rootW1=431; else rootW1=160}
 
             const rootW = rootW1;
 
             let rootH1 = this.app.offsetHeight;
+            if(rootH1<1){
+                if (global.get("fontlarge"))rootH1=413; else rootH1=146}
             const rootH = rootH1;
+            //if ()
 
             Object.assign(this.style, this.style);
 
