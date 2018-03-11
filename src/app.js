@@ -58,6 +58,7 @@ class Main extends React.Component {
     }
     connect(){
         this.mpd_client = new MPD(8800, "ws://" + window.server);
+        this.observer.publish('MpdInitialized', this.mpd_client);
         global.set("mpd_client",this.mpd_client);
         /*connect observer to mpd-client*/
         this.mpd_client.on('StateChanged', (state, client) => {

@@ -1,6 +1,7 @@
 /*CommonList*/
 import React from "react";
 import {blend_colors, global} from "./Utils";
+import ReactDOM from "react-dom";
 
 class CommonList extends React.Component {
     constructor(props) {
@@ -96,6 +97,19 @@ class CommonList extends React.Component {
         text=text.replace("-", 'blahblah');
         let sp=text.split("blahblah");
         return sp.map((e,i)=>{return <div>{e}</div>})
+    }
+
+    componentDidMount() {
+        this.listenerInit = global.get("observer").subscribe('MpdInitialized',(data)=>{
+            this.mpd_client=data;
+        });
+
+    }
+
+    componentWillUnmount() {
+        try {
+            this.listenerInit.unsubscribe();
+        }catch(e){}
     }
 
 }

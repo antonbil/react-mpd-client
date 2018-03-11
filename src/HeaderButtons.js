@@ -77,9 +77,13 @@ class HeaderButtons extends React.Component {
         this.listener = global.get("observer").subscribe('StateChanged',(data)=>{
             this.updateState(data.state);
         });
+        this.listenerInit = global.get("observer").subscribe('MpdInitialized',(data)=>{
+            this.mpd_client=data;
+        });
     }
     componentWillUnmount() {
         this.listener.unsubscribe();
+        this.listenerInit.unsubscribe();
     }
 
     updateState(state){

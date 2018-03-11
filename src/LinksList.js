@@ -77,7 +77,7 @@ class PopupEdit extends Component {
                     isOpen={true}
                     ariaHideApp={false}
                     contentLabel="Edit"
-                ><div className={"contextMenu--option"}>{this.title}</div>
+                ><div className={"contextMenu--option header-text"}>{this.title}</div>
 
                     <ReactScrollbar style={PopupStyle}>
                         <div className="popup">
@@ -200,7 +200,7 @@ class PopupCategories extends Component {
                     <div className="popup" onClick={(e) => {
                         this.closePopup(e, null);
                     }}>
-                        {"Category for "+this.title}
+                        <div className={"header-text"}>{"Category for "+this.title}</div>
                         <Img src={getImagePath("/" + this.album)}
                              className="list-image-large"/>
                         <ul>

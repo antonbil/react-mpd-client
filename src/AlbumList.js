@@ -76,6 +76,18 @@ class PopupAlbum extends Component {
         this.mpd_client.getDirectoryContents(this.album, this.getDir.bind(this));
     }
 
+    componentDidMount() {
+        this.listenerInit = global.get("observer").subscribe('MpdInitialized',(data)=>{
+            this.mpd_client=data;
+        });
+
+    }
+
+    componentWillUnmount() {
+        try {
+            this.listenerInit.unsubscribe();
+        }catch(e){}
+    }
     getDir(directory_contents) {
         let myTotalList = directory_contents.map((content) => {
             try {
@@ -143,7 +155,7 @@ class PopupAlbum extends Component {
                         this.itemChosen = false;
                     }}>
                         <Img src={getImagePath("/" + this.album)}
-                             className="list-image-large"/>{album}
+                             className="list-image-large"/><div className={"header-text"}>{album}</div>
                         <ul>
                             {this.state.items.map((listValue, i) => {
 

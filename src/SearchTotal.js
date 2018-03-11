@@ -23,6 +23,16 @@ class SearchList extends CommonList {
         this.processSearchResults.bind(this);
         this.imgStyle.margin=0;
     }
+    componentDidMount() {
+        this.listenerInit = global.get("observer").subscribe('MpdInitialized',(data)=>{
+            this.mpd_client=data;
+        });
+
+    }
+
+    componentWillUnmount() {
+        this.listenerInit.unsubscribe();
+    }
     setOptions(options){
         this.options=options;
     }
@@ -158,12 +168,16 @@ class SearchForm extends React.Component {
         let optionStyle={
             zIndex:-1
         };
+        let buttonStyle={
+            float:"right"
+        };
+
         return (
             <form >
                 <label>
                     <input type="text" value={this.state.value} onChange={this.handleChange} />
                 </label>
-                <MyButton text={"Search"} onClick={this.handleSubmit.bind(this)}/>
+                <MyButton text={"Search"} onClick={this.handleSubmit.bind(this)} style={buttonStyle}/>
                 { this.options.map((option, index) => (
                     <div className="checkbox" key={index}>
                         <label>

@@ -3,6 +3,9 @@
     font-family:'digital-7';
     src: url('../fonts/digital-7.ttf');
 }
+.header-text{
+    text-align:center;border:3px solid
+}
 
 ul {
     list-style-type: none;

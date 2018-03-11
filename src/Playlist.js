@@ -47,6 +47,9 @@ class PlayList extends CommonList {
         this.listenerState = global.get("observer").subscribe('StateChanged', (data) => {
             this.updateState(data.state);
         });
+        this.listenerInit = global.get("observer").subscribe('MpdInitialized',(data)=>{
+            this.mpd_client=data;
+        });
 
     }
 
@@ -61,6 +64,7 @@ class PlayList extends CommonList {
     componentWillUnmount() {
         this.listenerState.unsubscribe();
         this.listener.unsubscribe();
+        this.listenerInit.unsubscribe();
     }
 
     /**
