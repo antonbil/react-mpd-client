@@ -180,4 +180,8 @@ function int_to_hex(num)
         hex = '0' + hex;
     return hex;
 }
-export{global, padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome,getLinks,saveLinks,addLink,changeCSSRule, blend_colors}
+
+function mpd_client(){
+    return global.get("mpd_client");
+}
+export{global, padDigits,getTime,getImagePath,getDimensions,stringFormat,goHome,getLinks,saveLinks,addLink,changeCSSRule, blend_colors,mpd_client}

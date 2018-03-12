@@ -1,6 +1,6 @@
 /*VolumeSlider*/
 import React , { Component } from 'react';
-import {global,goHome} from "./Utils";
+import {global,goHome,mpd_client} from "./Utils";
 
 
 /**
@@ -98,7 +98,6 @@ class FloatingPlayButtons extends Component {
         this.level=props.level;
         this.state={subMenu:false};
         this.floatToggle.bind(this);
-        this.mpd_client=global.get("mpd_client");
     }
     floatToggle(){
         this.setState({subMenu:!this.state.subMenu})
@@ -107,21 +106,21 @@ class FloatingPlayButtons extends Component {
         let subMenu=this.state.subMenu?floatingSubMenu([{
             text: getImg('img/next.png'), f: () => {
                 this.floatToggle();
-                this.mpd_client.next();
+                mpd_client().next();
             }
         },{
             text:getImg('img/play.png'), f: () => {
                 this.floatToggle();
 
                 if (global.get("playstate")=="play")
-                    this.mpd_client.pause();
+                    mpd_client().pause();
                 else
-                    this.mpd_client.play();
+                    mpd_client().play();
             }
         }, {
             text: getImg('img/previous.png'), f: () => {
                 this.floatToggle();
-                this.mpd_client.previous();
+                mpd_client().previous();
             }
         }],this.level):null;
         return (

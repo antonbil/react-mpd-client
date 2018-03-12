@@ -1,6 +1,6 @@
 import {AlbumList,notifyMessage,lastPart}from "./AlbumList";
 import parser from 'react-dom-parser';
-import {global} from "./Utils";
+import {global,mpd_client} from "./Utils";
 
 
 // Changes XML to JSON
@@ -129,7 +129,7 @@ class FavsList extends AlbumList {
                 });
             } else {
                 this.getFilePathCallback(this.selection,(dirToAdd)=>{
-                    this.mpd_client.addSongToQueueByFile(dirToAdd);
+                    mpd_client().addSongToQueueByFile(dirToAdd);
                     global.get("observer").publish('AddRecent', {recentElement:dirToAdd});
                     notifyMessage("add dir:" + lastPart(dirToAdd));});
             }

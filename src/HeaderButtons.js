@@ -1,5 +1,5 @@
 /*Timer*/
-import {global,getDimensions, getImagePath, getTime,stringFormat,padDigits} from "./Utils";
+import {global,getDimensions, getImagePath, getTime,stringFormat,padDigits,mpd_client} from "./Utils";
 import React from "react";
 import Sticky from 'react-sticky-el';
 import Img from 'react-image';
@@ -65,7 +65,6 @@ class HeaderButtons extends React.Component {
         super(props);
         this.showTime = null;
         this.state = {playing: true, songName:"", path:""};
-        this.mpd_client=global.get("mpd_client");
         this.artist="";
 
         // This binding is necessary to make `this` work in the callback
@@ -77,17 +76,14 @@ class HeaderButtons extends React.Component {
         this.listener = global.get("observer").subscribe('StateChanged',(data)=>{
             this.updateState(data.state);
         });
-        this.listenerInit = global.get("observer").subscribe('MpdInitialized',(data)=>{
-            this.mpd_client=data;
-        });
+
     }
     componentWillUnmount() {
         this.listener.unsubscribe();
-        this.listenerInit.unsubscribe();
     }
 
     updateState(state){
-        let  current_song = this.mpd_client.getCurrentSong();
+        let  current_song = mpd_client().getCurrentSong();
         this.artist=stringFormat("{0}-{1}",[current_song.getArtist(),current_song.getAlbum()]);
         let duration=current_song.getDuration();
         this.showTime.updateStateDuration(duration);
@@ -106,13 +102,13 @@ class HeaderButtons extends React.Component {
         }));
     }
     next() {
-        this.mpd_client.next();
-        this.mpd_client.play();
+        mpd_client().next();
+        mpd_client().play();
     }
 
     prev() {
-        this.mpd_client.previous();
-        this.mpd_client.play();
+        mpd_client().previous();
+        mpd_client().play();
     }
 
     handleClick() {
@@ -120,10 +116,10 @@ class HeaderButtons extends React.Component {
             playing: !prevState.playing
         }));
         if (!this.state.playing){
-            this.mpd_client.play();
+            mpd_client().play();
             //console.log("play");
         } else{
-            this.mpd_client.pause();
+            mpd_client().pause();
             //console.log("pause");
         }
     }

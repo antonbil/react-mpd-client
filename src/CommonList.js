@@ -10,7 +10,6 @@ class CommonList extends React.Component {
         this.state = {
             items: []
         };
-        this.mpd_client=global.get("mpd_client");
         this.itemHeight=global.get("itemheight");
         this.listStyle = {
             border: '1px solid',
@@ -99,18 +98,6 @@ class CommonList extends React.Component {
         return sp.map((e,i)=>{return <div>{e}</div>})
     }
 
-    componentDidMount() {
-        this.listenerInit = global.get("observer").subscribe('MpdInitialized',(data)=>{
-            this.mpd_client=data;
-        });
-
-    }
-
-    componentWillUnmount() {
-        try {
-            this.listenerInit.unsubscribe();
-        }catch(e){}
-    }
 
 }
 

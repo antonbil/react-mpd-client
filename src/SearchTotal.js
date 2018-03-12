@@ -1,6 +1,6 @@
 /* class SearchList*/
 import CommonList from "./CommonList";
-import {getImagePath, global} from "./Utils";
+import {getImagePath, global,mpd_client} from "./Utils";
 import React from "react";
 import {ContextMenu2} from './ContextMenu.js';
 import Img from 'react-image';
@@ -19,20 +19,10 @@ class SearchList extends CommonList {
         };
         this.options=[];
         this.items=[];
-        this.mpd_client=global.get("mpd_client");
         this.processSearchResults.bind(this);
         this.imgStyle.margin=0;
     }
-    componentDidMount() {
-        this.listenerInit = global.get("observer").subscribe('MpdInitialized',(data)=>{
-            this.mpd_client=data;
-        });
 
-    }
-
-    componentWillUnmount() {
-        this.listenerInit.unsubscribe();
-    }
     setOptions(options){
         this.options=options;
     }
@@ -86,17 +76,17 @@ class SearchList extends CommonList {
         global.get("observer").publish('AddRecent', {recentElement:path});
 
         if (choice==="Add"){
-            this.mpd_client.addSongToQueueByFile(path);
+            mpd_client().addSongToQueueByFile(path);
         }
         if (choice==="Add and Play"){
-            let  len=this.mpd_client.getQueue().getSongs().length;
-            this.mpd_client.addSongToQueueByFile(path);
-            this.mpd_client.play(len);
+            let  len=mpd_client().getQueue().getSongs().length;
+            mpd_client().addSongToQueueByFile(path);
+            mpd_client().play(len);
         }
         if (choice==="Replace and Play"){
-            this.mpd_client.clearQueue();
-            this.mpd_client.addSongToQueueByFile(path);
-            this.mpd_client.play(0);
+            mpd_client().clearQueue();
+            mpd_client().addSongToQueueByFile(path);
+            mpd_client().play(0);
 
         }
     }
@@ -108,7 +98,7 @@ class SearchList extends CommonList {
         let  path=this.items[index].path;
         this.selection=index;
         global.get("observer").publish('AddRecent', {recentElement:path});
-        this.mpd_client.addSongToQueueByFile( path);
+        mpd_client().addSongToQueueByFile( path);
     }
     render() {
         return (
@@ -135,7 +125,6 @@ class SearchForm extends React.Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.mpd_client=global.get("mpd_client");
     }
 
     handleChange(event) {
@@ -159,7 +148,7 @@ class SearchForm extends React.Component {
 
         this.searchList.setOptions(this.options);
 
-        this.mpd_client.search(search,this.searchList.processSearchResults.bind(this.searchList));
+        mpd_client().search(search,this.searchList.processSearchResults.bind(this.searchList));
         event.preventDefault();
     }
 

@@ -8,7 +8,7 @@ import Img from 'react-image';
 import {ToastContainer, toast} from 'react-toastify';
 import ReactDOM from "react-dom";
 import {AlbumFloatingMenu} from './FloatingButton';
-import {global} from "./Utils";
+import {global,mpd_client} from "./Utils";
 
 /**
  * returns object with properties of content
@@ -72,22 +72,9 @@ class PopupAlbum extends Component {
         this.state = {
             items: []
         };
-        this.mpd_client=global.get("mpd_client");
-        this.mpd_client.getDirectoryContents(this.album, this.getDir.bind(this));
+        mpd_client().getDirectoryContents(this.album, this.getDir.bind(this));
     }
-
-    componentDidMount() {
-        this.listenerInit = global.get("observer").subscribe('MpdInitialized',(data)=>{
-            this.mpd_client=data;
-        });
-
-    }
-
-    componentWillUnmount() {
-        try {
-            this.listenerInit.unsubscribe();
-        }catch(e){}
-    }
+    
     getDir(directory_contents) {
         let myTotalList = directory_contents.map((content) => {
             try {
@@ -116,7 +103,7 @@ class PopupAlbum extends Component {
             notifyMessage(message);
         } catch (e) {
         }
-        this.mpd_client.addSongToQueueByFile(path);
+        mpd_client().addSongToQueueByFile(path);
     }
 
     render() {
@@ -233,7 +220,7 @@ class AlbumList extends CommonList {
     }
 
     getAlbumDirectoryContents(dir) {
-        this.mpd_client.getDirectoryContents(dir, (directory_contents) => {
+        mpd_client().getDirectoryContents(dir, (directory_contents) => {
             if (directory_contents.length===0){
                 //always display somthing!!
                 console.log("empty result, display main direcctory!");
@@ -263,7 +250,7 @@ class AlbumList extends CommonList {
                     items: mylist, showPopup: false
                 });
             } else {
-                this.mpd_client.addSongToQueueByFile(dir);
+                mpd_client().addSongToQueueByFile(dir);
                 global.get("observer").publish('AddRecent', {recentElement:dir});
 
                 notifyMessage("add dir:" + lastPart(dir));
@@ -311,19 +298,19 @@ class AlbumList extends CommonList {
             (path) => {
                 if (choice === "Add") {
                     global.get("observer").publish('AddRecent', {recentElement:path});
-                    this.mpd_client.addSongToQueueByFile(path);
+                    mpd_client().addSongToQueueByFile(path);
                 }
                 if (choice === "Add and Play") {
                     global.get("observer").publish('AddRecent', {recentElement:path});
-                    let len = this.mpd_client.getQueue().getSongs().length;
-                    this.mpd_client.addSongToQueueByFile(path);
-                    this.mpd_client.play(len);
+                    let len = mpd_client().getQueue().getSongs().length;
+                    mpd_client().addSongToQueueByFile(path);
+                    mpd_client().play(len);
                 }
                 if (choice === "Replace and Play") {
                     global.get("observer").publish('AddRecent', {recentElement:path});
-                    this.mpd_client.clearQueue();
-                    this.mpd_client.addSongToQueueByFile(path);
-                    this.mpd_client.play(0);
+                    mpd_client().clearQueue();
+                    mpd_client().addSongToQueueByFile(path);
+                    mpd_client().play(0);
 
                 }
                 if (choice === "Info Album") {

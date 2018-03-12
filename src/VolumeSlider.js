@@ -1,13 +1,12 @@
 /*VolumeSlider*/
 import React , { Component } from 'react';
 import Slider, { Range } from 'rc-slider';
-import {global} from "./Utils";
+import {global,mpd_client} from "./Utils";
 
 class VolumeSlider extends Component {
     constructor(props, context) {
         super(props, context);
-        this.mpd_client=global.get("mpd_client");
-        let  volume=Math.round(this.mpd_client.getVolume()*100);
+        let  volume=Math.round(mpd_client().getVolume()*100);
         this.state = {
             volume: volume
         };
@@ -15,7 +14,7 @@ class VolumeSlider extends Component {
 
     handleOnChange  (value)  {
         value=Math.round(value);
-        this.mpd_client.setVolume(value/100);
+        mpd_client().setVolume(value/100);
         this.setState({
             volume: value
         })
