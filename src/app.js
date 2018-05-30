@@ -26,7 +26,8 @@ class Main extends React.Component {
         //pictures at: http://192.168.2.8:8081/FamilyMusic/.....
 
         this.observer = ReactObserver();
-        this.connect();
+        this.mpd_client = new MPD(8800, "ws://" + window.server);
+        this.connect(false);
         console.log(this.mpd_client);
 
         //define global variables
@@ -56,9 +57,8 @@ class Main extends React.Component {
         });
         this.timer = setInterval(this.tick.bind(this), 10000);
     }
-    connect(){
-        this.mpd_client = new MPD(8800, "ws://" + window.server);
-        //this.observer.publish('MpdInitialized', this.mpd_client);
+    connect(reconnect){
+        //if (reconnect) this.mpd_client.init();
         global.set("mpd_client",this.mpd_client);
         /*connect observer to mpd-client*/
         this.mpd_client.on('StateChanged', (state, client) => {
@@ -67,25 +67,28 @@ class Main extends React.Component {
         });
         this.mpd_client.on('QueueChanged', (queue) => {
             //console.log("queue changed:",queue);
-            this.observer.publish('QueueChanged', queue);
+            //this.observer.publish('QueueChanged', queue);
         });
         this.mpd_client.on('PlaylistsChanged', (playlists, client) => {
             //console.log("Playlists Changed:",playlists);
             this.observer.publish('PlaylistsChanged', playlists);
         });
+        this.observer.publish('StateChanged', {state: this.mpd_client.getState(), client: this.mpd_client});
     }
 
     tick(){
         //sync time every 10 seconds
         let state=global.get("mpd_client").getState();
+        //console.log(state);
+        if (!state.connected)return;
 
-        if(typeof state === 'number' && isNaN(state)||state===undefined||state===null)this.connect();
+        if(typeof state === 'number' && isNaN(state)||state===undefined||state===null)this.connect(true);
         else {
             if (this.time!==null) {
                 let time1=this.time.curTime;
                 let time2=Math.floor(global.get("mpd_client").getCurrentSongTime());
                 if (Math.abs(time1-time2)>5)
-                    this.connect()
+                    this.connect(true);
                 else
                     this.time.curTime=time2;
             }
@@ -135,6 +138,7 @@ class Main extends React.Component {
                         < SelectSkin />
                         <PopupEditCategories title={"Edit Categories"} onRef={ref => (this.PopupEditCategories = ref)}/>
                         <MyButton text={"Edit Categories"}  onClick={(e)=>{this.PopupEditCategories.openPopup(e)}}/>
+                        <MyButton text={"Reset Connection"}  onClick={(e)=>{this.connect()}}/>
                         <FloatingPlayButtons level={0}/>
                     </div>
                 </Tabs.Panel>

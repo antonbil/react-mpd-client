@@ -223,7 +223,7 @@ class AlbumList extends CommonList {
         mpd_client().getDirectoryContents(dir, (directory_contents) => {
             if (directory_contents.length===0){
                 //always display somthing!!
-                console.log("empty result, display main direcctory!");
+                console.log("empty result, display main directory!");
                 getAlbumDirectoryContents(this.baseDir());
                 return;
             }
